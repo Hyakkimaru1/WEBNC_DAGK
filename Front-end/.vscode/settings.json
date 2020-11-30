@@ -1,0 +1,10 @@
+{
+  "todohighlight.keywords": [
+    {
+      "text": "UNUSED FILES",
+      "color": "#fff",
+      "backgroundColor": "#DB5600"
+    }
+  ],
+  "javascript.validate.enable": false
+}
