@@ -1,5 +1,7 @@
 {
     "defaultSeverity": "error",
+    "include": ["**/*.ts", "**/*.js"],
+    "allowJs": true,
     "extends": [
         "tslint:recommended"
     ],
