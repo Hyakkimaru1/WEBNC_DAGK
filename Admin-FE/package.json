@@ -1,0 +1,114 @@
+{
+  "name": "started-pattern-repo",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@types/d3": "^6.2.0",
+    "@types/jwt-decode": "^3.1.0",
+    "ahooks": "^2.9.1",
+    "axios": "^0.20.0",
+    "jwt-decode": "^2.2.0",
+    "moment": "^2.27.0",
+    "node-sass": "^4.14.1",
+    "query-string": "^6.13.7",
+    "react": "^16.13.1",
+    "react-cookie": "^4.0.3",
+    "react-dom": "^16.13.1",
+    "react-redux": "^7.2.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "3.4.3",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "lint": "npm run lint:js && npm run lint:style",
+    "lint:js": "eslint --cache --fix --ext .js,.jsx ./src",
+    "lint:style": "stylelint --fix \"src/**/*.scss\" --syntax scss",
+    "prettier": "prettier -c \"**/src/**\" --write",
+    "lint-staged:js": "eslint --cache --fix --ext .js,.jsx",
+    "lint-staged:ts": "eslint --cache --fix --ext .ts,.tsx",
+    "lint-staged:style": "stylelint --fix --syntax scss",
+    "lint-staged:prettier": "prettier -c --write"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,scss,md,json}": [
+      "npm run lint-staged:prettier",
+      "git add"
+    ],
+    "**/*.{js,jsx}": [
+      "npm run lint-staged:js",
+      "git add"
+    ],
+    "**/*.{ts,tsx}": [
+      "npm run lint-staged:ts",
+      "git add"
+    ],
+    "**/*.scss": [
+      "npm run lint-staged:style",
+      "git add"
+    ]
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^5.6.4",
+    "@types/jest": "^26.0.13",
+    "@types/node": "^14.6.3",
+    "@types/react": "^16.9.49",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-redux": "^7.1.11",
+    "@types/react-router-dom": "^5.1.5",
+    "@typescript-eslint/eslint-plugin": "4.0.1",
+    "@typescript-eslint/parser": "4.0.1",
+    "babel-eslint": "^10.1.0",
+    "babel-plugin-import": "^1.13.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-airbnb-typescript": "^10.0.0",
+    "eslint-config-babel": "^9.0.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-import-resolver-typescript": "^2.3.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-jest": "^23.20.0",
+    "eslint-plugin-json": "^2.1.2",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.20.6",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "eslint-plugin-unicorn": "^21.0.0",
+    "husky": "^4.2.5",
+    "jsdoc": "^3.6.5",
+    "lint-staged": "^10.3.0",
+    "prettier": "^2.1.1",
+    "prettier-eslint": "^11.0.0",
+    "stylelint": "^13.7.0",
+    "stylelint-config-standard": "^20.0.0",
+    "stylelint-prettier": "^1.1.2",
+    "typescript": "^4.0.2",
+    "webpack-bundle-analyzer": "^3.8.0",
+    "webpackbar": "^4.0.0"
+  }
+}
