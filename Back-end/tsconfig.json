@@ -1,20 +1,11 @@
 {
   "compilerOptions": {
-      "target": "es6",
-      "module": "commonjs",
-      "sourceMap": true,
-      "outDir": "./build",
-      /* Strict Type-Checking Options */
-      "strict": true,
-      "noImplicitAny": true,
-      /* Module Resolution Options */
-      "moduleResolution": "node",
-      "baseUrl": "./",
-      "esModuleInterop": true,
-      /* Advanced Options */
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist"
   },
-  "include": ["*"],
-  "exclude": ["node_modules"]
+  "lib": ["es2015"]
 }
