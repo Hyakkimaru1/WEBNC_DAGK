@@ -1,6 +1,7 @@
 const ROUTERS = {
   HOME: "/",
-  SAMPLE: "/sample"
+  SAMPLE: "/sample",
+  LOGIN: "/login"
 };
 
 export default ROUTERS;
