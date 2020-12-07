@@ -7,26 +7,35 @@ import ProcessingLoader from "@/components/ProcessingLoader";
 // others
 import Home from "./pages/Home";
 import ROUTERS from "./constants/routers";
-import Login from './pages/Login/index';
-import '@/styles/App.scss'
-import Signup from './pages/Signup/index';
+import Login from "./pages/Login/index";
+import "@/styles/App.scss";
+import Signup from "./pages/Signup/index";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import ToggleLayOut from "./components/ToggleLayOut/index";
 
 // generate app routes
 
 const App = () => (
   <Router>
+    <ToastContainer />
     <Suspense fallback={<ProcessingLoader message="Suspense fallback" />}>
-      <Switch>
-          <Route exact path={ROUTERS.HOME}>
-            <Home/>
-          </Route>
-          <Route path={ROUTERS.LOGIN}>
-            <Login/>
-          </Route>
-          <Route path={ROUTERS.SIGNUP}>
-            <Signup/>
-          </Route>
-      </Switch>
+      <ThemeProvider>
+        <ToggleLayOut>
+          <Switch>
+            <Route exact path={ROUTERS.HOME}>
+              <Home />
+            </Route>
+            <Route path={ROUTERS.LOGIN}>
+              <Login />
+            </Route>
+            <Route path={ROUTERS.SIGNUP}>
+              <Signup />
+            </Route>
+          </Switch>
+        </ToggleLayOut>
+      </ThemeProvider>
     </Suspense>
   </Router>
 );

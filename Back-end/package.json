@@ -14,7 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1",
+    "firebase": "^8.1.2",
+    "jsonwebtoken": "^8.5.1",
+    "md5": "^2.3.0",
+    "mongoose": "^5.11.4",
     "ts-node": "^9.1.0"
   },
   "devDependencies": {

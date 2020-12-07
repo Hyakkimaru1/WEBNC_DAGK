@@ -1,0 +1,25 @@
+.ToggleLayOut{
+    position: relative;
+    &__button{
+        width: 50px;
+        position: absolute;
+        top: 1%;
+        right:1%;
+        overflow: hidden;
+        z-index: 1000;
+        font-size: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 100px;
+        border: none;
+        outline: none;
+        cursor: pointer;
+        transition: all 0.3s linear;
+        svg {
+            height: auto;
+            width: 2.5rem;
+            transition: all 0.3s linear;
+        }
+    }
+}
