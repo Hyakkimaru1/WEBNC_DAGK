@@ -1,13 +1,18 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import "./style.scss";
 import BG from "@/Images/2021.jpg";
-import { Button, TextField } from "@material-ui/core";
+import { Button, createMuiTheme, Snackbar, TextField, ThemeProvider } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import ROUTERS from "@/constants/routers/index";
 import { useForm } from "react-hook-form";
 import { FormDataSignUp } from "@/types/FormData";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { Alert } from "@material-ui/lab";
 import * as yup from "yup";
+import { productAPI } from "@/configs/productAPI";
+import { toast } from "react-toastify";
+import { ThemeContext } from '@/contexts/ThemeContext';
+import THEME from '@/constants/Theme';
 
 const schema = yup.object().shape({
   email: yup
@@ -18,18 +23,51 @@ const schema = yup.object().shape({
   confirmPassword: yup.string().required("This field is required"),
 });
 
-const Signup: React.FC<{}> = () => {
+const Signup: React.FC = () => {
+  const [open, setOpen] = useState(false);
   const { register, handleSubmit } = useForm<FormDataSignUp>({
     resolver: yupResolver(schema),
   });
+  const { userTheme, theme } = useContext(ThemeContext);
 
-  const onSubmit = handleSubmit(({ email, password,confirmPassword}) => {
-    console.log(email, password);
+  const themeMUI = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: userTheme === THEME.LIGHT ? "light" : "dark",
+        },
+      }),
+    [userTheme]
+  );
+  const onSubmit = handleSubmit(({ email, password, confirmPassword }) => {
+    if (password !== confirmPassword) {
+      setOpen(true);
+    } else {
+      productAPI
+        .register(email, password)
+        .then(() => {
+          toast.success("😋 success");
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("😭 This email is used");
+        });
+    }
   });
   return (
     <div className="login__wrapper" style={{ backgroundImage: `url(${BG})` }}>
-      <form onSubmit={onSubmit} action="" className="login__form">
-        <h3>SIGN UP FORM</h3>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={open}
+        onClose={() => setOpen(false)}
+      >
+        <Alert severity="warning">
+          Password and confirm password must be equal!
+        </Alert>
+      </Snackbar>
+      <form onSubmit={onSubmit} action="" className="login__form" style={{ backgroundColor: theme?.formBackGround }}>
+        <h3 style={{ color: theme?.color }}>SIGN UP FORM</h3>
+        <ThemeProvider theme={themeMUI}>
         <TextField
           inputRef={register}
           name="email"
@@ -56,6 +94,7 @@ const Signup: React.FC<{}> = () => {
           Sign up
         </Button>
         <Link to={ROUTERS.LOGIN}>Sign in</Link>
+        </ThemeProvider>
       </form>
     </div>
   );
