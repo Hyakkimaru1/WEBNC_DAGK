@@ -57,6 +57,9 @@ const Login: React.FC = () => {
         if (err.response?.status === 404) {
           toast.error("😢 Wrong username or password");
         }
+        else {
+          toast.error("😢 Wrong username or password");
+        }
       });
   });
 

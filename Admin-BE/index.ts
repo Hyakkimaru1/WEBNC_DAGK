@@ -5,7 +5,7 @@ import routesMDW from "./middlewares/routes.mdw";
 
 // rest of the code remains same
 const app = express();
-const PORT = 8000 || process.env.PORT;
+const PORT = process.env.PORT || 8000;
 // middlewares
 app.use(express.json());
 app.use(cors());

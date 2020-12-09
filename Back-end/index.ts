@@ -9,7 +9,7 @@ import { Server, Socket } from "socket.io";
 import socket from "./socket";
 // rest of the code remains same
 const app = express();
-const PORT = 8001 || process.env.PORT;
+const PORT = process.env.PORT || 8001;
 
 // middlewares
 app.use(express.json());

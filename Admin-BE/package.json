@@ -5,9 +5,9 @@
   "main": "index.ts",
   "scripts": {
     "prebuild": "tslint -c tslint.json -p tsconfig.json --fix",
-    "build": "tsc --project ./",
+    "build": "tsc",
     "prestart": "npm run build",
-    "start": "nodemon",
+    "start": "ts-node index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
