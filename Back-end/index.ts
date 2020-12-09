@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import routesMdw from "./middlewares/routes.mdw";
 // rest of the code remains same
 const app = express();
-const PORT = 8001 || process.env.PORT;
+const PORT = process.env.PORT || 8001;
 
 //middlewares
 app.use(express.json());
@@ -28,5 +28,5 @@ routesMdw(app);
 
 app.get("/", (req, res) => res.send("Typescript"));
 app.listen(PORT, () => {
-  console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
+  console.log(`⚡️[server]: Server is running at http://localhost:${PORT}`);
 });

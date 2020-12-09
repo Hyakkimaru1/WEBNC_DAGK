@@ -2,8 +2,8 @@ import { AXIOS_INSTANCE } from "@/configs/enviroments";
 import { API } from "@/constants/API/index";
 
 export const productAPI = {
-  login: (user: string, password: string) => {
-    return AXIOS_INSTANCE.post(API.LOGIN, { user, password });
+  login: (username: string, password: string) => {
+    return AXIOS_INSTANCE.post(API.LOGIN, { username, password });
   },
   loginGGFB: (
     loginfb: boolean,
