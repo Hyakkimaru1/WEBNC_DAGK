@@ -7,27 +7,30 @@ export default function (io) {
   io.on("connection", (socket) => {
     console.log("loggin");
     socket.on("join", ({ name, room }, callback) => {
-      jwt.verify(name, primaryKey, function (err, decoded) {
-        if (err) {
-          callback(err);
-          return;
-        } else {
-          name = decoded.user;
-        }
-      });
-      let newUser = {
-        id: socket.id,
-        name,
-        room,
-      };
-      console.log("name,room", name, room);
-
       try {
+        name &&
+          jwt.verify(name, primaryKey, function (err, decoded) {
+            if (err) {
+              console.log("err", err);
+              // callback(err);
+              // return;
+            } else {
+              name = decoded.user;
+            }
+          });
+        let newUser = {
+          id: socket.id,
+          name,
+          room,
+        };
+        console.log("name,room", name, room);
+
         const user: any = addUser(newUser);
         if (user.error) {
           callback(user.error);
           return;
         }
+
         socket.emit("message", {
           user: "admin",
           text: `${name}, welcome to  room${room}`,
@@ -71,6 +74,12 @@ export default function (io) {
       const user = removeUser(socket.id);
       console.log("disconnect", user);
       if (user) {
+        const users = userInRoom(user.room);
+
+        io.to(user.room).emit("roomData", {
+          room: user.room,
+          users,
+        });
         io.to(user.room).emit("message", {
           user: "admin",
           text: `${user.name} has left!`,

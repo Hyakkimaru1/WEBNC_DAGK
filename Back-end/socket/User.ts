@@ -16,8 +16,10 @@ export const addUser = (user: User) => {
   if (existUser) {
     return { err: "username was taken!" };
   }
-  users.push(user);
-  return user;
+  if (user.name) {
+    users.push(user);
+    return user;
+  } else return { err: "username was invalid!" };
 };
 
 export const removeUser = (id: string) => {
