@@ -15,8 +15,8 @@ router.get("/", (req, res) => {
     res.send("<h1>ROUTE USER</h1>");
 });
 router.post("/login", (req, res) => {
-    //req.body has
-    //username,password
+    // req.body has
+    // username,password
     if (req.body.username && req.body.password) {
         req.body.password = md5_1.default(req.body.password);
         User_model_1.default.find({ user: req.body.username, password: req.body.password }, (err, docs) => {
@@ -24,7 +24,7 @@ router.post("/login", (req, res) => {
                 res.sendStatus(503);
             }
             else {
-                //send jwt
+                // send jwt
                 if (docs.length > 0) {
                     docs[0].password = "";
                     jsonwebtoken_1.default.sign(docs[0].toJSON(), primaryKey, (err, token) => {
@@ -32,6 +32,7 @@ router.post("/login", (req, res) => {
                             res.sendStatus(503);
                         }
                         else {
+                            console.log("token", token);
                             res.send({
                                 token,
                                 _id: docs[0]._id,
@@ -59,7 +60,9 @@ router.post("/loginGGFB", (req, res) => {
         // Build Firebase credential with the Google ID token.
         let credential;
         if (req.body.loginfb) {
-            credential = firebase_1.providerfb.credentital({ accessToken: req.body.idToken });
+            credential = firebase_1.providerfb.credentital({
+                accessToken: req.body.idToken,
+            });
         }
         else {
             credential = firebase_1.provider.credential(req.body.idToken);
@@ -73,7 +76,7 @@ router.post("/loginGGFB", (req, res) => {
                     res.sendStatus(503);
                 }
                 else {
-                    //send jwt
+                    // send jwt
                     if (docs.length > 0) {
                         docs[0].password = "";
                         jsonwebtoken_1.default.sign(docs[0].toJSON(), primaryKey, (err, token) => {
@@ -94,7 +97,7 @@ router.post("/loginGGFB", (req, res) => {
                     }
                     else {
                         User_model_1.default.create({
-                            user: (req.body.username),
+                            user: req.body.username,
                             password: req.body.password,
                             avatar: req.body.avatar,
                             name: req.body.name,
@@ -170,7 +173,7 @@ router.post("/register", (req, res) => {
     });
 });
 function checkAuthorization(req, res, next) {
-    //check header contain beader
+    // check header contain beader
     if (req.headers &&
         req.headers.authorization &&
         req.headers.authorization.split(" ")[0] === "Bearer") {

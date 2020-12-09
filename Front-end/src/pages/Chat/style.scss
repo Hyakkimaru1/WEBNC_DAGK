@@ -1,0 +1,10 @@
+// No CSS
+.chat {
+    // background-color: rgb(241, 135, 197);
+    height: 100vh;
+    & .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

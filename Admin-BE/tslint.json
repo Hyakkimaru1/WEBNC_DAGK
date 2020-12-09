@@ -6,7 +6,18 @@
     "jsRules": {},
     "rules": {
         "trailing-comma": [false],
-        "no-console": false
+        "no-console": false,
+        "variable-name": [false, "allow-leading-underscore"],
+        "only-arrow-functions": false,
+        "no-shadowed-variable": false,
+        "ban-types": false,
+        "comment-format": false,
+        "max-line-length": false,
+        "no-var-keyword": false,
+        "prefer-const": false,
+        "semicolon": false,
+        "space-before-function-paren": false,
+        "unified-signatures": false
     },
     "rulesDirectory": []
 }

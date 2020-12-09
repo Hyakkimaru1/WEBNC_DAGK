@@ -6,6 +6,7 @@ import ProcessingLoader from "@/components/ProcessingLoader";
 // routers
 // others
 import Home from "./pages/Home";
+import Chat from "./pages/Chat";
 import ROUTERS from "./constants/routers";
 import Login from "./pages/Login/index";
 import "@/styles/App.scss";
@@ -25,7 +26,8 @@ const App = () => (
         <ToggleLayOut>
           <Switch>
             <Route exact path={ROUTERS.HOME}>
-              <Home />
+              {/* <Home /> */}
+              <Chat/>
             </Route>
             <Route path={ROUTERS.LOGIN}>
               <Login />

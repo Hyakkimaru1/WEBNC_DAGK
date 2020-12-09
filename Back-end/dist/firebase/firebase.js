@@ -15,12 +15,12 @@ exports.firebaseConfig = {
     measurementId: "G-EE3TS8L5HB",
 };
 firebase_1.default.initializeApp(exports.firebaseConfig);
-//const db = firebaseApp.firestore();
+// const db = firebaseApp.firestore();
 const auth = firebase_1.default.auth();
 exports.auth = auth;
 const provider = new firebase_1.default.auth.GoogleAuthProvider();
 exports.provider = provider;
 const providerfb = new firebase_1.default.auth.FacebookAuthProvider();
 exports.providerfb = providerfb;
-//export default db;
+// export default db;
 //# sourceMappingURL=firebase.js.map
