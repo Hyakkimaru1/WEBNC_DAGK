@@ -29,7 +29,6 @@ const schema = yup.object().shape({
   password: yup.string().required("This field is required"),
 });
 
-
 const Login: React.FC = () => {
   const router = useHistory();
   const { userTheme, theme } = useContext(ThemeContext);
@@ -77,7 +76,8 @@ const Login: React.FC = () => {
               credential.idToken
             )
             .then((res: any) => {
-              localStorage.setItem("token", res.token);
+              console.log("res", res);
+              localStorage.setItem("token", res.data.token);
               router.push(ROUTERS.HOME);
             })
             .catch((err) => {
@@ -104,7 +104,7 @@ const Login: React.FC = () => {
               credential.accessToken
             )
             .then((res: any) => {
-              localStorage.setItem("token", res.token);
+              localStorage.setItem("token", res.data.token);
               router.push(ROUTERS.HOME);
             })
             .catch((err) => {

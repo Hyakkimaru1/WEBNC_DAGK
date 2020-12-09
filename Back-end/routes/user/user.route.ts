@@ -13,24 +13,25 @@ router.get("/", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  //req.body has
-  //username,password
+  // req.body has
+  // username,password
   if (req.body.username && req.body.password) {
     req.body.password = md5(req.body.password);
 
     UserModel.find(
       { user: req.body.username, password: req.body.password },
-      (err, docs:any) => {
+      (err, docs: any) => {
         if (err) {
           res.sendStatus(503);
         } else {
-          //send jwt
+          // send jwt
           if (docs.length > 0) {
             docs[0].password = "";
-            jwt.sign(docs[0].toJSON(), primaryKey, (err, token) => {
+            jwt.sign(docs[0].toJSON(), primaryKey, (err: any, token: any) => {
               if (err) {
                 res.sendStatus(503);
               } else {
+                console.log("token", token);
                 res.send({
                   token,
                   _id: docs[0]._id,
@@ -58,9 +59,11 @@ router.post("/loginGGFB", (req, res) => {
     // Build Firebase credential with the Google ID token.
     let credential;
     if (req.body.loginfb) {
-      credential = (<any> providerfb).credentital({ accessToken: req.body.idToken });
+      credential = (providerfb as any).credentital({
+        accessToken: req.body.idToken,
+      });
     } else {
-      credential = (<any> provider).credential(req.body.idToken);
+      credential = (provider as any).credential(req.body.idToken);
     }
 
     // Sign in with credential from the Google user.
@@ -69,11 +72,11 @@ router.post("/loginGGFB", (req, res) => {
       .then((data) => {
         UserModel.find(
           { user: req.body.username, password: req.body.password },
-          (err, docs:any) => {
+          (err, docs: any) => {
             if (err) {
               res.sendStatus(503);
             } else {
-              //send jwt
+              // send jwt
               if (docs.length > 0) {
                 docs[0].password = "";
                 jwt.sign(docs[0].toJSON(), primaryKey, (err, token) => {
@@ -93,7 +96,7 @@ router.post("/loginGGFB", (req, res) => {
               } else {
                 UserModel.create(
                   {
-                    user: (req.body.username) ,
+                    user: req.body.username,
                     password: req.body.password,
                     avatar: req.body.avatar,
                     name: req.body.name,
@@ -131,7 +134,7 @@ router.post("/loginGGFB", (req, res) => {
   }
 });
 
-router.get("/loginagain", checkAuthorization, (req:any, res) => {
+router.get("/loginagain", checkAuthorization, (req: any, res) => {
   UserModel.findById(req.authorization._id, (err, doc) => {
     if (err) {
       res.sendStatus(404);
@@ -168,7 +171,7 @@ router.post("/register", (req, res) => {
 });
 
 function checkAuthorization(req, res, next) {
-  //check header contain beader
+  // check header contain beader
   if (
     req.headers &&
     req.headers.authorization &&
