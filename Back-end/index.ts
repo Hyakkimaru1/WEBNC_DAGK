@@ -26,7 +26,6 @@ const io = new Server(server, {
   },
 });
 
-
 // Key
 const connect_URL =
   "mongodb+srv://admin:admin@cluster0.0n2op.mongodb.net/CARO_DACK?retryWrites=true&w=majority";

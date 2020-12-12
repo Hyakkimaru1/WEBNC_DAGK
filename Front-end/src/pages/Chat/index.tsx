@@ -63,7 +63,7 @@ const Chat = () => {
     );
 
     // return () => {
-    //   socket.emit("disconnect");
+    //   // socket.emit("disconnect");
     //   socket.off();
     // };
   }, [name,room]);
@@ -96,11 +96,10 @@ const Chat = () => {
 
   return (
     <div className="chat" style={{ backgroundColor: theme?.formBackGround }}>
-        
-      <div className="chat_title"style={{ color: theme?.text }} >
-      Các tài khoản đang hoạt động:
+      <div className="chat_title" style={{ color: theme?.text }}>
+        Các tài khoản đang hoạt động:
       </div>
-      <div className="container" >
+      <div className="container">
         <div className="container_wrap"></div>
         {/* <input
           value={message}
@@ -110,8 +109,12 @@ const Chat = () => {
           }
         ></input> */}
         <ThemeProvider theme={themeMUI}>
-          <List dense style={{backgroundColor:themeMUI.palette.background.paper}} className={classes.root}>
-            {users.map((user:any,value:any) => {
+          <List
+            dense
+            style={{ backgroundColor: themeMUI.palette.background.paper }}
+            className={classes.root}
+          >
+            {users.map((user: any, value: any) => {
               const labelId = `checkbox-list-secondary-label-${value}`;
               return (
                 <ListItem key={value} button>
@@ -122,7 +125,7 @@ const Chat = () => {
                     />
                   </ListItemAvatar>
                   <ListItemText
-                  style={{ color: theme?.text }}
+                    style={{ color: theme?.text }}
                     id={labelId}
                     primary={user.name}
                   />
