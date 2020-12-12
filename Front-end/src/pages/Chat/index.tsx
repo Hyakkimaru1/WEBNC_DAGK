@@ -66,7 +66,7 @@ const Chat = () => {
     //   socket.emit("disconnect");
     //   socket.off();
     // };
-  }, [name]);
+  }, [name,room]);
 
   useEffect(() => {
     socket.on("message", (message: any, callback: any) => {

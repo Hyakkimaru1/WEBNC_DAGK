@@ -15,6 +15,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ToggleLayOut from "./components/ToggleLayOut/index";
+import Room from './pages/Room/index';
 
 // generate app routes
 
@@ -31,6 +32,9 @@ const App = () => (
             </Route>
             <Route path={ROUTERS.LOGIN}>
               <Login />
+            </Route>
+            <Route path={ROUTERS.ROOM}>
+              <Room />
             </Route>
             <Route path={ROUTERS.SIGNUP}>
               <Signup />

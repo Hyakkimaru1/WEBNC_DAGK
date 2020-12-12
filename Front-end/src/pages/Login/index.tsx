@@ -43,7 +43,7 @@ const Login: React.FC = () => {
     [userTheme]
   );
 
-  const { register, handleSubmit, errors } = useForm<FormData>({
+  const { register, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
 
@@ -51,6 +51,7 @@ const Login: React.FC = () => {
     productAPI
       .login(email, password)
       .then((result: AxiosResponse<any>) => {
+        localStorage.setItem("token", result.data.token);
         router.push(ROUTERS.HOME);
       })
       .catch((err) => {
