@@ -1,3 +1,4 @@
-import AddBoardSlide from '@/actions/AddBoardSlide';
+import AddBoardSlide from "@/actions/AddBoardSlide";
+import JoinBoardSlide from "@/actions/JoinBoardSlide";
 
-export {AddBoardSlide}
+export { AddBoardSlide, JoinBoardSlide };

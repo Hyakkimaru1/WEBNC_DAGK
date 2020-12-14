@@ -5,14 +5,17 @@ import { ThemeContext } from "@/contexts/ThemeContext";
 import { useDispatch, useSelector } from "react-redux";
 import { Backdrop, CircularProgress } from "@material-ui/core";
 import { callApiCreateBoard } from "@/actions/AddBoardSlide";
-import { useHistory } from 'react-router-dom';
-import ROUTERS from '@/constants/routers';
+import { useHistory } from "react-router-dom";
+import ROUTERS from "@/constants/routers";
+import { callApiJoinBoard } from "@/actions/JoinBoardSlide";
+import { toast } from "react-toastify";
 
 const CurrentBoard: React.FC = () => {
   const { theme } = useContext(ThemeContext);
   const history = useHistory();
   const dispatch = useDispatch();
   const state = useSelector((state: any) => state.AddBoardSlide);
+  const stateJoin = useSelector((state: any) => state.JoinBoardSlide);
   const roomIdRef = useRef<HTMLInputElement>(null);
 
   const handleAddRoom = () => {
@@ -20,19 +23,33 @@ const CurrentBoard: React.FC = () => {
   };
 
   const handleJoinRoom = () => {
-    if (roomIdRef.current){
-      history.push(ROUTERS.ROOM_PUSH + roomIdRef.current.value);
+    if (roomIdRef.current) {
+      const _id = roomIdRef.current.value;
+      dispatch(
+        callApiJoinBoard({
+          _id,
+          cbSuccess: () => {
+            history.push(ROUTERS.ROOM_PUSH + _id);
+          },
+          cbError: () => {
+            toast.error("This room is not existed");
+          },
+        })
+      );
     }
   };
 
-  if (state.id){
-    history.push(ROUTERS.ROOM_PUSH+state.id);
+  if (state.id) {
+    history.push(ROUTERS.ROOM_PUSH + state.id);
     return <></>;
   }
 
   return (
     <div className="currentboard">
-      <Backdrop style={{backgroundColor:'rgba(255,255,255,.75',zIndex:111}} open={state.isLoading}>
+      <Backdrop
+        style={{ backgroundColor: "rgba(255,255,255,.75", zIndex: 111 }}
+        open={state.isLoading || stateJoin.isLoading}
+      >
         <CircularProgress color="inherit" />
       </Backdrop>
       <div className="currentboard__addboard">
@@ -48,7 +65,9 @@ const CurrentBoard: React.FC = () => {
             type="text"
             ref={roomIdRef}
           />
-          <button onClick={handleJoinRoom} className="currentboard__button">Join room</button>
+          <button onClick={handleJoinRoom} className="currentboard__button">
+            Join room
+          </button>
         </div>
       </div>
       <div

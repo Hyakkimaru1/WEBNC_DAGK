@@ -25,14 +25,28 @@ const joinBoard = createSlice({
 const { reducer, actions } = joinBoard;
 export const { joinboard, loadingJoinBoard, errorJoinBoard } = actions;
 
-export const callApiCreateBoard = (_id:string): AppThunk => async (dispatch) => {
+export const callApiJoinBoard = ({
+  _id,
+  cbSuccess,
+  cbError,
+}: {
+  _id: string;
+  cbSuccess?: (...args: Array<any>) => any;
+  cbError?: any;
+}): AppThunk => async (dispatch) => {
   try {
     dispatch(loadingJoinBoard());
     await productAPI.joinBoard(_id).then((res: any) => {
       dispatch(joinboard(res.data.id));
+      if (cbSuccess) {
+        cbSuccess(res.data);
+      }
     });
   } catch (err) {
     dispatch(errorJoinBoard({ error: err.response?.data }));
+    if (cbError) {
+      cbError(err.response?.data);
+    }
   }
 };
 
