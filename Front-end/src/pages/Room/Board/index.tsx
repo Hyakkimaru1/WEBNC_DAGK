@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
 import "./style.scss";
 import Square from "./Square/index";
 
 const Board: React.FC = () => {
-  const [squares, setSquares] = useState(Array(9).fill(null));
+  //const [squares, setSquares] = useState(Array(25*25).fill(null));
   const renderSquare = (i: number) => {
     return (
       <Square
+        key={`square${i}`}
         value={i}
         //    onClick={() => onClick(i)}
       />

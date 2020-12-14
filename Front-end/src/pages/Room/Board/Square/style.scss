@@ -1,7 +1,52 @@
-.square{
-    display: inline-block;
-    border: 1px solid #ccc;
-    height: 25px;
-    width: 25px;
-    padding: 5px;
+.square {
+  display: inline-block;
+  border: 1px solid #ccc;
+  height: 26px;
+  text-align: center;
+  border-width: thin;
+  position: relative;
+  &__X {
+    transition: all .2s;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 2px;
+    background-color: red;
+    transform: translate(-50%, -50%) rotate(45deg);
+    animation: show 1s linear;
+    &::after {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%,-50%) rotate(90deg);
+      content: "";
+      display: inline-block;
+      position: absolute;
+      width: 20px;
+      height: 2px;
+      background-color: red;
+    }
+  }
+  &__O {
+    transition: all .2s;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #37B102;
+    animation: show .4s linear;
+    transform: translate(-50%,-50%);
+    border-radius: 50%;
+  }
+}
+
+
+@keyframes show{
+    0%{
+        transform: scale(1.2) translate(-50%, -50%) rotate(45deg);
+    }
+    100%{
+        transform: scale(1) translate(-50%, -50%) rotate(45deg);
+    }
 }

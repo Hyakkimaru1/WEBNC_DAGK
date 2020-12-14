@@ -1,1 +1,3 @@
-export { BranchReducer } from "./BranchReducer";
+import AddBoardSlide from '@/actions/AddBoardSlide';
+
+export {AddBoardSlide}

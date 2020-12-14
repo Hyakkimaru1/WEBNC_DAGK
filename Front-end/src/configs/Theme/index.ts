@@ -14,7 +14,7 @@ export const darkTheme:THEME = {
   body: "#363537",
   text: "#FAFAFA",
   toggleBorder: "#6B8096",
-  backgroundColor: "#181818",
+  backgroundColor: "#242526",
   formBackGround: '#181818',
   color:'#F1FFFF',
   gradient: "linear-gradient(#091236, #1E215D)",

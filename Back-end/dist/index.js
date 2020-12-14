@@ -22,7 +22,7 @@ app.use(body_parser_1.default.json());
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: "http://localhost:3000",
+        origin: "*",
         methods: ["GET", "POST"],
     },
 });
@@ -37,7 +37,7 @@ mongoose_1.default.connection.once("open", () => {
     console.log("connected");
 });
 socket_1.default(io);
-routes_mdw_1.default(app);
+routes_mdw_1.default(app, io);
 app.get("/", (req, res) => res.send("Typescript"));
 server.listen(PORT, () => {
     console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);

@@ -1,14 +1,15 @@
 .Room{
     display: flex;
     justify-content: space-between;
+    padding: 1rem;
     &__board{
-        flex: 0 1 40%;
+        flex: 0 1 50%;
     }
 
     &__player{
-        flex: 0 1 15%;
+        flex: 0 1 10%;
     }
     &__chatbox{
-        flex: 0 1 15%;
+        flex: 0 1 10%;
     }
 }

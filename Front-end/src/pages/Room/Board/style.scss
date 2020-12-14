@@ -2,5 +2,30 @@
     display: grid;
     grid-template-columns: repeat(25,1fr);
     column-gap: 0px;
-
+        margin:0px;
+        padding:0;
+        position:relative;
+    &:before {
+        left: 0;
+        right: 0;
+        bottom: 0px;
+        height: 0;
+        border-bottom: 1px solid #777;
+        content:"";
+        top: auto;
+        display: block;
+        position: absolute;
+    }
+    &:after {
+        clear:both;
+        display:block;
+        content:""
+    }
+    & li {
+        display:block;
+        float:left;
+        margin-right:-1px;
+        margin-top: -1px;
+        position:relative;
+    }
 }

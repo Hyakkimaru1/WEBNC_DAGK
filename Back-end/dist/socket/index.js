@@ -20,22 +20,24 @@ function default_1(io) {
     io.on("connection", (socket) => {
         console.log("loggin");
         socket.on("join", ({ name, room }, callback) => {
-            jsonwebtoken_1.default.verify(name, primaryKey, function (err, decoded) {
-                if (err) {
-                    callback(err);
-                    return;
-                }
-                else {
-                    name = decoded.user;
-                }
-            });
-            let newUser = {
-                id: socket.id,
-                name,
-                room,
-            };
-            console.log("name,room", name, room);
             try {
+                name &&
+                    jsonwebtoken_1.default.verify(name, primaryKey, function (err, decoded) {
+                        if (err) {
+                            console.log("err", err);
+                            // callback(err);
+                            // return;
+                        }
+                        else {
+                            name = decoded.user;
+                        }
+                    });
+                let newUser = {
+                    id: socket.id,
+                    name,
+                    room,
+                };
+                //console.log("name,room", name, room);
                 const user = User_1.addUser(newUser);
                 if (user.error) {
                     callback(user.error);
@@ -51,7 +53,7 @@ function default_1(io) {
                 });
                 socket.join(room);
                 const users = User_1.userInRoom(room);
-                console.log("users", users);
+                //console.log("users", users);
                 io.to(room).emit("roomData", {
                     room: user.room,
                     users,
@@ -67,7 +69,7 @@ function default_1(io) {
                 const user = yield User_1.getUser(socket.id);
                 io.to(user.room).emit("message", { user: user.name, text: message });
                 const users = User_1.userInRoom(user.room);
-                console.log("usersssss", users);
+                //console.log("usersssss", users);
                 io.to(user.room).emit("roomData", {
                     room: user.room,
                     users,
@@ -78,10 +80,34 @@ function default_1(io) {
                 console.log("error", error);
             }
         }));
+        socket.on("onboard", ({ boardID, token }) => {
+            jsonwebtoken_1.default.verify(token, primaryKey, function (err, decoded) {
+                if (err) {
+                }
+                else {
+                    socket.join(boardID);
+                    const room = io.sockets.adapter.rooms.get(`${boardID}`);
+                    if (room.size == 1) {
+                        const initialValueCurrentBoardPlay = {
+                            boardID,
+                            playerX: decoded.user,
+                            playerY: ''
+                        };
+                        io.sockets.adapter.rooms.get(`${boardID}`).infBoard = initialValueCurrentBoardPlay;
+                    }
+                    socket.emit('getInfBoard', io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
+                }
+            });
+        });
         socket.on("disconnect", () => {
             const user = User_1.removeUser(socket.id);
-            console.log("disconnect", user);
+            //console.log("disconnect", user);
             if (user) {
+                const users = User_1.userInRoom(user.room);
+                io.to(user.room).emit("roomData", {
+                    room: user.room,
+                    users,
+                });
                 io.to(user.room).emit("message", {
                     user: "admin",
                     text: `${user.name} has left!`,

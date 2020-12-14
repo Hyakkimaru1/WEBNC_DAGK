@@ -5,8 +5,6 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import ProcessingLoader from "@/components/ProcessingLoader";
 // routers
 // others
-import Home from "./pages/Home";
-import Chat from "./pages/Chat";
 import ROUTERS from "./constants/routers";
 import Login from "./pages/Login/index";
 import "@/styles/App.scss";
@@ -15,7 +13,8 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ToggleLayOut from "./components/ToggleLayOut/index";
-import Room from './pages/Room/index';
+import Main from './Main';
+import { UserProvider } from './contexts/UserContext';
 
 // generate app routes
 
@@ -26,19 +25,15 @@ const App = () => (
       <ThemeProvider>
         <ToggleLayOut>
           <Switch>
-            <Route exact path={ROUTERS.HOME}>
-              {/* <Home /> */}
-              <Chat/>
-            </Route>
             <Route path={ROUTERS.LOGIN}>
               <Login />
-            </Route>
-            <Route path={ROUTERS.ROOM}>
-              <Room />
             </Route>
             <Route path={ROUTERS.SIGNUP}>
               <Signup />
             </Route>
+            <UserProvider>
+                <Main/>
+            </UserProvider>
           </Switch>
         </ToggleLayOut>
       </ThemeProvider>

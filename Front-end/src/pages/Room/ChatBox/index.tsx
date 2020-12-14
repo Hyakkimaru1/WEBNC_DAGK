@@ -1,30 +1,27 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./style.scss";
-import { Grid, TextField, Button } from "@material-ui/core";
-import {} from "@material-ui/core";
+import {TextField, Button } from "@material-ui/core";
+import UserChat from './UserChat/index';
 
 const ChatBox: React.FC = () => {
+  const chatRef = useRef(null);
   return (
     <div className="chatbox">
-      <div className="chatbox__container">
-        <ul className="chatbox__chats"></ul>
+        <ul className="chatbox__chats">
+          <UserChat name="duy" text="chat here"/>
+          <UserChat name="duy" text="chat here"/>
+          <UserChat name="duy" text="chat here"/>
+        </ul>
         <div className="chatbox__inputchat">
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
-              <TextField
-                id="outlined-basic"
-                label="Outlined"
-                variant="outlined"
-              />
-            </Grid>
-            <Grid item xs={3}>
-              <Button variant="contained" color="primary">
-                Primary
-              </Button>
-            </Grid>
-          </Grid>
+          <TextField
+            inputRef={chatRef}
+            id="outlined-basic"
+            variant="outlined"
+          />
+          <Button variant="contained" color="primary">
+            Chat
+          </Button>
         </div>
-      </div>
     </div>
   );
 };

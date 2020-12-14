@@ -24,7 +24,7 @@ interface Props {
 }
 
 export const ThemeProvider: React.FC<Props> = ({ children }) => {
-  const [userTheme, setUserTheme] = useState(THEME_MODE.LIGHT);
+  const [userTheme, setUserTheme] = useState(window.localStorage.getItem("theme")||THEME_MODE.LIGHT);
 
   const provider = {
     userTheme,
