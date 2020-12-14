@@ -7,6 +7,7 @@ import Avatar from "@material-ui/core/Avatar";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 import ListItemText from "@material-ui/core/ListItemText";
 // others
 import { makeStyles } from "@material-ui/core/styles";
@@ -27,6 +28,14 @@ const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
     maxWidth: 360,
+  },
+  online: {
+    position: "absolute",
+    left: "41px",
+    zIndex: 1,
+    color: "limegreen",
+    bottom: "2px",
+    width: "20px",
   },
 }));
 let socket: any;
@@ -61,12 +70,7 @@ const Chat = () => {
     socket.emit("join", { name, room }, (error: any) =>
       console.log("error", error)
     );
-
-    // return () => {
-    //   // socket.emit("disconnect");
-    //   socket.off();
-    // };
-  }, [name,room]);
+  }, [name, room]);
 
   useEffect(() => {
     socket.on("message", (message: any, callback: any) => {
@@ -119,11 +123,16 @@ const Chat = () => {
               return (
                 <ListItem key={value} button>
                   <ListItemAvatar>
-                    <Avatar
-                      alt={`Avatar n°${value + 1}`}
-                      src={`/static/images/avatar/${value + 1}.jpg`}
-                    />
+                    <div className="avatar-wrap">
+                      <FiberManualRecordIcon className={classes.online} />
+
+                      <Avatar
+                        alt={`Avatar n°${value + 1}`}
+                        src={`/static/images/avatar/${value + 1}.jpg`}
+                      />
+                    </div>
                   </ListItemAvatar>
+
                   <ListItemText
                     style={{ color: theme?.text }}
                     id={labelId}
