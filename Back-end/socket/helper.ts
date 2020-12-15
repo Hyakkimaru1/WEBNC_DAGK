@@ -1,5 +1,6 @@
 export default function checkWin(a, x, y, turn) {
-  console.log("a", a);
+  //   console.log("x,y,turn", x, y, turn);
+  //   console.table("a", a);
   if (a) {
     if (checkVertical(a, x, y, turn)) return true;
     if (checkHorizontal(a, x, y, turn)) return true;

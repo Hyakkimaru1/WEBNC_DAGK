@@ -2,6 +2,8 @@ import { getAllUsers, addUser, getUser, removeUser, userInRoom } from "./User";
 import jwt from "jsonwebtoken";
 import config from "../config";
 import checkWin from "./helper";
+import RoomModel, { Room } from "../models/Room.model";
+
 const primaryKey = config.PRIMARYKEY;
 
 type Location = {
@@ -16,13 +18,11 @@ type CurrentBoardPlay = {
   board: number[];
   turn: number;
   i: number;
-  winner: number | null;
+  winner: number;
 };
 
 export default function (io) {
   io.on("connection", (socket) => {
-    console.log("loggin");
-    // console.log("io.sockets.adapter.rooms", io.sockets.adapter.rooms);
     socket.on("join", ({ name, room }, callback) => {
       try {
         name &&
@@ -58,7 +58,6 @@ export default function (io) {
         });
         socket.join(room);
         const users = getAllUsers;
-        console.log("usersall", users);
         io.to(room).emit("roomData", {
           room: user.room,
           users,
@@ -86,6 +85,7 @@ export default function (io) {
       }
     });
 
+    //luc vao phong
     socket.on(
       "onboard",
       ({ boardID, token }: { boardID: string; token: string }) => {
@@ -102,11 +102,11 @@ export default function (io) {
 
             socket.join(boardID);
             const room = io.sockets.adapter.rooms.get(`${boardID}`);
-            if (room.size == 1) {
+            if (room.size === 1) {
               const initialValueCurrentBoardPlay: CurrentBoardPlay = {
                 boardID,
                 playerX: decoded.user,
-                playerO: "duy1@gmail.com",
+                playerO: null,
                 board: new Array(25 * 25).fill(null),
                 turn: 1,
                 i: null,
@@ -116,42 +116,181 @@ export default function (io) {
                 `${boardID}`
               ).infBoard = initialValueCurrentBoardPlay;
             }
-            socket.emit(
+
+            io.to(boardID).emit(
               "getInfBoard",
               io.sockets.adapter.rooms.get(`${boardID}`).infBoard
             );
+
+            const rooms = io.sockets.adapter.rooms;
+            allrooms(socket);
           }
         });
       }
     );
 
+    //Luc danh
     socket.on(
       "onplay",
-      ({ infBoard, token }: { infBoard: CurrentBoardPlay; token: string }) => {
+      ({
+        infBoard,
+        i,
+        token,
+      }: {
+        infBoard: CurrentBoardPlay;
+        i: number;
+        token: string;
+      }) => {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
-            const newArr = [];
-            const board = infBoard.board.splice(0);
-            const x = Math.floor(infBoard.i / 25);
-            const y = infBoard.i % 25;
-            while (board.length) newArr.push(board.splice(0, 3));
-            if (checkWin(newArr, x, y, infBoard.turn)) {
-              infBoard.winner = infBoard.turn;
+            const roomH = io.sockets.adapter.rooms.get(`${infBoard.boardID}`);
+            if (roomH?.history) {
+              roomH.history.push(infBoard.board);
+            } else {
+              roomH.history = [infBoard.board];
             }
+            //check win
+            const newArr = [];
+            const board = [...infBoard.board];
+            const x = Math.floor(i / 25);
+            const y = i % 25;
+            while (board.length) newArr.push(board.splice(0, 25));
+            if (checkWin(newArr, x, y, infBoard.turn)) {
+              console.log("win");
+              infBoard.winner = infBoard.turn;
+              io.to(infBoard.boardID).emit("toastwinner", infBoard);
+
+
+              const room: any = {
+                roomId: infBoard.boardID, // roomID
+                playerX: infBoard.playerX, // store userID or username
+                playerO: infBoard.playerO,
+                board: roomH.history,
+                winner: decoded._id,
+              };
+              try {
+                RoomModel.create(room, (err) => {
+                  if (err) {
+                    console.log("err", err);
+                  }
+                });
+              } catch (error) {
+                console.log("error", error);
+              }
+            }
+
+            //count turn
             infBoard.turn = 1 - infBoard.turn;
             io.to(infBoard.boardID).emit("getInfBoard", infBoard);
-            io.sockets.adapter.rooms.get(
-              `${infBoard.boardID}`
-            ).infBoard = infBoard;
+            const room = io.sockets.adapter.rooms.get(`${infBoard.boardID}`);
+            if (room) room.infBoard = infBoard;
           }
         });
       }
     );
 
+    socket.on("onhome", () => {
+      allrooms(socket);
+    });
+
+    // Host doi vi tri
+    socket.on(
+      "joinplayas",
+      ({ id, value, token }: { id: string; value: number; token: string }) => {
+        jwt.verify(token, primaryKey, function (err, decoded) {
+          if (err) {
+          } else {
+            let room = io.sockets.adapter.rooms.get(`${id}`)?.infBoard;
+            console.log("room11111", room);
+
+            console.log("user", decoded.user);
+            if (!room) return;
+            if (value === 1 && !room.playerX) {
+              room.playerX = decoded.user;
+              if (room.playerO === decoded.user) {
+                room.playerO = null;
+              } else {
+                room.board = new Array(625).fill(null);
+                room.turn = 1;
+                room.i = null;
+                room.winner = null;
+              }
+            } else if (value === 0 && !room.playerO) {
+              room.playerO = decoded.user;
+              if (room.playerX === decoded.user) {
+                room.playerX = null;
+              } else {
+                room.board = new Array(625).fill(null);
+                room.turn = 1;
+                room.i = null;
+                room.winner = null;
+              }
+            } else {
+              if (room.playerX === decoded.user) {
+                room.playerX = null;
+              } else if (room.playerO === decoded.user) {
+                room.playerO = null;
+              }
+            }
+            console.log("room", room);
+
+            io.to(id).emit("getInfBoard", room);
+            allrooms(socket);
+          }
+        });
+      }
+    );
+    socket.on(
+      "leaveroom",
+      ({ boardId, token }: { boardId: string; token: string }) => {
+        jwt.verify(token, primaryKey, function (err, decoded) {
+          if (err) {
+          } else {
+            console.log("boardId", boardId);
+            let room = io.sockets.adapter.rooms.get(`${boardId}`);
+            console.log("room", room);
+            if (!room && !room?.infBoard) return;
+
+            if (
+              room.infBoard.playerX === decoded.user ||
+              room.infBoard.playerO === decoded.user
+            ) {
+              if (room.infBoard.playerX === decoded.user) {
+                room.infBoard.playerX = null;
+              } else if (room.infBoard.playerO === decoded.user) {
+                room.infBoard.playerO = null;
+              }
+              allrooms(socket);
+            }
+            console.log("room", room.infBoard);
+
+            socket.leave(boardId);
+            if (room) io.to(boardId).emit("getInfBoard", room.infBoard);
+          }
+        });
+      }
+    );
+
+    socket.on("disconnecting", () => {
+      const roomId = getLastValue(socket.rooms);
+      const room = io.sockets.adapter.rooms.get(`${roomId}`);
+      const user = getUser(socket.id);
+      if (room?.infBoard && roomId !== "1") {
+        if (room.infBoard.playerX === user.name) {
+          room.infBoard.playerX = null;
+        } else if (room.infBoard.playerO === user.name) {
+          room.infBoard.playerO = null;
+        }
+        io.to(roomId).emit("getInfBoard", room.infBoard);
+        allrooms(socket);
+      }
+
+    });
+
     socket.on("disconnect", () => {
       const user = removeUser(socket.id);
-      console.log("disconnect", user);
+      console.log("disconnect", socket.id);
       if (user) {
         const users = userInRoom(user.room);
 
@@ -166,4 +305,22 @@ export default function (io) {
       }
     });
   });
+
+  //emit all room data
+  const allrooms = (socket) => {
+    const rooms = io.sockets.adapter.rooms;
+    const resRooms: CurrentBoardPlay[] = [];
+    rooms.forEach((element) => {
+      if (element.infBoard) {
+        resRooms.push(element.infBoard);
+      }
+    });
+    io.sockets.emit("allrooms", { resRooms });
+  };
 }
+
+const getLastValue = (set) => {
+  let value;
+  for (value of set);
+  return value;
+};
