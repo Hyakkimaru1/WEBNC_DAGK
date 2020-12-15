@@ -11,7 +11,7 @@ type Location = {
 interface CurrentBoardPlay {
   boardID: string; // roomID
   playerX: string; // store userID or username
-  playerY: string;
+  playerO: string | null;
   board?: Location[];
 }
 
@@ -90,15 +90,20 @@ export default function (io) {
           } else {
             socket.join(boardID);
             const room = io.sockets.adapter.rooms.get(`${boardID}`);
-            if (room.size==1){
-              const initialValueCurrentBoardPlay:CurrentBoardPlay = {
+            if (room.size == 1) {
+              const initialValueCurrentBoardPlay: CurrentBoardPlay = {
                 boardID,
-                playerX:decoded.user,
-                playerY:''
+                playerX: decoded.user,
+                playerO: null,
               };
-              io.sockets.adapter.rooms.get(`${boardID}`).infBoard = initialValueCurrentBoardPlay;
+              io.sockets.adapter.rooms.get(
+                `${boardID}`
+              ).infBoard = initialValueCurrentBoardPlay;
             }
-            socket.emit('getInfBoard',io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
+            socket.emit(
+              "getInfBoard",
+              io.sockets.adapter.rooms.get(`${boardID}`).infBoard
+            );
           }
         });
       }

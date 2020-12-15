@@ -91,11 +91,11 @@ function default_1(io) {
                         const initialValueCurrentBoardPlay = {
                             boardID,
                             playerX: decoded.user,
-                            playerY: ''
+                            playerO: null,
                         };
                         io.sockets.adapter.rooms.get(`${boardID}`).infBoard = initialValueCurrentBoardPlay;
                     }
-                    socket.emit('getInfBoard', io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
+                    socket.emit("getInfBoard", io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
                 }
             });
         });

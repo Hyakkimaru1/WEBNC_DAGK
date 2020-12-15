@@ -5,6 +5,7 @@
   text-align: center;
   border-width: thin;
   position: relative;
+  cursor: pointer;
   &__X {
     transition: all .2s;
     position: absolute;
@@ -14,7 +15,7 @@
     height: 2px;
     background-color: red;
     transform: translate(-50%, -50%) rotate(45deg);
-    animation: show 1s linear;
+    animation: show .4s linear;
     &::after {
       top: 50%;
       left: 50%;
@@ -44,7 +45,7 @@
 
 @keyframes show{
     0%{
-        transform: scale(1.2) translate(-50%, -50%) rotate(45deg);
+        transform: scale(1.5) translate(-50%, -50%) rotate(45deg);
     }
     100%{
         transform: scale(1) translate(-50%, -50%) rotate(45deg);

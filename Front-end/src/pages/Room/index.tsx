@@ -1,36 +1,65 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./style.scss";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import ChatBox from "./ChatBox";
 import Board from "./Board";
-import Player from './Player';
-import socket from '@/configs/socket';
+import Player from "./Player";
+import socket from "@/configs/socket";
 import { useParams } from "react-router-dom";
+import CurrentBoardPlay from "@/types/CurrentBoardPlay";
+import { UserContext } from "@/contexts/UserContext";
 
 const Room: React.FC = () => {
   //const params = useParams();
-  const {theme } = useContext(ThemeContext);
-  const params:any = useParams(); 
+  const { theme } = useContext(ThemeContext);
+  const user: any = useContext(UserContext);
+  const params: any = useParams();
+  const [infBoard, setInfBoard] = useState<CurrentBoardPlay>({
+    boardID: params.id, // roomID
+    playerX: null, // store userID or username
+    playerO: null,
+    turn: 1,
+    board: new Array(25 * 25).fill(null),
+  });
+  
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
-    async function emitTokenOnBoard(){
-      const token = await localStorage.getItem("token") || "";
-      socket.emit("onboard",{boardID:params.id,token});
+    async function emitTokenOnBoard() {
+      const token = (await localStorage.getItem("token")) || "";
+      socket.emit("onboard", { boardID: params.id, token });
     }
     emitTokenOnBoard();
   }, [params.id]);
-  socket.on('getInfBoard',(data:any)=>{
+  socket.on("getInfBoard", (data: any) => {
     console.log(data);
-  })
+    setInfBoard(data);
+  });
+
+  const handleClickBoard = (i: number) => {
+    if (infBoard.board) {
+      const clone = { ...infBoard };
+      clone.board[i] = clone.turn || 0;
+      socket.emit("onplay", {infBoard,token});
+    }
+  };
+  const isPlay =
+    (infBoard.playerX === user.user && infBoard.turn === 1) ||
+    (infBoard.playerO === user.user && infBoard.turn === 0);
   return (
-    <div className="Room" style={{backgroundColor:theme?.backgroundColor}}>
+    <div className="Room" style={{ backgroundColor: theme?.backgroundColor }}>
       <div className="Room__chat">
-          <ChatBox/>
+        <ChatBox />
       </div>
       <div className="Room__board">
-          <Board/>
+        <Board
+          isPlay={isPlay}
+          board={infBoard.board}
+          onClick={handleClickBoard}
+        />
       </div>
       <div className="Room__player">
-          <Player/>
+        <Player />
       </div>
     </div>
   );

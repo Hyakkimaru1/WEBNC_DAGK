@@ -75,29 +75,6 @@ const CurrentBoard: React.FC = () => {
         className="currentboard__container"
       >
         <BoardPlay player={1} idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay player={1} idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay player={1} idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay player={1} idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay player={1} idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay player={1} idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
-        <BoardPlay idroom="123" />
       </div>
     </div>
   );

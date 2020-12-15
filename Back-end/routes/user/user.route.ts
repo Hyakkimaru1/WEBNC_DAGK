@@ -172,11 +172,22 @@ const routerUser = (io: any) => {
   });
 
   router.post("/board", checkAuthorization, (req: any, res) => {
-    Board.create({createBy:req.authorization.user},(err,doc) => {
+    Board.create({ createBy: req.authorization.user }, (err, doc) => {
       if (err) {
         res.sendStatus(501);
       } else {
-        res.send({id:doc._id});
+        res.send({ id: doc._id });
+      }
+    });
+  });
+
+  router.post("/joinboard", checkAuthorization, (req: any, res) => {
+    Board.find(req.body, (err, doc) => {
+      if (err){
+        res.sendStatus(404);
+      }
+      else {
+        res.sendStatus(200);
       }
     });
   });

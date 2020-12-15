@@ -183,6 +183,16 @@ const routerUser = (io) => {
             }
         });
     });
+    router.post("/joinboard", checkAuthorization, (req, res) => {
+        Board_model_1.default.find(req.body, (err, doc) => {
+            if (err) {
+                res.sendStatus(404);
+            }
+            else {
+                res.sendStatus(200);
+            }
+        });
+    });
     function checkAuthorization(req, res, next) {
         // check header contain beader
         if (req.headers &&

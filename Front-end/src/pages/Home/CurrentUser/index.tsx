@@ -16,4 +16,4 @@ const CurrentUser: React.FC<{
   );
 };
 
-export default CurrentUser;
+export default React.memo(CurrentUser);
