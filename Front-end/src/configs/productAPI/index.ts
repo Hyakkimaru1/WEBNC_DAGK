@@ -26,4 +26,8 @@ export const productAPI = {
   register: (user: string, password: string) => {
     return AXIOS_INSTANCE.post(API.REGISTER, { user, password });
   },
+  createNewBoard: () => {
+    return AXIOS_INSTANCE.post(API.CREATE_A_BOARD);
+  },
+  joinBoard: (_id:string) => AXIOS_INSTANCE.post(API.JOIN_THE_BOARD,{_id})
 };

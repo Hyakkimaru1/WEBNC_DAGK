@@ -12,8 +12,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 // others
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useEffect, useState } from "react";
-import io from "socket.io-client";
 import { BASE_URL } from "../../configs/enviroments";
+import socket from '@/configs/socket';
 import "./style.scss";
 
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +38,6 @@ const useStyles = makeStyles((theme) => ({
     width: "20px",
   },
 }));
-let socket: any;
 const Chat = () => {
   const classes = useStyles();
   const { userTheme, theme } = useContext(ThemeContext);
@@ -63,7 +62,6 @@ const Chat = () => {
     setName(nameN);
     setRoom(roomN);
     console.log("name,room", nameN, room);
-    socket = io(BASE_URL);
     socket.on("connect", () => {
       console.log(socket.id);
     });

@@ -3,7 +3,8 @@ const ROUTERS = {
   SAMPLE: "/sample",
   LOGIN:"/login",
   SIGNUP:"/signup",
-  ROOM:"/room/:id"
+  ROOM:"/room/:id",
+  ROOM_PUSH:"/room/"
 };
 
 export default ROUTERS;

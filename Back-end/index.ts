@@ -40,7 +40,7 @@ mongoose.connection.once("open", () => {
   console.log("connected");
 });
 socket(io);
-routesMdw(app);
+routesMdw(app,io);
 
 app.get("/", (req, res) => res.send("Typescript"));
 server.listen(PORT, () => {

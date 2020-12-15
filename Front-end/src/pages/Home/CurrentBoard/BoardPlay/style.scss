@@ -1,0 +1,24 @@
+.boardplay {
+  text-align: center;
+  border: 1px solid #aaa;
+  border-radius: 10px;
+  height: 100px;
+  cursor: pointer;
+  &__table {
+    border-top: 1px solid #aaa;
+    margin-top: 10px;
+    padding-top: 10px;
+    display: flex;
+    justify-content: center;
+    &--left {
+      color: #d10d01;
+    }
+    &--center {
+      color: #af6219;
+    }
+    &--right {
+      transform: rotateY(180deg);
+      color: #2b892d;
+    }
+  }
+}

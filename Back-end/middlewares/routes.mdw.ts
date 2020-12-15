@@ -1,7 +1,9 @@
-import userRoute from '../routes/user/user.route';
-import roomRoute from '../routes/room/room.route';
 
-export default function (app) {
-    app.use('/user', userRoute);
-    app.use('/room', roomRoute);
-};
+import userRoute from "../routes/user/user.route";
+import adminRoute from "../routes/admin/admin.route";
+
+export default function (app,io) {
+  app.use("/user", userRoute(io));
+  app.use("/admin", adminRoute(io));
+}
+

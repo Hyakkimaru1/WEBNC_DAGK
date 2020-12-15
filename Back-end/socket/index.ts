@@ -3,6 +3,18 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 const primaryKey = config.PRIMARYKEY;
 
+type Location = {
+  x: number;
+  y: number;
+};
+
+interface CurrentBoardPlay {
+  boardID: string; // roomID
+  playerX: string; // store userID or username
+  playerY: string;
+  board?: Location[];
+}
+
 export default function (io) {
   io.on("connection", (socket) => {
     console.log("loggin");
@@ -23,7 +35,7 @@ export default function (io) {
           name,
           room,
         };
-        console.log("name,room", name, room);
+        //console.log("name,room", name, room);
 
         const user: any = addUser(newUser);
         if (user.error) {
@@ -42,7 +54,7 @@ export default function (io) {
         });
         socket.join(room);
         const users = userInRoom(room);
-        console.log("users", users);
+        //console.log("users", users);
         io.to(room).emit("roomData", {
           room: user.room,
           users,
@@ -58,7 +70,7 @@ export default function (io) {
         const user: any = await getUser(socket.id);
         io.to(user.room).emit("message", { user: user.name, text: message });
         const users = userInRoom(user.room);
-        console.log("usersssss", users);
+        //console.log("usersssss", users);
 
         io.to(user.room).emit("roomData", {
           room: user.room,
@@ -70,9 +82,31 @@ export default function (io) {
       }
     });
 
+    socket.on(
+      "onboard",
+      ({ boardID, token }: { boardID: string; token: string }) => {
+        jwt.verify(token, primaryKey, function (err, decoded) {
+          if (err) {
+          } else {
+            socket.join(boardID);
+            const room = io.sockets.adapter.rooms.get(`${boardID}`);
+            if (room.size==1){
+              const initialValueCurrentBoardPlay:CurrentBoardPlay = {
+                boardID,
+                playerX:decoded.user,
+                playerY:''
+              };
+              io.sockets.adapter.rooms.get(`${boardID}`).infBoard = initialValueCurrentBoardPlay;
+            }
+            socket.emit('getInfBoard',io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
+          }
+        });
+      }
+    );
+
     socket.on("disconnect", () => {
       const user = removeUser(socket.id);
-      console.log("disconnect", user);
+      //console.log("disconnect", user);
       if (user) {
         const users = userInRoom(user.room);
 

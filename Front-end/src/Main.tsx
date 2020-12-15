@@ -5,10 +5,12 @@ import { Provider } from "react-redux";
 // routers
 // interceptors
 // others
-import {store} from "@/configs/Redux/store";
+import { store } from "@/configs/Redux/store";
 import "./styles/main.scss";
 import { doAxiosRequestIntercept } from "./configs/Interceptors";
-
+import ROUTERS from '@/constants/routers';
+import Room from "./pages/Room";
+import Home from './pages/Home';
 
 const Main = () => {
   doAxiosRequestIntercept();
@@ -16,9 +18,13 @@ const Main = () => {
     <Provider store={store}>
       <div className="main-wrapper">
         <Switch>
-          {
-            // route here
-          }
+          <Route exact path={ROUTERS.HOME}>
+             <Home /> 
+            {/* <Chat /> */}
+          </Route>
+          <Route path={ROUTERS.ROOM}>
+            <Room />
+          </Route>
         </Switch>
       </div>
     </Provider>
