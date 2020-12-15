@@ -1,4 +1,4 @@
-import { User, addUser, getUser, removeUser, userInRoom } from "./User";
+import { getAllUsers, addUser, getUser, removeUser, userInRoom } from "./User";
 import jwt from "jsonwebtoken";
 import config from "../config";
 const primaryKey = config.PRIMARYKEY;
@@ -42,7 +42,7 @@ export default function (io) {
           callback(user.error);
           return;
         }
-
+//admin chat when someone join room
         socket.emit("message", {
           user: "admin",
           text: `${name}, welcome to  room${room}`,
@@ -121,7 +121,7 @@ export default function (io) {
         });
         io.to(user.room).emit("message", {
           user: "admin",
-          text: `${user.name} has left!`,
+          text: `${user.name} has left!!`,
         });
       }
     });
