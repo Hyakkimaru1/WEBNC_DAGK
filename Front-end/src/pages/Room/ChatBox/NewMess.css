@@ -1,0 +1,41 @@
+.newMess{
+    position: fixed;
+    bottom: 3%;
+    right: 2%;
+    z-index: 1100;
+}
+
+.newMess>button{
+    margin-top: 5px;
+    border-radius: 50%;
+    padding: 12px;
+    min-width: 0px;
+    background-color: white;
+    box-shadow: 0px 3px 15px -7px rgba(0,0,0,0.8);
+}
+
+
+.newMess>div:nth-child(1){
+    width: 47px;
+    height: 47px;
+    box-shadow: 0px 3px 15px -7px rgba(0,0,0,0.8);
+    overflow: initial;
+    transition: all .2s;
+}
+
+.newMess>div:nth-child(1)>img{
+    border-radius: 50%;
+}
+
+.newMess>div:nth-child(1)::after{
+    content: '';
+    width: 12px;
+    height: 12px;
+    background-color: #32A24D;
+    position: absolute;
+    border: 2px solid white;
+    border-radius: 50%;
+    right: 0;
+    bottom: 0;
+    z-index: 120;
+}

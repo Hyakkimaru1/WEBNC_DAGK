@@ -6,6 +6,7 @@ const useStyles = makeStyles({
   root: {
     minWidth: 250,
     textAlign: "center",
+    position: "relative",
   },
   bullet: {
     display: "inline-block",
@@ -15,35 +16,50 @@ const useStyles = makeStyles({
   title: {
     fontSize: 14,
   },
-  avatar:{
-    margin:'0 auto'
-  }
+  avatar: {
+    margin: "0 auto",
+  },
 });
-const UserPlayer: React.FC<{ username?: string; avt?: string }> = ({
-  username = "Duy",
-  avt,
-}) => {
+const UserPlayer: React.FC<{
+  username: string | null;
+  avt?: string;
+  playKey?: number;
+  onClick: () => void;
+}> = ({ username, avt = "", playKey = 1, onClick}) => {
   const classes = useStyles();
+
+  if (username) {
+    return (
+      <div>
+        <Card className={classes.root}>
+          <CardContent>
+            <div></div>
+            <Typography variant="h5" component="h2">
+              <Avatar className={classes.avatar} src={avt} />
+            </Typography>
+            <Typography
+              className={classes.title}
+              color="textSecondary"
+              gutterBottom
+            >
+              {username}
+            </Typography>
+            <div style={{ position: "relative", marginTop: "1rem" }}>
+              {playKey ===1 ? (
+                <div className="square__X"></div>
+              ) : (
+                <div className="square__O"></div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   return (
-    <div>
+    <div style={{cursor:'pointer'}} onClick={() => onClick()}>
       <Card className={classes.root}>
-        <CardContent>
-          <Typography
-            className={classes.title}
-            color="textSecondary"
-            gutterBottom
-          >
-            {username}
-          </Typography>
-          <Typography  variant="h5" component="h2">
-            <Avatar className={classes.avatar}/>
-          </Typography>
-          <Typography variant="body2" component="p">
-            well meaning and kindly.
-            <br />
-            {'"a benevolent smile"'}
-          </Typography>
-        </CardContent>
+        <CardContent>Join here</CardContent>
       </Card>
     </div>
   );

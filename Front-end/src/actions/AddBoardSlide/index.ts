@@ -36,11 +36,16 @@ const addBoard = createSlice({
 const { reducer, actions } = addBoard;
 export const { addboard, loadingCreateBoard, errorCreateBoard } = actions;
 
-export const callApiCreateBoard = (): AppThunk => async (dispatch) => {
+export const callApiCreateBoard = (
+  cbSuccess?: (...args: Array<any>) => any
+): AppThunk => async (dispatch) => {
   try {
     dispatch(loadingCreateBoard());
     await productAPI.createNewBoard().then((res: any) => {
       dispatch(addboard(res.data.id));
+      if (cbSuccess){
+        cbSuccess(res.data.id);
+      }
     });
   } catch (err) {
     dispatch(errorCreateBoard({ error: err.response?.data }));

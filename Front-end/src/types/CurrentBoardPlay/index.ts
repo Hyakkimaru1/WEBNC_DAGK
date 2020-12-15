@@ -3,6 +3,8 @@ type CurrentBoardPlay = {
   playerX: string | null;
   playerO: string | null;
   turn: number | null;
+  i?:number;
+  winner?:number;
   board: number[];
 };
 
