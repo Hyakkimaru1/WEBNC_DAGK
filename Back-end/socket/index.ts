@@ -12,7 +12,7 @@ interface CurrentBoardPlay {
   boardID: string; // roomID
   playerX: string; // store userID or username
   playerO: string;
-  board: Location[];
+  board: number[];
   turn: number;
 }
 
