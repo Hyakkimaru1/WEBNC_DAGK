@@ -43,6 +43,7 @@ function default_1(io) {
                     callback(user.error);
                     return;
                 }
+                //admin chat when someone join room
                 socket.emit("message", {
                     user: "admin",
                     text: `${name}, welcome to  room${room}`,
@@ -91,11 +92,24 @@ function default_1(io) {
                         const initialValueCurrentBoardPlay = {
                             boardID,
                             playerX: decoded.user,
-                            playerY: ''
+                            playerO: "duy1@gmail.com",
+                            board: new Array(25 * 25).fill(null),
+                            turn: 1,
                         };
                         io.sockets.adapter.rooms.get(`${boardID}`).infBoard = initialValueCurrentBoardPlay;
                     }
-                    socket.emit('getInfBoard', io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
+                    socket.emit("getInfBoard", io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
+                }
+            });
+        });
+        socket.on("onplay", ({ infBoard, token }) => {
+            jsonwebtoken_1.default.verify(token, primaryKey, function (err, decoded) {
+                if (err) {
+                }
+                else {
+                    infBoard.turn = 1 - infBoard.turn;
+                    io.to(infBoard.boardID).emit("getInfBoard", io.sockets.adapter.rooms.get(`${infBoard.boardID}`).infBoard);
+                    io.sockets.adapter.rooms.get(`${infBoard.boardID}`).infBoard = infBoard;
                 }
             });
         });
@@ -110,7 +124,7 @@ function default_1(io) {
                 });
                 io.to(user.room).emit("message", {
                     user: "admin",
-                    text: `${user.name} has left!`,
+                    text: `${user.name} has left!!`,
                 });
             }
         });

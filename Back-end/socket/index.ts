@@ -119,10 +119,7 @@ export default function (io) {
           if (err) {
           } else {
             infBoard.turn = 1 - infBoard.turn;
-            io.to(infBoard.boardID).emit(
-              "getInfBoard",
-              io.sockets.adapter.rooms.get(`${infBoard.boardID}`).infBoard
-            );
+            io.to(infBoard.boardID).emit("getInfBoard", infBoard);
             io.sockets.adapter.rooms.get(
               `${infBoard.boardID}`
             ).infBoard = infBoard;
