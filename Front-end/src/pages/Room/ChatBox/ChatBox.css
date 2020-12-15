@@ -1,0 +1,46 @@
+.chatBox{
+    height: 310px;
+    padding: 0 10px;
+    overflow: auto;
+}
+
+.chatBox__right{
+    float: right;
+    clear: both;
+    margin-top: 5px;
+}
+
+.chatBox__left{
+    margin-top: 5px;
+    float: left;
+    clear: both;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.chatBox__left .chatBox__left--chat{
+    margin-left: 10px;
+    background-color: #E4E6EB;
+    padding: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    display: inline-block;
+}
+
+.chatBox__left .chatBox__left--name{
+    font-size: .8rem;
+    padding-left: 10px;
+    margin-bottom: 5px;
+}
+
+.chatBox__right>p{
+    margin-right: 10px;
+    background-color: #2e81f4;
+    color: white;
+    padding: 10px;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}

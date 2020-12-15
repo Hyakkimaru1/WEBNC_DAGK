@@ -9,8 +9,8 @@ const Square: React.FC<{
 }> = ({ isPlay, value = -1, onClick, location }) => {
   return (
     <li
-      style={isPlay ? { cursor: "pointer" } : { cursor: "context-menu" }}
-      onClick={() => (isPlay ? onClick(location) : null)}
+      style={isPlay && value === null ? { cursor: "pointer" } : { cursor: "context-menu" }}
+      onClick={() => (isPlay && value === null? onClick(location) : null)}
       className="square"
     >
       {value === 0 ? <div className="square__O"></div> : <></>}
