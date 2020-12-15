@@ -37,6 +37,7 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
+    "dev": "npm run start",
     "lint": "npm run lint:js && npm run lint:style",
     "lint:js": "eslint --cache --fix --ext .js,.jsx ./src",
     "lint:style": "stylelint --fix \"src/**/*.scss\" --syntax scss",

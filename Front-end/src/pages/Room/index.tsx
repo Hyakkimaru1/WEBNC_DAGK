@@ -8,7 +8,7 @@ import socket from "@/configs/socket";
 import { useParams } from "react-router-dom";
 import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import { UserContext } from "@/contexts/UserContext";
-import { createMuiTheme ,ThemeProvider} from "@material-ui/core";
+import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import THEME from "@/constants/Theme";
 
 const Room: React.FC = () => {
@@ -35,6 +35,15 @@ const Room: React.FC = () => {
   );
   const token = localStorage.getItem("token");
 
+  //user online
+  const roomN = "1";
+  socket.on("connect", () => {
+    console.log(socket.id);
+  });
+  socket.emit("join", { token, roomN }, (error: any) =>
+    console.log("error", error)
+  );
+
   useEffect(() => {
     async function emitTokenOnBoard() {
       const token = (await localStorage.getItem("token")) || "";
@@ -43,6 +52,7 @@ const Room: React.FC = () => {
     emitTokenOnBoard();
   }, [params.id]);
   socket.on("getInfBoard", (data: any) => {
+    console.log("data", data);
     setInfBoard(data);
   });
 

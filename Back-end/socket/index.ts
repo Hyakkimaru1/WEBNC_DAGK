@@ -1,6 +1,7 @@
 import { getAllUsers, addUser, getUser, removeUser, userInRoom } from "./User";
 import jwt from "jsonwebtoken";
 import config from "../config";
+import checkWin from "./helper";
 const primaryKey = config.PRIMARYKEY;
 
 type Location = {
@@ -8,17 +9,20 @@ type Location = {
   y: number;
 };
 
-interface CurrentBoardPlay {
+type CurrentBoardPlay = {
   boardID: string; // roomID
   playerX: string; // store userID or username
   playerO: string;
   board: number[];
   turn: number;
-}
+  i: number;
+  winner: number | null;
+};
 
 export default function (io) {
   io.on("connection", (socket) => {
     console.log("loggin");
+    // console.log("io.sockets.adapter.rooms", io.sockets.adapter.rooms);
     socket.on("join", ({ name, room }, callback) => {
       try {
         name &&
@@ -36,7 +40,6 @@ export default function (io) {
           name,
           room,
         };
-        //console.log("name,room", name, room);
 
         const user: any = addUser(newUser);
         if (user.error) {
@@ -54,8 +57,8 @@ export default function (io) {
           text: `${name}, has joined!`,
         });
         socket.join(room);
-        const users = userInRoom(room);
-        //console.log("users", users);
+        const users = getAllUsers;
+        console.log("usersall", users);
         io.to(room).emit("roomData", {
           room: user.room,
           users,
@@ -89,6 +92,14 @@ export default function (io) {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
+            let newUser = {
+              id: socket.id,
+              name: decoded.user,
+              room: "1",
+            };
+
+            const user: any = addUser(newUser);
+
             socket.join(boardID);
             const room = io.sockets.adapter.rooms.get(`${boardID}`);
             if (room.size == 1) {
@@ -98,6 +109,8 @@ export default function (io) {
                 playerO: "duy1@gmail.com",
                 board: new Array(25 * 25).fill(null),
                 turn: 1,
+                i: null,
+                winner: null,
               };
               io.sockets.adapter.rooms.get(
                 `${boardID}`
@@ -118,6 +131,14 @@ export default function (io) {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
+            const newArr = [];
+            const board = infBoard.board.splice(0);
+            const x = Math.floor(infBoard.i / 25);
+            const y = infBoard.i % 25;
+            while (board.length) newArr.push(board.splice(0, 3));
+            if (checkWin(newArr, x, y, infBoard.turn)) {
+              infBoard.winner = infBoard.turn;
+            }
             infBoard.turn = 1 - infBoard.turn;
             io.to(infBoard.boardID).emit("getInfBoard", infBoard);
             io.sockets.adapter.rooms.get(
@@ -130,7 +151,7 @@ export default function (io) {
 
     socket.on("disconnect", () => {
       const user = removeUser(socket.id);
-      //console.log("disconnect", user);
+      console.log("disconnect", user);
       if (user) {
         const users = userInRoom(user.room);
 

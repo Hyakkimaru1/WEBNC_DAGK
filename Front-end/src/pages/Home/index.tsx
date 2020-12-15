@@ -76,7 +76,7 @@ const Home = () => {
 
   useEffect(() => {
     socket.on("roomData", (message: any, callback: any) => {
-      //console.table("users", message);
+      console.table("usersss", message);
       if (message) setusers(message.users);
     });
     //console.table("usersssssssss", users);

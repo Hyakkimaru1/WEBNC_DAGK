@@ -19,14 +19,7 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f21223f0-35f1-48bb-8837-45c40309051a" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/Back-end/dist/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/dist/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Back-end/dist/index.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/dist/index.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Back-end/dist/socket/User.js" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/dist/socket/User.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Back-end/dist/socket/User.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/dist/socket/User.js.map" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Back-end/dist/socket/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/dist/socket/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Back-end/dist/socket/index.js.map" beforeDir="false" afterPath="$PROJECT_DIR$/Back-end/dist/socket/index.js.map" afterDir="false" />
-    </list>
+    <list default="true" id="f21223f0-35f1-48bb-8837-45c40309051a" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,6 +48,7 @@
       <updated>1607848985773</updated>
       <workItem from="1607848987774" duration="68000" />
       <workItem from="1607941407375" duration="23000" />
+      <workItem from="1608004620110" duration="17000" />
     </task>
     <servers />
   </component>
