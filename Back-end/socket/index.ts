@@ -11,8 +11,9 @@ type Location = {
 interface CurrentBoardPlay {
   boardID: string; // roomID
   playerX: string; // store userID or username
-  playerY: string;
-  board?: Location[];
+  playerO: string;
+  board: Location[];
+  turn: number;
 }
 
 export default function (io) {
@@ -42,7 +43,7 @@ export default function (io) {
           callback(user.error);
           return;
         }
-//admin chat when someone join room
+        //admin chat when someone join room
         socket.emit("message", {
           user: "admin",
           text: `${name}, welcome to  room${room}`,
@@ -90,15 +91,41 @@ export default function (io) {
           } else {
             socket.join(boardID);
             const room = io.sockets.adapter.rooms.get(`${boardID}`);
-            if (room.size==1){
-              const initialValueCurrentBoardPlay:CurrentBoardPlay = {
+            if (room.size == 1) {
+              const initialValueCurrentBoardPlay: CurrentBoardPlay = {
                 boardID,
-                playerX:decoded.user,
-                playerY:''
+                playerX: decoded.user,
+                playerO: "duy1@gmail.com",
+                board: new Array(25 * 25).fill(null),
+                turn: 1,
               };
-              io.sockets.adapter.rooms.get(`${boardID}`).infBoard = initialValueCurrentBoardPlay;
+              io.sockets.adapter.rooms.get(
+                `${boardID}`
+              ).infBoard = initialValueCurrentBoardPlay;
             }
-            socket.emit('getInfBoard',io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
+            socket.emit(
+              "getInfBoard",
+              io.sockets.adapter.rooms.get(`${boardID}`).infBoard
+            );
+          }
+        });
+      }
+    );
+
+    socket.on(
+      "onplay",
+      ({ infBoard, token }: { infBoard: CurrentBoardPlay; token: string }) => {
+        jwt.verify(token, primaryKey, function (err, decoded) {
+          if (err) {
+          } else {
+            infBoard.turn = 1 - infBoard.turn;
+            io.to(infBoard.boardID).emit(
+              "getInfBoard",
+              io.sockets.adapter.rooms.get(`${infBoard.boardID}`).infBoard
+            );
+            io.sockets.adapter.rooms.get(
+              `${infBoard.boardID}`
+            ).infBoard = infBoard;
           }
         });
       }
