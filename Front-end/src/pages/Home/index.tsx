@@ -2,7 +2,7 @@
 // libs
 import THEME from "@/constants/Theme";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+import { createMuiTheme } from "@material-ui/core";
 import Avatar from "@material-ui/core/Avatar";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 const Home = () => {
   const classes = useStyles();
   const { userTheme, theme } = useContext(ThemeContext);
-  const user:any = useContext(UserContext);
+  const user: any = useContext(UserContext);
   const themeMUI = React.useMemo(
     () =>
       createMuiTheme({
@@ -82,15 +82,14 @@ const Home = () => {
     //console.table("usersssssssss", users);
   }, [users]);
 
-
   return (
     <div className="home" style={{ backgroundColor: theme?.formBackGround }}>
       <div className="home__user">
-        <CurrentUser theme={theme} username={user.user} avatar={user.avatar}/>
+        <CurrentUser theme={theme} username={user.user} avatar={user.avatar} />
       </div>
       <div className="home__board">
         <div className="home__board--current">
-          <CurrentBoard/>
+          <CurrentBoard />
         </div>
         <div className="home__board--user">
           <div className="chat_title" style={{ color: theme?.text }}>
@@ -105,32 +104,30 @@ const Home = () => {
             event.key == "Enter" ? sendMessage(event) : null
           }
         ></input> */}
-            <ThemeProvider theme={themeMUI}>
-              <List
-                dense
-                style={{ backgroundColor: themeMUI.palette.background.paper }}
-                className={classes.root}
-              >
-                {users.map((user: any, value: any) => {
-                  const labelId = `checkbox-list-secondary-label-${value}`;
-                  return (
-                    <ListItem key={value} button>
-                      <ListItemAvatar>
-                        <Avatar
-                          alt={`Avatar n°${value + 1}`}
-                          src={`/static/images/avatar/${value + 1}.jpg`}
-                        />
-                      </ListItemAvatar>
-                      <ListItemText
-                        style={{ color: theme?.text }}
-                        id={labelId}
-                        primary={user.name}
+            <List
+              dense
+              style={{ backgroundColor: themeMUI.palette.background.paper }}
+              className={classes.root}
+            >
+              {users.map((user: any, value: any) => {
+                const labelId = `checkbox-list-secondary-label-${value}`;
+                return (
+                  <ListItem key={value} button>
+                    <ListItemAvatar>
+                      <Avatar
+                        alt={`Avatar n°${value + 1}`}
+                        src={`/static/images/avatar/${value + 1}.jpg`}
                       />
-                    </ListItem>
-                  );
-                })}
-              </List>
-            </ThemeProvider>
+                    </ListItemAvatar>
+                    <ListItemText
+                      style={{ color: theme?.text }}
+                      id={labelId}
+                      primary={user.name}
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
           </div>
         </div>
       </div>

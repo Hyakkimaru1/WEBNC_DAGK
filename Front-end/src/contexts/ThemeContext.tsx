@@ -23,7 +23,7 @@ interface Props {
   children: JSX.Element[] | JSX.Element;
 }
 
-export const ThemeProvider: React.FC<Props> = ({ children }) => {
+export const ThemeProviderLocal: React.FC<Props> = ({ children }) => {
   const [userTheme, setUserTheme] = useState(window.localStorage.getItem("theme")||THEME_MODE.LIGHT);
 
   const provider = {

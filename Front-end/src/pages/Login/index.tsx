@@ -1,12 +1,7 @@
 import React, { useContext } from "react";
 import "./style.scss";
 import BG from "@/Images/2021.jpg";
-import {
-  Button,
-  createMuiTheme,
-  TextField,
-  ThemeProvider,
-} from "@material-ui/core";
+import { Button, TextField } from "@material-ui/core";
 import { Link, useHistory } from "react-router-dom";
 import ROUTERS from "@/constants/routers/index";
 import { useForm } from "react-hook-form";
@@ -19,7 +14,6 @@ import { AxiosResponse } from "axios";
 import { toast } from "react-toastify";
 import firebase from "firebase";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import THEME from "@/constants/Theme";
 
 const schema = yup.object().shape({
   email: yup
@@ -31,17 +25,7 @@ const schema = yup.object().shape({
 
 const Login: React.FC = () => {
   const router = useHistory();
-  const { userTheme, theme } = useContext(ThemeContext);
-
-  const themeMUI = React.useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          type: userTheme === THEME.LIGHT ? "light" : "dark",
-        },
-      }),
-    [userTheme]
-  );
+  const { theme } = useContext(ThemeContext);
 
   const { register, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -57,8 +41,7 @@ const Login: React.FC = () => {
       .catch((err) => {
         if (err.response?.status === 404) {
           toast.error("😢 Wrong username or password");
-        }
-        else {
+        } else {
           toast.error("😢 Wrong username or password");
         }
       });
@@ -136,45 +119,43 @@ const Login: React.FC = () => {
         style={{ backgroundColor: theme?.formBackGround }}
       >
         <h3 style={{ color: theme?.color }}>LOGIN FORM</h3>
-        <ThemeProvider theme={themeMUI}>
-          <TextField
-            inputRef={register}
-            name="email"
-            label="Email"
-            type="email"
-          />
-          <br />
-          <TextField
-            inputRef={register}
-            name="password"
-            label="Password"
-            type="password"
-            autoComplete="current-password"
-            color="secondary"
-          />
-          <br />
-          <Button type="submit" variant="contained" color="primary">
-            Sign in
+        <TextField
+          inputRef={register}
+          name="email"
+          label="Email"
+          type="email"
+        />
+        <br />
+        <TextField
+          inputRef={register}
+          name="password"
+          label="Password"
+          type="password"
+          autoComplete="current-password"
+          color="secondary"
+        />
+        <br />
+        <Button type="submit" variant="contained" color="primary">
+          Sign in
+        </Button>
+        <Link to={ROUTERS.SIGNUP}>Sign up</Link>
+        <br />
+        <div className="login__form--button">
+          <Button
+            onClick={handleClickGG}
+            className="login__form--button-gg"
+            variant="contained"
+          >
+            GOOGLE
           </Button>
-          <Link to={ROUTERS.SIGNUP}>Sign up</Link>
-          <br />
-          <div className="login__form--button">
-            <Button
-              onClick={handleClickGG}
-              className="login__form--button-gg"
-              variant="contained"
-            >
-              GOOGLE
-            </Button>
-            <Button
-              onClick={handleClickFB}
-              className="login__form--button-fb"
-              variant="contained"
-            >
-              Facebook
-            </Button>
-          </div>
-        </ThemeProvider>
+          <Button
+            onClick={handleClickFB}
+            className="login__form--button-fb"
+            variant="contained"
+          >
+            Facebook
+          </Button>
+        </div>
       </form>
     </div>
   );

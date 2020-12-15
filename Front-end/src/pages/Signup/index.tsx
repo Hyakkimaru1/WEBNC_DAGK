@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import "./style.scss";
 import BG from "@/Images/2021.jpg";
-import { Button, createMuiTheme, Snackbar, TextField, ThemeProvider } from "@material-ui/core";
+import { Button, Snackbar, TextField } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import ROUTERS from "@/constants/routers/index";
 import { useForm } from "react-hook-form";
@@ -12,7 +12,6 @@ import * as yup from "yup";
 import { productAPI } from "@/configs/productAPI";
 import { toast } from "react-toastify";
 import { ThemeContext } from '@/contexts/ThemeContext';
-import THEME from '@/constants/Theme';
 
 const schema = yup.object().shape({
   email: yup
@@ -28,17 +27,8 @@ const Signup: React.FC = () => {
   const { register, handleSubmit } = useForm<FormDataSignUp>({
     resolver: yupResolver(schema),
   });
-  const { userTheme, theme } = useContext(ThemeContext);
+  const { theme } = useContext(ThemeContext);
 
-  const themeMUI = React.useMemo(
-    () =>
-      createMuiTheme({
-        palette: {
-          type: userTheme === THEME.LIGHT ? "light" : "dark",
-        },
-      }),
-    [userTheme]
-  );
   const onSubmit = handleSubmit(({ email, password, confirmPassword }) => {
     if (password !== confirmPassword) {
       setOpen(true);
@@ -67,7 +57,6 @@ const Signup: React.FC = () => {
       </Snackbar>
       <form onSubmit={onSubmit} action="" className="login__form" style={{ backgroundColor: theme?.formBackGround }}>
         <h3 style={{ color: theme?.color }}>SIGN UP FORM</h3>
-        <ThemeProvider theme={themeMUI}>
         <TextField
           inputRef={register}
           name="email"
@@ -94,7 +83,6 @@ const Signup: React.FC = () => {
           Sign up
         </Button>
         <Link to={ROUTERS.LOGIN}>Sign in</Link>
-        </ThemeProvider>
       </form>
     </div>
   );

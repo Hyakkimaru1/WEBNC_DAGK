@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import App from "./App"
+import App from "./App";
+import { ThemeProviderLocal } from "./contexts/ThemeContext";
 import * as serviceWorker from "./serviceWorker";
 
 // render application
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render((<ThemeProviderLocal><App /></ThemeProviderLocal>), document.getElementById("root"));
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
