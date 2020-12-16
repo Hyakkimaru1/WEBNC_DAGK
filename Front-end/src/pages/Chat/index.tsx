@@ -16,6 +16,11 @@ import { BASE_URL } from "../../configs/enviroments";
 import socket from "@/configs/socket";
 import "./style.scss";
 
+
+ type mess={
+   user:string
+   message:string
+ }
 const useStyles = makeStyles((theme) => ({
   chat: {
     display: "flex",
@@ -50,9 +55,10 @@ const Chat = () => {
       }),
     [userTheme]
   );
+  
   const [room, setRoom] = React.useState<string>();
   const [name, setName] = React.useState<string>();
-  const [messages, setmessages] = useState<string[]>([]);
+  const [messages, setmessages] = useState<mess[]>([]);
   const [message, setmessage] = useState<string>("");
   const [users, setusers] = useState<any>([]);
   useEffect(() => {
@@ -71,8 +77,8 @@ const Chat = () => {
   }, [name, room]);
 
   useEffect(() => {
-    socket.on("message", (message: any, callback: any) => {
-      setmessages([...messages, message]);
+    socket.on("message", (messages: any, callback: any) => {
+      setmessages([...messages]);
     });
     console.table(messages);
   }, [messages]);

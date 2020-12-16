@@ -13,14 +13,21 @@ import VideocamIcon from "@material-ui/icons/Videocam";
 import React, { useState } from "react";
 import ChatBox from "./ChatBox";
 import "./ClientChat.css";
-function ClientChat() {
-  const [input, setInput] = useState();
+import socket from "@/configs/socket";
+import { useParams } from "react-router-dom";
 
+function ClientChat() {
+  const params = useParams();
+  const token = localStorage.getItem("token");
+  const [input, setInput] = useState();
+  const id = params.id;
   const handleSubmit = (e) => {
     e.preventDefault();
-    //e.target.value
-    //input
-    // call socket.emit("chat") =>
+    if (input) {
+      socket.emit("sendMess", { roomId: id, token, message: input }, () =>
+        setInput("")
+      );
+    }
   };
 
   const handleChange = (e) => {

@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 import checkWin from "./helper";
 import RoomModel, { Room } from "../models/Room.model";
+import ChatModel from "../models/Chat.model";
 
 const primaryKey = config.PRIMARYKEY;
 
@@ -47,15 +48,15 @@ export default function (io) {
           return;
         }
         //admin chat when someone join room
-        socket.emit("message", {
-          user: "admin",
-          text: `${name}, welcome to  room${room}`,
-        });
+        // socket.emit("message", {
+        //   user: "admin",
+        //   text: `${name}, welcome to  room${room}`,
+        // });
 
-        socket.broadcast.to(user.room).emit("message", {
-          user: "admin",
-          text: `${name}, has joined!`,
-        });
+        // socket.broadcast.to(user.room).emit("message", {
+        //   user: "admin",
+        //   text: `${name}, has joined!`,
+        // });
         socket.join(room);
         const users = getAllUsers;
         io.to(room).emit("roomData", {
@@ -68,17 +69,28 @@ export default function (io) {
       }
     });
 
-    socket.on("sendMess", async (message, callback) => {
+    socket.on("sendMess", async ({ roomId, token, message }, callback) => {
       try {
-        const user: any = await getUser(socket.id);
-        io.to(user.room).emit("message", { user: user.name, text: message });
-        const users = userInRoom(user.room);
+        let user: string = null;
+        token &&
+          jwt.verify(token, primaryKey, function (err, decoded) {
+            if (err) {
+              console.log("err", err);
+              // callback(err);
+              // return;
+            } else {
+              user = decoded.user;
+            }
+          });
+        const roomH = io.sockets.adapter.rooms.get(`${roomId}`);
+        if (roomH && roomH?.messages) {
+          roomH.messages.push({ user, message });
+        } else {
+          roomH.messages = [{ user, message }];
+        }
         //console.log("usersssss", users);
-
-        io.to(user.room).emit("roomData", {
-          room: user.room,
-          users,
-        });
+        roomH.messages &&
+          io.to(roomId).emit("message", { messages: roomH.messages });
         callback();
       } catch (error) {
         console.log("error", error);
@@ -121,7 +133,8 @@ export default function (io) {
               "getInfBoard",
               io.sockets.adapter.rooms.get(`${boardID}`).infBoard
             );
-
+            room?.messages &&
+              io.to(boardID).emit("message", { messages: room?.messages });
             const rooms = io.sockets.adapter.rooms;
             allrooms(socket);
           }
@@ -157,17 +170,15 @@ export default function (io) {
             const y = i % 25;
             while (board.length) newArr.push(board.splice(0, 25));
             if (checkWin(newArr, x, y, infBoard.turn)) {
-              console.log("win");
               infBoard.winner = infBoard.turn;
               io.to(infBoard.boardID).emit("toastwinner", infBoard);
-
 
               const room: any = {
                 roomId: infBoard.boardID, // roomID
                 playerX: infBoard.playerX, // store userID or username
                 playerO: infBoard.playerO,
                 board: roomH.history,
-                winner: decoded._id,
+                winner: decoded.user,
               };
               try {
                 RoomModel.create(room, (err) => {
@@ -202,9 +213,7 @@ export default function (io) {
           if (err) {
           } else {
             let room = io.sockets.adapter.rooms.get(`${id}`)?.infBoard;
-            console.log("room11111", room);
 
-            console.log("user", decoded.user);
             if (!room) return;
             if (value === 1 && !room.playerX) {
               room.playerX = decoded.user;
@@ -233,7 +242,6 @@ export default function (io) {
                 room.playerO = null;
               }
             }
-            console.log("room", room);
 
             io.to(id).emit("getInfBoard", room);
             allrooms(socket);
@@ -247,9 +255,7 @@ export default function (io) {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
-            console.log("boardId", boardId);
             let room = io.sockets.adapter.rooms.get(`${boardId}`);
-            console.log("room", room);
             if (!room && !room?.infBoard) return;
 
             if (
@@ -263,16 +269,33 @@ export default function (io) {
               }
               allrooms(socket);
             }
-            console.log("room", room.infBoard);
-
             socket.leave(boardId);
             if (room) io.to(boardId).emit("getInfBoard", room.infBoard);
+            console.log("room.messages", room.messages);
+            if (room.size === 0 && room.messages) {
+              const chat: any = {
+                roomId: boardId, // roomID
+                messages: room.messages,
+              };
+              try {
+                ChatModel.create(chat, (err) => {
+                  if (err) {
+                    console.log("err", err);
+                  } else {
+                    console.log("chat", chat);
+                  }
+                });
+              } catch (error) {
+                console.log("error", error);
+              }
+            }
           }
         });
       }
     );
 
     socket.on("disconnecting", () => {
+      console.log("socket.rooms", socket.rooms);
       const roomId = getLastValue(socket.rooms);
       const room = io.sockets.adapter.rooms.get(`${roomId}`);
       const user = getUser(socket.id);
@@ -285,10 +308,10 @@ export default function (io) {
         io.to(roomId).emit("getInfBoard", room.infBoard);
         allrooms(socket);
       }
-
     });
 
     socket.on("disconnect", () => {
+      console.log("socket.rooms", socket.rooms);
       const user = removeUser(socket.id);
       console.log("disconnect", socket.id);
       if (user) {
