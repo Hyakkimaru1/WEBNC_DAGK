@@ -35,6 +35,7 @@ const Home = () => {
   const classes = useStyles();
   const { userTheme, theme } = useContext(ThemeContext);
   const user: any = useContext(UserContext);
+  const [boards, setBoards] = useState([]);
   const themeMUI = React.useMemo(
     () =>
       createMuiTheme({
@@ -44,43 +45,29 @@ const Home = () => {
       }),
     [userTheme]
   );
-  const [room, setRoom] = React.useState<string>();
-  const [name, setName] = React.useState<string>();
-  const [messages, setmessages] = useState<string[]>([]);
+
   const [users, setusers] = useState<any>([]);
+
   useEffect(() => {
-    const nameN = localStorage.getItem("token") || "";
-    const roomN = "1";
-    setName(nameN);
-    setRoom(roomN);
-    //console.log("name,room", nameN, room);
-    socket.on("connect", () => {
-      //console.log(socket.id);
-    });
+    const name = localStorage.getItem("token") || "";
+    const room = "1";
     socket.emit("join", { name, room }, (error: any) =>
       console.log("error", error)
     );
-
-    // return () => {
-    //   // socket.emit("disconnect");
-    //   socket.off();
-    // };
-  }, [name, room]);
-
-  useEffect(() => {
-    socket.on("message", (message: any, callback: any) => {
-      setmessages([...messages, message]);
+    socket.emit("onhome");
+    socket.on("allrooms", (data: any) => {
+      //setBoard here;
+      setBoards(data.resRooms);
     });
-    //console.table(messages);
-  }, [messages]);
-
-  useEffect(() => {
     socket.on("roomData", (message: any, callback: any) => {
-      //console.table("users", message);
       if (message) setusers(message.users);
     });
-    //console.table("usersssssssss", users);
-  }, [users]);
+
+    return () => {
+      socket.off("roomData");
+      socket.off("allrooms");
+    };
+  }, []);
 
   return (
     <div className="home" style={{ backgroundColor: theme?.formBackGround }}>
@@ -89,7 +76,7 @@ const Home = () => {
       </div>
       <div className="home__board">
         <div className="home__board--current">
-          <CurrentBoard />
+          <CurrentBoard boards={boards} />
         </div>
         <div className="home__board--user">
           <div className="chat_title" style={{ color: theme?.text }}>

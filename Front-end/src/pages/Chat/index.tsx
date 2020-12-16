@@ -13,7 +13,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import { makeStyles } from "@material-ui/core/styles";
 import React, { useContext, useEffect, useState } from "react";
 import { BASE_URL } from "../../configs/enviroments";
-import socket from '@/configs/socket';
+import socket from "@/configs/socket";
 import "./style.scss";
 
 const useStyles = makeStyles((theme) => ({
@@ -56,18 +56,18 @@ const Chat = () => {
   const [message, setmessage] = useState<string>("");
   const [users, setusers] = useState<any>([]);
   useEffect(() => {
-    const nameN = localStorage.getItem("token") || "";
-    const roomN = "1";
-    console.log("object", BASE_URL);
-    setName(nameN);
-    setRoom(roomN);
-    console.log("name,room", nameN, room);
-    socket.on("connect", () => {
-      console.log(socket.id);
-    });
-    socket.emit("join", { name, room }, (error: any) =>
-      console.log("error", error)
-    );
+    // const nameN = localStorage.getItem("token") || "";
+    // const roomN = "1";
+    // console.log("object", BASE_URL);
+    // setName(nameN);
+    // setRoom(roomN);
+    // console.log("name,room", nameN, room);
+    // socket.on("connect", () => {
+    //   console.log(socket.id);
+    // });
+    // socket.emit("join", { name, room }, (error: any) =>
+    //   console.log("error", error)
+    // );
   }, [name, room]);
 
   useEffect(() => {
@@ -78,8 +78,8 @@ const Chat = () => {
   }, [messages]);
 
   useEffect(() => {
-    socket.on("roomData", (message: any, callback: any) => {
-      console.table("users", message);
+    socket.on("roomData", (message: any) => {
+      console.table("usersss", message);
       if (message) setusers(message.users);
     });
     console.table("usersssssssss", users);

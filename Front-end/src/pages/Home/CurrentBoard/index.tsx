@@ -9,8 +9,9 @@ import { useHistory } from "react-router-dom";
 import ROUTERS from "@/constants/routers";
 import { callApiJoinBoard } from "@/actions/JoinBoardSlide";
 import { toast } from "react-toastify";
+import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 
-const CurrentBoard: React.FC = () => {
+const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   const { theme } = useContext(ThemeContext);
   const history = useHistory();
   const dispatch = useDispatch();
@@ -19,7 +20,9 @@ const CurrentBoard: React.FC = () => {
   const roomIdRef = useRef<HTMLInputElement>(null);
 
   const handleAddRoom = () => {
-    dispatch(callApiCreateBoard());
+    dispatch(callApiCreateBoard((id) => {
+      history.push(ROUTERS.ROOM_PUSH + id);
+    }));
   };
 
   const handleJoinRoom = () => {
@@ -38,11 +41,6 @@ const CurrentBoard: React.FC = () => {
       );
     }
   };
-
-  if (state.id) {
-    history.push(ROUTERS.ROOM_PUSH + state.id);
-    return <></>;
-  }
 
   return (
     <div className="currentboard">
@@ -74,7 +72,21 @@ const CurrentBoard: React.FC = () => {
         style={{ backgroundColor: theme?.backgroundColor }}
         className="currentboard__container"
       >
-        <BoardPlay player={1} idroom="123" />
+        {boards?.map((ele) => {
+          if (ele.playerO && ele.playerX) {
+            return (
+              <BoardPlay key={ele.boardID} player={2} idroom={ele.boardID} />
+            );
+          } else if (ele.playerO || ele.playerX) {
+            return (
+              <BoardPlay key={ele.boardID} player={1} idroom={ele.boardID} />
+            );
+          } else {
+            return (
+              <BoardPlay key={ele.boardID} player={0} idroom={ele.boardID} />
+            );
+          }
+        })}
       </div>
     </div>
   );

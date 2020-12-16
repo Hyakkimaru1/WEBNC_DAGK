@@ -1,21 +1,20 @@
 import mongoose, { Document } from "mongoose";
 
 export interface Room extends Document {
-  host: String;
-  guest: String;
-  winner: String;
-  history: [[String]];
-  time: String;
-  chat: String;
+  roomId: string; // roomID
+  playerX: string; // store userID or username
+  playerO: string;
+  board: number[][];
+  winner: string;
 }
 
 const instance = new mongoose.Schema({
-  host: String,
-  guest: String,
+  roomId: String, // roomID
+  playerX: String, // store userID or username
+  playerO: String,
+  board: [[Number]],
+  turn: Number,
   winner: String,
-  history: [[String]],
-  time: String,
-  chat: String,
 });
 
 export default mongoose.model<Room>("room", instance);

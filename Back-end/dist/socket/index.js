@@ -92,19 +92,13 @@ function default_1(io) {
                         const initialValueCurrentBoardPlay = {
                             boardID,
                             playerX: decoded.user,
-<<<<<<< HEAD
-                            playerO: null,
-=======
                             playerO: "duy1@gmail.com",
                             board: new Array(25 * 25).fill(null),
                             turn: 1,
->>>>>>> 7ae7d61146f5aad34637897b7dc6ce76175b944b
                         };
                         io.sockets.adapter.rooms.get(`${boardID}`).infBoard = initialValueCurrentBoardPlay;
                     }
                     socket.emit("getInfBoard", io.sockets.adapter.rooms.get(`${boardID}`).infBoard);
-<<<<<<< HEAD
-=======
                 }
             });
         });
@@ -114,9 +108,8 @@ function default_1(io) {
                 }
                 else {
                     infBoard.turn = 1 - infBoard.turn;
-                    io.to(infBoard.boardID).emit("getInfBoard", io.sockets.adapter.rooms.get(`${infBoard.boardID}`).infBoard);
+                    io.to(infBoard.boardID).emit("getInfBoard", infBoard);
                     io.sockets.adapter.rooms.get(`${infBoard.boardID}`).infBoard = infBoard;
->>>>>>> 7ae7d61146f5aad34637897b7dc6ce76175b944b
                 }
             });
         });

@@ -1,0 +1,134 @@
+.clientChat {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  position: fixed;
+  width: 320px;
+  height: 420px;
+  background-color: white;
+  bottom: 0;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  right: 7%;
+  box-shadow: 0 3px 15px -5px rgba(0, 0, 0, 0.75);
+}
+
+#clientChat {
+  display: none;
+}
+
+.clientChat__info--avt > div:nth-child(1)::after {
+  content: "";
+  width: 12px;
+  height: 12px;
+  background-color: #32a24d;
+  position: absolute;
+  border: 2px solid white;
+  border-radius: 50%;
+  right: 0;
+  bottom: 0;
+}
+
+.clientChat__info--avt > div:nth-child(1) {
+  overflow: initial;
+}
+
+.clientChat__info--avt > div:nth-child(1) > img {
+  border-radius: 50%;
+}
+
+.clientChat__top {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+  border-bottom: 1px solid lightgray;
+}
+
+.clientChat__info {
+  display: flex;
+}
+
+.clientChat__info--name {
+  margin-left: 7px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.clientChat__info--name > p {
+  font-size: 0.8rem;
+  color: grey;
+}
+
+.clientChat__name {
+  display: flex;
+}
+
+.clientChat__name > svg {
+  font-size: 1.4rem;
+}
+
+.clientChat__name > p {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.clientChat__button {
+  justify-content: space-between;
+  display: flex;
+  align-items: center;
+}
+
+.clientChat__button > svg {
+  margin-right: 6px;
+  color: #2e81f4;
+}
+
+.clientChat__button > svg:hover {
+  background-color: rgb(245, 245, 245);
+  border-radius: 50%;
+}
+
+.clientChat__bottom {
+  padding: 10px;
+  position: relative;
+}
+
+.clientChat__bottom > svg {
+  color: #bec2c9;
+  transition: all 0.2s;
+  top: 5px;
+  position: relative;
+  margin-right: 6px;
+}
+
+.clientChat__input {
+  background-color: #f0f0f0;
+  padding: 6px 10px;
+  border-radius: 20px;
+  display: flex;
+  transition: all 0.2s;
+}
+
+.clientChat__input > input {
+  width: 100px;
+  border: none;
+  outline: none;
+  background-color: #f0f0f0;
+  transition: all 0.2s;
+}
+
+.clientChat__input > svg {
+  color: #bec2c9;
+  right: 5px;
+  position: absolute;
+  top: 2.3px;
+}
+
+.clientChat__textbox {
+  display: inline-block;
+  position: relative;
+  top: 2px;
+  float: right;
+  margin-right: 38px;
+}
