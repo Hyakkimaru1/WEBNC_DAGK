@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import config from "../config";
 import checkWin from "./helper";
 import RoomModel, { Room } from "../models/Room.model";
+import { decode } from "punycode";
+import { decodedTextSpanIntersectsWith } from "typescript";
 
 const primaryKey = config.PRIMARYKEY;
 
@@ -26,13 +28,13 @@ export default function (io) {
     socket.on("join", ({ name, room }, callback) => {
       try {
         name &&
-          jwt.verify(name, primaryKey, function (err, decoded) {
+          jwt.verify(name, primaryKey, function (err, decode) {
             if (err) {
               console.log("err", err);
               // callback(err);
               // return;
             } else {
-              name = decoded.user;
+              name = decode.user;
             }
           });
         let newUser = {
@@ -68,23 +70,36 @@ export default function (io) {
       }
     });
 
-    socket.on("sendMess", async (message, callback) => {
+    socket.on("sendMess", ({roomId, token, message}, callback) => {
       try {
-        const user: any = await getUser(socket.id);
-        io.to(user.room).emit("message", { user: user.name, text: message });
-        const users = userInRoom(user.room);
-        //console.log("usersssss", users);
-
-        io.to(user.room).emit("roomData", {
-          room: user.room,
-          users,
-        });
+        let user:string = null;
+        token &&
+          jwt.verify(token, primaryKey, function (err, decode) {
+            if (err) {
+              console.log("err", err);
+              // callback(err);
+              // return;
+            } else {
+              user = decode.user;
+            }
+          });
+          
+       const roomH = io.sockets.adapter.rooms.get(`${roomId}`);
+       console.log(roomH);
+       if (roomH && roomH?.messages){
+         roomH.messages.push({user,message});
+       }
+       else {
+         roomH.messages = [{user,message}];
+       }
+       //
+       io.in(roomH.roomId).emit("messagesUpdated", roomH.messages);
+       console.log(roomH.messages);
         callback();
       } catch (error) {
         console.log("error", error);
       }
     });
-
     //luc vao phong
     socket.on(
       "onboard",

@@ -40,7 +40,7 @@ const Room: React.FC = () => {
   //user online
   const roomN = "1";
   socket.on("connect", () => {
-    console.log(socket.id);
+    //console.log(socket.id);
   });
   socket.emit("join", { token, roomN }, (error: any) =>
     console.log("error", error)
