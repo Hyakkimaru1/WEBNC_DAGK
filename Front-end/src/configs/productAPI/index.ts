@@ -29,5 +29,7 @@ export const productAPI = {
   createNewBoard: () => {
     return AXIOS_INSTANCE.post(API.CREATE_A_BOARD);
   },
-  joinBoard: (_id:string) => AXIOS_INSTANCE.post(API.JOIN_THE_BOARD,{_id})
+  joinBoard: (_id: string) => AXIOS_INSTANCE.post(API.JOIN_THE_BOARD, { _id }),
+  getHistory: (page: number) =>
+    AXIOS_INSTANCE.post(API.HISTORY_USER, { page }),
 };

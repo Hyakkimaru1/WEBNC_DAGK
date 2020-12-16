@@ -5,6 +5,7 @@ import config from "../../config";
 import md5 from "md5";
 import { auth, provider, providerfb } from "../../firebase/firebase";
 import Board from "../../models/Board.model";
+import RoomModel from "../../models/Room.model";
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -188,6 +189,17 @@ const routerUser = (io: any) => {
       }
       else {
         res.sendStatus(200);
+      }
+    });
+  });
+
+  router.post("/history",checkAuthorization,(req: any, res) => {
+    RoomModel.find({$or:[{playerX:req.authorization.user},{playerO:req.authorization.user}]}, (err, doc) => {
+      if (err){
+        res.sendStatus(404);
+      }
+      else {
+        res.send(doc);
       }
     });
   });

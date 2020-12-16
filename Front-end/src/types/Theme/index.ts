@@ -6,4 +6,6 @@ export type THEME = {
   formBackGround:string;
   color:string;
   gradient: string;
+  BackgrounImg: string;
+  backgroundBlendMode:string;
 };

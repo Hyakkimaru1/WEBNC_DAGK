@@ -22,7 +22,10 @@ const CurrentUser: React.FC<{
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  const handleShowHistory = () => {
+    setAnchorEl(null);
+    history.push(ROUTERS.HISTORY);
+  }
   const handleLogOut = async () => {
     await localStorage.removeItem("token");
     setAnchorEl(null);
@@ -46,6 +49,7 @@ const CurrentUser: React.FC<{
         onClose={handleClose}
       >
         <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleShowHistory}>History</MenuItem>
         <MenuItem onClick={handleLogOut}>Logout</MenuItem>
       </Menu>
     </div>

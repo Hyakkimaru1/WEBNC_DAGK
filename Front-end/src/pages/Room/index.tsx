@@ -10,7 +10,6 @@ import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import { UserContext } from "@/contexts/UserContext";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import THEME from "@/constants/Theme";
-import NewMess from "./ChatBox/NewMess";
 import { toast } from "react-toastify";
 
 const Room: React.FC = () => {
@@ -39,9 +38,7 @@ const Room: React.FC = () => {
 
   //user online
   const roomN = "1";
-  socket.on("connect", () => {
-    console.log(socket.id);
-  });
+
   socket.emit("join", { token, roomN }, (error: any) =>
     console.log("error", error)
   );
@@ -62,23 +59,27 @@ const Room: React.FC = () => {
     socket.on("getInfBoard", (data: any) => {
       setInfBoard(data);
     });
+
+    socket.on("connect", () => {});
+
     socket.on("toastwinner", (data: any) => {
-        if (data.winner === 0 && data.playerX === user.user) {
-          toast.warning("😭😢😢 You are lost");
-        } else if (data.winner === 0 && data.playerO === user.user) {
-          toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
-        } else if (data.winner === 1 && data.playerX === user.user) {
-          toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
-        } else if (data.winner === 1 && data.playerO === user.user) {
-          toast.warning("😭😢😢 You are lost");
-        } else {
-          toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
-        }
+      if (data.winner === 0 && data.playerX === user.user) {
+        toast.warning("😭😢😢 You are lost");
+      } else if (data.winner === 0 && data.playerO === user.user) {
+        toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
+      } else if (data.winner === 1 && data.playerX === user.user) {
+        toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
+      } else if (data.winner === 1 && data.playerO === user.user) {
+        toast.warning("😭😢😢 You are lost");
+      } else {
+        toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
+      }
     });
 
     return () => {
       socket.off("toastwinner");
       socket.off("getInfBoard");
+      socket.off("connect");
     };
   }, [user.user]);
 
@@ -92,20 +93,20 @@ const Room: React.FC = () => {
 
   let isPlay = true;
 
-  if (!infBoard.playerX || !infBoard.playerO){
+  if (!infBoard.playerX || !infBoard.playerO) {
     isPlay = false;
   } else {
-    isPlay = ((infBoard.playerX === user.user && infBoard.turn === 1) ||
-      (infBoard.playerO === user.user && infBoard.turn === 0)) &&
-    infBoard.winner === null;
+    isPlay =
+      ((infBoard.playerX === user.user && infBoard.turn === 1) ||
+        (infBoard.playerO === user.user && infBoard.turn === 0)) &&
+      infBoard.winner === null;
   }
-    
+
   return (
     <ThemeProvider theme={themeMUI}>
       <div className="Room" style={{ backgroundColor: theme?.backgroundColor }}>
-        <div className="Room__chat">
-          <ChatBox />
-          <NewMess />
+        <div className="Room__player">
+          <Player infBoard={infBoard} />
         </div>
         <div className="Room__board">
           <Board
@@ -114,8 +115,8 @@ const Room: React.FC = () => {
             onClick={handleClickBoard}
           />
         </div>
-        <div className="Room__player">
-          <Player infBoard={infBoard} />
+        <div className="Room__chat">
+          <ChatBox />
         </div>
       </div>
     </ThemeProvider>

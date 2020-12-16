@@ -28,7 +28,7 @@ export default function (io) {
         name &&
           jwt.verify(name, primaryKey, function (err, decoded) {
             if (err) {
-              console.log("err", err);
+              //console.log("err", err);
               // callback(err);
               // return;
             } else {
@@ -157,7 +157,7 @@ export default function (io) {
             const y = i % 25;
             while (board.length) newArr.push(board.splice(0, 25));
             if (checkWin(newArr, x, y, infBoard.turn)) {
-              console.log("win");
+              //console.log("win");
               infBoard.winner = infBoard.turn;
               io.to(infBoard.boardID).emit("toastwinner", infBoard);
 
@@ -167,7 +167,7 @@ export default function (io) {
                 playerX: infBoard.playerX, // store userID or username
                 playerO: infBoard.playerO,
                 board: roomH.history,
-                winner: decoded._id,
+                winner: decoded.user,
               };
               try {
                 RoomModel.create(room, (err) => {
@@ -202,9 +202,9 @@ export default function (io) {
           if (err) {
           } else {
             let room = io.sockets.adapter.rooms.get(`${id}`)?.infBoard;
-            console.log("room11111", room);
+            //console.log("room11111", room);
 
-            console.log("user", decoded.user);
+            //console.log("user", decoded.user);
             if (!room) return;
             if (value === 1 && !room.playerX) {
               room.playerX = decoded.user;
@@ -233,7 +233,7 @@ export default function (io) {
                 room.playerO = null;
               }
             }
-            console.log("room", room);
+            //console.log("room", room);
 
             io.to(id).emit("getInfBoard", room);
             allrooms(socket);
@@ -247,9 +247,9 @@ export default function (io) {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
-            console.log("boardId", boardId);
+            //console.log("boardId", boardId);
             let room = io.sockets.adapter.rooms.get(`${boardId}`);
-            console.log("room", room);
+            //console.log("room", room);
             if (!room && !room?.infBoard) return;
 
             if (
@@ -263,7 +263,7 @@ export default function (io) {
               }
               allrooms(socket);
             }
-            console.log("room", room.infBoard);
+            //console.log("room", room.infBoard);
 
             socket.leave(boardId);
             if (room) io.to(boardId).emit("getInfBoard", room.infBoard);
@@ -290,7 +290,7 @@ export default function (io) {
 
     socket.on("disconnect", () => {
       const user = removeUser(socket.id);
-      console.log("disconnect", socket.id);
+      //console.log("disconnect", socket.id);
       if (user) {
         const users = userInRoom(user.room);
 

@@ -1,27 +1,29 @@
-import React, { useRef } from "react";
+import React, { useContext } from "react";
 import "./style.scss";
-import {TextField, Button } from "@material-ui/core";
-import UserChat from './UserChat/index';
+import UserChat from "./UserChat/index";
+import NewMess from "./NewMess";
+import { ThemeContext } from "@/contexts/ThemeContext";
 
 const ChatBox: React.FC = () => {
-  const chatRef = useRef(null);
+  const { theme } = useContext(ThemeContext);
   return (
-    <div className="chatbox">
-        <ul className="chatbox__chats">
-          <UserChat name="duy" text="chat here"/>
-          <UserChat name="duy" text="chat here"/>
-          <UserChat name="duy" text="chat here"/>
+    <div>
+      <NewMess />
+      <div className="chatbox">
+        <ul id="showguest" className="chatbox__chats">
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
+
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
+          <UserChat name="duy" theme={theme}/>
         </ul>
-        <div className="chatbox__inputchat">
-          <TextField
-            inputRef={chatRef}
-            id="outlined-basic"
-            variant="outlined"
-          />
-          <Button variant="contained" color="primary">
-            Chat
-          </Button>
-        </div>
+      </div>
     </div>
   );
 };

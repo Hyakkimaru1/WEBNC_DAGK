@@ -21,7 +21,7 @@ import THEME from "@/constants/Theme";
 // generate app routes
 
 const App = () => {
-  const { userTheme } = useContext(ThemeContext);
+  const { userTheme,theme } = useContext(ThemeContext);
 
 
   const themeMUI = React.useMemo(
@@ -47,7 +47,7 @@ const App = () => {
                 <Signup />
               </Route>
               <UserProvider>
-                <Main />
+                <Main theme={theme}/>
               </UserProvider>
             </Switch>
           </ThemeProvider>

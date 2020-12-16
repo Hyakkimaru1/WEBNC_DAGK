@@ -11,12 +11,15 @@ import { doAxiosRequestIntercept } from "./configs/Interceptors";
 import ROUTERS from '@/constants/routers';
 import Room from "./pages/Room";
 import Home from './pages/Home';
+import Profile from "./pages/Profile";
+import HistoryFC from "./pages/HistoryFC";
+import { THEME } from '@/types/Theme';
 
-const Main = () => {
+const Main:React.FC<{theme?:THEME}> = ({theme}) => {
   doAxiosRequestIntercept();
   return (
     <Provider store={store}>
-      <div className="main-wrapper">
+      <div style={{backgroundColor:theme?.formBackGround}} className="main-wrapper">
         <Switch>
           <Route exact path={ROUTERS.HOME}>
              <Home /> 
@@ -24,6 +27,12 @@ const Main = () => {
           </Route>
           <Route path={ROUTERS.ROOM}>
             <Room />
+          </Route>
+          <Route path={ROUTERS.PROFILE}>
+            <Profile />
+          </Route>
+          <Route path={ROUTERS.HISTORY}>
+            <HistoryFC />
           </Route>
         </Switch>
       </div>

@@ -8,6 +8,8 @@ export const lightTheme:THEME = {
   formBackGround: '#FFF',
   color:'#222',
   gradient: "linear-gradient(#39598A, #79D7ED)",
+  BackgrounImg: "linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%)",
+  backgroundBlendMode: ""
 };
 
 export const darkTheme:THEME = {
@@ -18,4 +20,6 @@ export const darkTheme:THEME = {
   formBackGround: '#181818',
   color:'#F1FFFF',
   gradient: "linear-gradient(#091236, #1E215D)",
+  BackgrounImg:"linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898",
+  backgroundBlendMode: "multiply,multiply"
 };

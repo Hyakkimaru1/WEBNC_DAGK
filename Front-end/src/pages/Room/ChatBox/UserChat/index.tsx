@@ -1,13 +1,20 @@
-import React, { useContext } from "react";
+import React from "react";
 import "./style.scss";
-import { ThemeContext } from '@/contexts/ThemeContext';
+import { Avatar, Paper } from "@material-ui/core";
+import {THEME} from '@/types/Theme';
 
-const UserChat: React.FC<{name:string,text:string}> = ({name,text}) => {
-    
-  const {theme } = useContext(ThemeContext);
-  return <li>
-      <span style={{color:theme?.text}}>{name}</span>: <span style={{color:theme?.text}}>{text}</span>
-  </li>;
+const UserChat: React.FC<{ name: string; theme?: THEME }> = ({
+  name,
+  theme,
+}) => {
+  return (
+    <li>
+      <Paper className="chatbox__inputchat" elevation={3}>
+        <Avatar />
+        <span style={{ color: theme?.text,marginLeft:7 }}>{name}</span>
+      </Paper>
+    </li>
+  );
 };
 
 export default UserChat;

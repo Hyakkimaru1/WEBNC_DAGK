@@ -1,0 +1,50 @@
+.historyfc {
+  padding: 2rem;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  &__board {
+    width: 700px;
+    margin: 0 auto;
+    .square {
+      height: 24px;
+    }
+  }
+  &__user {
+    margin: 0 auto;
+  }
+
+  &__showUser {
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+    min-width: 200px;
+    > div {
+        padding-bottom: 20px;
+        text-align: center;
+      >div{
+          margin: 0 auto;
+          margin-top: 1rem;
+      }
+    }
+    &--name{
+        margin-top: 10px;
+        & + div{
+            top: 2%;
+            right:-15%;
+        }
+    }
+  }
+
+  &__Play {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    transform: translate(-50%, -50%);
+    >button{
+        margin-right: 15px;
+    }
+  }
+}
+
