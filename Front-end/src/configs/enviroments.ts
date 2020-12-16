@@ -5,7 +5,7 @@ const { CLIENT_ENV = "dev" } = process.env;
 
 const envInfo: ENV_INFO = {
   dev: {
-    BASE_URL: "https://dack-backend.herokuapp.com",
+    BASE_URL: "http://localhost:8001",
     //BASE_URL: "http://192.168.1.7:8001",
     //BASE_URL: "http://192.168.1.49:8001"
   },

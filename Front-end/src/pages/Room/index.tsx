@@ -38,7 +38,6 @@ const Room: React.FC = () => {
 
   //user online
   const roomN = "1";
-
   socket.emit("join", { token, roomN }, (error: any) =>
     console.log("error", error)
   );
