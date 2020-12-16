@@ -15,7 +15,6 @@ import React, { useContext, useEffect, useState } from "react";
 import { BASE_URL } from "../../configs/enviroments";
 import socket from "@/configs/socket";
 import "./style.scss";
-import { useParams } from "react-router-dom";
 
 
  type mess={
@@ -44,13 +43,6 @@ const useStyles = makeStyles((theme) => ({
     width: "20px",
   },
 }));
-const params: any = useParams();
-
-type mess = {
-  user:string,
-  message: string
-}
-
 const Chat = () => {
   const classes = useStyles();
   const { userTheme, theme } = useContext(ThemeContext);
@@ -106,8 +98,7 @@ const Chat = () => {
   const sendMessage = (event: any) => {
     event.preventDefault();
     if (message) {
-      console.log(message);
-      socket.emit("sendMess", {roomId:params.id,token,message}, () => setmessage(""));
+      socket.emit("sendMess", message, () => setmessage(""));
     }
   };
 
@@ -118,13 +109,13 @@ const Chat = () => {
       </div>
       <div className="container">
         <div className="container_wrap"></div>
-        {<input
+        {/* <input
           value={message}
           onChange={(event) => setmessage(event?.target.value)}
           onKeyPress={(event) =>
             event.key == "Enter" ? sendMessage(event) : null
           }
-        ></input>}
+        ></input> */}
         <ThemeProvider theme={themeMUI}>
           <List
             dense

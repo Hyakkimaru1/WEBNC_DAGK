@@ -11,8 +11,6 @@ import RemoveIcon from "@material-ui/icons/Remove";
 import ThumbUpAltSharpIcon from "@material-ui/icons/ThumbUpAltSharp";
 import VideocamIcon from "@material-ui/icons/Videocam";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import socket from "@/configs/socket";
 import ChatBox from "./ChatBox";
 import "./ClientChat.css";
 
@@ -33,7 +31,7 @@ function ClientChat() {
 
   const handleChange = (e) => {
     const value = e.target.value;
-    setmessage(e.target.value);
+    setInput(e.target.value);
     if (value === "" || !value) {
       //document.getElementsByClassName('clientChat__textbox')[0].style.width='';
       requestAnimationFrame(() => {
@@ -100,7 +98,7 @@ function ClientChat() {
         <div className="clientChat__textbox">
           <form className="clientChat__input">
             <input
-              value={message}
+              value={input}
               type="text"
               placeholder="Aa"
               onChange={handleChange}
