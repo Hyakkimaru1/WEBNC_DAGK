@@ -29,7 +29,7 @@ export default function (io) {
         name &&
           jwt.verify(name, primaryKey, function (err, decoded) {
             if (err) {
-              //console.log("err", err);
+              console.log("err", err);
               // callback(err);
               // return;
             } else {
@@ -50,12 +50,12 @@ export default function (io) {
         //admin chat when someone join room
         // socket.emit("message", {
         //   user: "admin",
-        //   text: `${name}, welcome to  room${room}`,
+        //   text: ${name}, welcome to  room${room},
         // });
 
         // socket.broadcast.to(user.room).emit("message", {
         //   user: "admin",
-        //   text: `${name}, has joined!`,
+        //   text: ${name}, has joined!,
         // });
         socket.join(room);
         const users = getAllUsers;
@@ -82,13 +82,12 @@ export default function (io) {
               user = decoded.user;
             }
           });
-        const roomH = io.sockets.adapter.rooms.get(`${roomId}`);
+        const roomH = io.sockets.adapter.rooms.get(roomId);
         if (roomH && roomH?.messages) {
           roomH.messages.push({ user, message });
         } else {
           roomH.messages = [{ user, message }];
         }
-        //console.log("usersssss", users);
         roomH.messages &&
           io.to(roomId).emit("message", { messages: roomH.messages });
         callback();
@@ -113,7 +112,7 @@ export default function (io) {
             const user: any = addUser(newUser);
 
             socket.join(boardID);
-            const room = io.sockets.adapter.rooms.get(`${boardID}`);
+            const room = io.sockets.adapter.rooms.get(boardID);
             if (room.size === 1) {
               const initialValueCurrentBoardPlay: CurrentBoardPlay = {
                 boardID,
@@ -125,13 +124,13 @@ export default function (io) {
                 winner: null,
               };
               io.sockets.adapter.rooms.get(
-                `${boardID}`
+                boardID
               ).infBoard = initialValueCurrentBoardPlay;
             }
 
             io.to(boardID).emit(
               "getInfBoard",
-              io.sockets.adapter.rooms.get(`${boardID}`).infBoard
+              io.sockets.adapter.rooms.get(boardID).infBoard
             );
             room?.messages &&
               io.to(boardID).emit("message", { messages: room?.messages });
@@ -157,7 +156,7 @@ export default function (io) {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
-            const roomH = io.sockets.adapter.rooms.get(`${infBoard.boardID}`);
+            const roomH = io.sockets.adapter.rooms.get(infBoard.boardID);
             if (roomH?.history) {
               roomH.history.push(infBoard.board);
             } else {
@@ -194,7 +193,7 @@ export default function (io) {
             //count turn
             infBoard.turn = 1 - infBoard.turn;
             io.to(infBoard.boardID).emit("getInfBoard", infBoard);
-            const room = io.sockets.adapter.rooms.get(`${infBoard.boardID}`);
+            const room = io.sockets.adapter.rooms.get(infBoard.boardID);
             if (room) room.infBoard = infBoard;
           }
         });
@@ -212,7 +211,8 @@ export default function (io) {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
-            let room = io.sockets.adapter.rooms.get(`${id}`)?.infBoard;
+            let room = io.sockets.adapter.rooms.get(id)?.infBoard;
+
             if (!room) return;
             if (value === 1 && !room.playerX) {
               room.playerX = decoded.user;
@@ -254,7 +254,7 @@ export default function (io) {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
           } else {
-            let room = io.sockets.adapter.rooms.get(`${boardId}`);
+            let room = io.sockets.adapter.rooms.get(boardId);
             if (!room && !room?.infBoard) return;
 
             if (
@@ -270,7 +270,6 @@ export default function (io) {
             }
             socket.leave(boardId);
             if (room) io.to(boardId).emit("getInfBoard", room.infBoard);
-            console.log("room.messages", room.messages);
             if (room.size === 0 && room.messages) {
               const chat: any = {
                 roomId: boardId, // roomID
@@ -281,7 +280,6 @@ export default function (io) {
                   if (err) {
                     console.log("err", err);
                   } else {
-                    console.log("chat", chat);
                   }
                 });
               } catch (error) {
@@ -294,9 +292,8 @@ export default function (io) {
     );
 
     socket.on("disconnecting", () => {
-      console.log("socket.rooms", socket.rooms);
       const roomId = getLastValue(socket.rooms);
-      const room = io.sockets.adapter.rooms.get(`${roomId}`);
+      const room = io.sockets.adapter.rooms.get(roomId);
       const user = getUser(socket.id);
       if (room?.infBoard && roomId !== "1") {
         if (room.infBoard.playerX === user.name) {
@@ -310,19 +307,13 @@ export default function (io) {
     });
 
     socket.on("disconnect", () => {
-      console.log("socket.rooms", socket.rooms);
       const user = removeUser(socket.id);
-      //console.log("disconnect", socket.id);
       if (user) {
         const users = userInRoom(user.room);
 
         io.to(user.room).emit("roomData", {
           room: user.room,
           users,
-        });
-        io.to(user.room).emit("message", {
-          user: "admin",
-          text: `${user.name} has left!!`,
         });
       }
     });

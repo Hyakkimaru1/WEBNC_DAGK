@@ -83,6 +83,7 @@ export default function HistoryFC() {
 
   const handleSelected = (id: number) => {
     setBoardShow(data[id]);
+    setTurn(0);
     setOpen(true);
   };
 

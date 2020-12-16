@@ -10,28 +10,28 @@ import PhotoLibraryIcon from "@material-ui/icons/PhotoLibrary";
 import RemoveIcon from "@material-ui/icons/Remove";
 import ThumbUpAltSharpIcon from "@material-ui/icons/ThumbUpAltSharp";
 import VideocamIcon from "@material-ui/icons/Videocam";
-import React, { useState } from "react";
+import React, { useRef } from "react";
 import ChatBox from "./ChatBox";
 import "./ClientChat.css";
+import { useParams } from 'react-router-dom';
+import socket from '@/configs/socket';
 
 function ClientChat() {
   const params = useParams();
   const token = localStorage.getItem("token");
-  const [input, setInput] = useState();
-  const [message,setmessage] = useState('');
+  const inputRef = useRef(null);
   const id = params.id;
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (input) {
-      socket.emit("sendMess", { roomId: id, token, message: input }, () =>
-        setInput("")
+    if (inputRef.current) {
+      socket.emit("sendMess", { roomId: id, token, message: inputRef.current.value }, () =>
+        inputRef.current.value = ""
       );
     }
   };
 
   const handleChange = (e) => {
     const value = e.target.value;
-    setInput(e.target.value);
     if (value === "" || !value) {
       //document.getElementsByClassName('clientChat__textbox')[0].style.width='';
       requestAnimationFrame(() => {
@@ -98,7 +98,7 @@ function ClientChat() {
         <div className="clientChat__textbox">
           <form className="clientChat__input">
             <input
-              value={input}
+              ref = {inputRef}
               type="text"
               placeholder="Aa"
               onChange={handleChange}
