@@ -27,13 +27,13 @@ export default function (io) {
     socket.on("join", ({ name, room }, callback) => {
       try {
         name &&
-          jwt.verify(name, primaryKey, function (err, decode) {
+          jwt.verify(name, primaryKey, function (err, decoded) {
             if (err) {
               console.log("err", err);
               // callback(err);
               // return;
             } else {
-              name = decode.user;
+              name = decoded.user;
             }
           });
         let newUser = {
@@ -96,6 +96,7 @@ export default function (io) {
         console.log("error", error);
       }
     });
+
     //luc vao phong
     socket.on(
       "onboard",
