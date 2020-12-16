@@ -8,8 +8,22 @@ const ChatBox = () => {
   const [messages, setmessages] = useState([]);
   const user = useContext(UserContext);
 
-  //get user context
+const ChatBox = () => {
+  const [messages, setmessages] = useState([]);
+  const token = localStorage.getItem("token");
+  const params = useParams();
+  // const sendMessage = (event) => {
+  //   event.preventDefault();
+  //   if (message) {
+  //     console.log(message);
+  //     socket.emit("sendMess", { roomId: params.id, token, message }, () =>
+  //       setmessage("")
+  //     );
+  //   }
+  // };
 
+  //Get user context
+  const user = useContext(UserContext);
   useEffect(() => {
     const token = localStorage.getItem("token");
     socket.on("message", ({ messages }, callback) => {
@@ -18,6 +32,11 @@ const ChatBox = () => {
     console.table(messages);
   }, [messages]);
 
+    socket.on("messagesUpdated",(messages) => {
+     setmessages(messages);
+    })
+  }, []);
+  const chatRef = useRef(null);
   return (
     <div className="chatBox">
       {messages.map((chat) =>
