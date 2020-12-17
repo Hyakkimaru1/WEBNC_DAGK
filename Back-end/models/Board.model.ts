@@ -1,22 +1,27 @@
 import mongoose, { Document } from "mongoose";
-// import autoIncrement from "mongoose-auto-increment";
+import autoIncrement from "mongoose-auto-increment";
+mongoose.set("useCreateIndex", true);
+var connection = mongoose.createConnection(
+  "mongodb+srv://admin:admin@cluster0.0n2op.mongodb.net/CARO_DACK?retryWrites=true&w=majority",
+  {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+    useFindAndModify: false,
+  }
+);
 
-// var connection = mongoose.createConnection(
-//   "mongodb+srv://admin:admin@cluster0.0n2op.mongodb.net/CARO_DACK?retryWrites=true&w=majority"
-// );
-
-// autoIncrement.initialize(connection);
+autoIncrement.initialize(connection);
 export interface ITBoard extends Document {
   createBy: string;
 }
 const instance = new mongoose.Schema({
   createBy: String,
 });
-// instance.plugin(autoIncrement.plugin, {
-//   model: "Book",
-//   field: "bookId",
-//   startAt: 100,
-//   incrementBy: 100,
-// });
-// var Book = connection.model("name", instance);
+instance.plugin(autoIncrement.plugin, {
+  model: "board",
+  field: "name",
+  startAt: 0,
+  incrementBy: 1,
+});
+var Board = connection.model("board", instance);
 export default mongoose.model<ITBoard>("board", instance);

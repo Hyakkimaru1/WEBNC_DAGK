@@ -6,7 +6,7 @@ const Board: React.FC<{
   isPlay: boolean;
   board?: number[];
   onClick: (i: number) => void;
-}> = ({ isPlay,  board = [], onClick }) => {
+}> = ({ isPlay, board = [], onClick }) => {
   //const [squares, setSquares] = useState(Array(25*25).fill(null));
   const renderSquare = (i: number) => {
     return (

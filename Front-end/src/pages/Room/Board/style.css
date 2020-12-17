@@ -1,0 +1,41 @@
+.board {
+  display: -ms-grid;
+  display: grid;
+  -ms-grid-columns: (1fr)[25];
+      grid-template-columns: repeat(25, 1fr);
+  -webkit-box-flex: 0;
+      -ms-flex: 0 1 100%;
+          flex: 0 1 100%;
+  -webkit-column-gap: 0px;
+          column-gap: 0px;
+  margin: 0px;
+  padding: 0;
+  position: relative;
+}
+
+.board:before {
+  left: 0;
+  right: 0;
+  bottom: 0px;
+  height: 0;
+  border-bottom: 1px solid #777;
+  content: "";
+  top: auto;
+  display: block;
+  position: absolute;
+}
+
+.board:after {
+  clear: both;
+  display: block;
+  content: "";
+}
+
+.board li {
+  display: block;
+  float: left;
+  margin-right: -1px;
+  margin-top: -1px;
+  position: relative;
+}
+/*# sourceMappingURL=style.css.map */

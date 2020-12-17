@@ -1,0 +1,60 @@
+.historyfc {
+  padding: 2rem;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+.historyfc__board {
+  width: 700px;
+  margin: 0 auto;
+}
+
+.historyfc__board .square {
+  height: 24px;
+}
+
+.historyfc__user {
+  margin: 0 auto;
+}
+
+.historyfc__showUser {
+  position: absolute;
+  top: 50%;
+  left: 10%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  min-width: 200px;
+}
+
+.historyfc__showUser > div {
+  padding-bottom: 20px;
+  text-align: center;
+}
+
+.historyfc__showUser > div > div {
+  margin: 0 auto;
+  margin-top: 1rem;
+}
+
+.historyfc__showUser--name {
+  margin-top: 10px;
+}
+
+.historyfc__showUser--name + div {
+  top: 2%;
+  right: -15%;
+}
+
+.historyfc__Play {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
+.historyfc__Play > button {
+  margin-right: 15px;
+}
+/*# sourceMappingURL=style.css.map */

@@ -7,4 +7,7 @@
   font-family: "Poppins",sans-serif;
 }
 
+body {
+  min-width: 1280px;
+}
 /*# sourceMappingURL=App.css.map */
