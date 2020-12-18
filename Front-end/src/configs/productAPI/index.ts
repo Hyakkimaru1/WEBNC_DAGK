@@ -26,10 +26,10 @@ export const productAPI = {
   register: (user: string, password: string) => {
     return AXIOS_INSTANCE.post(API.REGISTER, { user, password });
   },
-  createNewBoard: () => {
-    return AXIOS_INSTANCE.post(API.CREATE_A_BOARD);
+  createNewBoard: (hasPassword:boolean, password:string) => {
+    return AXIOS_INSTANCE.post(API.CREATE_A_BOARD,{hasPassword, password});
   },
-  joinBoard: (_id: string) => AXIOS_INSTANCE.post(API.JOIN_THE_BOARD, { _id }),
+  joinBoard: (_id:string|null,password:string,socketId:string) => AXIOS_INSTANCE.post(API.JOIN_THE_BOARD, { _id,password,socketId }),
   getHistory: (page: number) =>
     AXIOS_INSTANCE.post(API.HISTORY_USER, { page }),
 };

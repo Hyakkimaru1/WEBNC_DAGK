@@ -173,7 +173,7 @@ const routerUser = (io: any) => {
   });
 
   router.post("/board", checkAuthorization, (req: any, res) => {
-    Board.create({ createBy: req.authorization.user }, (err, doc) => {
+    Board.create({ createBy: req.authorization.user,hasPassword: req.body.hasPassword,password:req.body.password}, (err, doc) => {
       if (err) {
         res.sendStatus(501);
       } else {
@@ -183,13 +183,20 @@ const routerUser = (io: any) => {
   });
 
   router.post("/joinboard", checkAuthorization, (req: any, res) => {
-    Board.find(req.body, (err, doc) => {
+    const uni = {_id:req.body._id,password:req.body.password};
+    Board.find(uni, (err, doc) => {
       if (err){
         res.sendStatus(404);
+        return;
       }
-      else {
+      else if (doc.length>0) {
+        console.log("true");
+        io.sockets.adapter.rooms.get(req.body._id).peopleInRoom.push({socketId:req.body.socketId,user:req.authorization.user});
+        console.log(io.sockets.adapter.rooms.get(req.body._id));
         res.sendStatus(200);
+        return;
       }
+      res.sendStatus(400);
     });
   });
 

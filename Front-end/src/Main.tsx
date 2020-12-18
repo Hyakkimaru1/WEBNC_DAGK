@@ -34,6 +34,9 @@ const Main:React.FC<{theme?:THEME}> = ({theme}) => {
           <Route path={ROUTERS.HISTORY}>
             <HistoryFC />
           </Route>
+          <Route>
+            <h1>ERROR</h1>
+          </Route>
         </Switch>
       </div>
     </Provider>

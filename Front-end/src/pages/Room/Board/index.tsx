@@ -5,8 +5,9 @@ import Square from "./Square/index";
 const Board: React.FC<{
   isPlay: boolean;
   board?: number[];
+  current?:number
   onClick: (i: number) => void;
-}> = ({ isPlay,  board = [], onClick }) => {
+}> = ({ isPlay,  board = [], onClick,current }) => {
   //const [squares, setSquares] = useState(Array(25*25).fill(null));
   const renderSquare = (i: number) => {
     return (
@@ -14,6 +15,7 @@ const Board: React.FC<{
         isPlay={isPlay}
         key={`square${i}`}
         location={i}
+        current={current===i}
         value={board[i]}
         onClick={onClick}
       />

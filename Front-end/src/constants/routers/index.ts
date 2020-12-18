@@ -6,7 +6,8 @@ const ROUTERS = {
   ROOM:"/room/:id",
   ROOM_PUSH:"/room/",
   PROFILE: "/profile",
-  HISTORY: "/history"
+  HISTORY: "/history",
+  ERROR: "/error",
 };
 
 export default ROUTERS;

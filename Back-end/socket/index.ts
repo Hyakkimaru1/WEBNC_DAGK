@@ -1,15 +1,16 @@
 import { getAllUsers, addUser, getUser, removeUser, userInRoom } from "./User";
 import jwt from "jsonwebtoken";
-import config from "../config";
+import config, { EventSocket } from "../config";
 import checkWin from "./helper";
 import RoomModel, { Room } from "../models/Room.model";
 import ChatModel from "../models/Chat.model";
+import BoardModel from "../models/Board.model";
 
 const primaryKey = config.PRIMARYKEY;
 
-type Location = {
-  x: number;
-  y: number;
+type personInRoom = {
+  socketId: string;
+  user: string;
 };
 
 type CurrentBoardPlay = {
@@ -19,12 +20,13 @@ type CurrentBoardPlay = {
   board: number[];
   turn: number;
   i: number;
+  hasPassword?: boolean;
   winner: number;
 };
 
 export default function (io) {
-  io.on("connection", (socket) => {
-    socket.on("join", ({ name, room }, callback) => {
+  io.on(EventSocket.CONNECTION, (socket) => {
+    socket.on(EventSocket.JOIN, ({ name, room }, callback) => {
       try {
         name &&
           jwt.verify(name, primaryKey, function (err, decoded) {
@@ -59,7 +61,7 @@ export default function (io) {
         // });
         socket.join(room);
         const users = getAllUsers;
-        io.to(room).emit("roomData", {
+        io.to(room).emit(EventSocket.ROOM_DATA, {
           room: user.room,
           users,
         });
@@ -69,7 +71,7 @@ export default function (io) {
       }
     });
 
-    socket.on("sendMess", async ({ roomId, token, message }, callback) => {
+    socket.on(EventSocket.SEND_MESS, ({ roomId, token, message }, callback) => {
       try {
         let user: string = null;
         token &&
@@ -89,7 +91,7 @@ export default function (io) {
           roomH.messages = [{ user, message }];
         }
         roomH.messages &&
-          io.to(roomId).emit("message", { messages: roomH.messages });
+          io.to(roomId).emit(EventSocket.MESSAGE, { messages: roomH.messages });
         callback();
       } catch (error) {
         console.log("error", error);
@@ -98,9 +100,9 @@ export default function (io) {
 
     //luc vao phong
     socket.on(
-      "onboard",
-      ({ boardID, token }: { boardID: string; token: string }) => {
-        jwt.verify(token, primaryKey, function (err, decoded) {
+      EventSocket.ON_BOARD,
+      ({ boardID, token }: { boardID: string; token: string }, callback) => {
+        jwt.verify(token, primaryKey, async function (err, decoded) {
           if (err) {
           } else {
             let newUser = {
@@ -113,28 +115,60 @@ export default function (io) {
 
             socket.join(boardID);
             const room = io.sockets.adapter.rooms.get(boardID);
+
+            //declare person with their socketId and user (allow invite or primary chat)
+            const person: personInRoom = {
+              socketId: socket.id,
+              user: decoded.user,
+            };
+
+            //check new room
             if (room.size === 1) {
-              const initialValueCurrentBoardPlay: CurrentBoardPlay = {
-                boardID,
-                playerX: decoded.user,
-                playerO: null,
-                board: new Array(25 * 25).fill(null),
-                turn: 1,
-                i: null,
-                winner: null,
-              };
-              io.sockets.adapter.rooms.get(
-                boardID
-              ).infBoard = initialValueCurrentBoardPlay;
+              const doc: any = await BoardModel.findById(boardID);
+              if (doc) {
+                const initialValueCurrentBoardPlay: CurrentBoardPlay = {
+                  boardID,
+                  playerX: decoded.user,
+                  playerO: null,
+                  board: new Array(25 * 25).fill(null),
+                  turn: 1,
+                  hasPassword: doc.hasPassword,
+                  i: null,
+                  winner: null,
+                };
+                io.sockets.adapter.rooms.get(
+                  boardID
+                ).infBoard = initialValueCurrentBoardPlay;
+              } else {
+                return callback();
+              }
+              //add initial array person
+              room.peopleInRoom = [person];
+            } else {
+              //push user to room
+              if (room.infBoard.hasPassword) {
+                const finduser = room.peopleInRoom.findIndex(
+                  (ele: personInRoom) => ele.user === decoded.user
+                );
+                if (finduser === -1) {
+                  return callback(null);
+                }
+              } else room.peopleInRoom.push(person);
             }
 
+            //toast all users in room know about new user has joined
+            io.to(boardID).emit(EventSocket.USER_JOIN, room.peopleInRoom);
+
+            //send inf board for user join room
             io.to(boardID).emit(
-              "getInfBoard",
+              EventSocket.GET_INFO_BOARD,
               io.sockets.adapter.rooms.get(boardID).infBoard
             );
+
             room?.messages &&
-              io.to(boardID).emit("message", { messages: room?.messages });
-            const rooms = io.sockets.adapter.rooms;
+              io
+                .to(boardID)
+                .emit(EventSocket.MESSAGE, { messages: room?.messages });
             allrooms(socket);
           }
         });
@@ -143,7 +177,7 @@ export default function (io) {
 
     //Luc danh
     socket.on(
-      "onplay",
+      EventSocket.ON_PLAY,
       ({
         infBoard,
         i,
@@ -157,6 +191,7 @@ export default function (io) {
           if (err) {
           } else {
             const roomH = io.sockets.adapter.rooms.get(infBoard.boardID);
+            if (!roomH) return;
             if (roomH?.history) {
               roomH.history.push(infBoard.board);
             } else {
@@ -170,7 +205,7 @@ export default function (io) {
             while (board.length) newArr.push(board.splice(0, 25));
             if (checkWin(newArr, x, y, infBoard.turn)) {
               infBoard.winner = infBoard.turn;
-              io.to(infBoard.boardID).emit("toastwinner", infBoard);
+              io.to(infBoard.boardID).emit(EventSocket.TOAST_WINNER, infBoard);
 
               const room: any = {
                 roomId: infBoard.boardID, // roomID
@@ -192,7 +227,8 @@ export default function (io) {
 
             //count turn
             infBoard.turn = 1 - infBoard.turn;
-            io.to(infBoard.boardID).emit("getInfBoard", infBoard);
+            infBoard.i = i;
+            io.to(infBoard.boardID).emit(EventSocket.GET_INFO_BOARD, infBoard);
             const room = io.sockets.adapter.rooms.get(infBoard.boardID);
             if (room) room.infBoard = infBoard;
           }
@@ -200,13 +236,14 @@ export default function (io) {
       }
     );
 
-    socket.on("onhome", () => {
+    //user connect to home page
+    socket.on(EventSocket.ON_HOME, () => {
       allrooms(socket);
     });
 
     // Host doi vi tri
     socket.on(
-      "joinplayas",
+      EventSocket.JOIN_PLAY_AS,
       ({ id, value, token }: { id: string; value: number; token: string }) => {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
@@ -242,14 +279,16 @@ export default function (io) {
               }
             }
 
-            io.to(id).emit("getInfBoard", room);
+            io.to(id).emit(EventSocket.GET_INFO_BOARD, room);
             allrooms(socket);
           }
         });
       }
     );
+
+    //user leave room
     socket.on(
-      "leaveroom",
+      EventSocket.LEAVE_ROOM,
       ({ boardId, token }: { boardId: string; token: string }) => {
         jwt.verify(token, primaryKey, function (err, decoded) {
           if (err) {
@@ -268,8 +307,18 @@ export default function (io) {
               }
               allrooms(socket);
             }
+
+            const index = room.peopleInRoom.findIndex(
+              (element: personInRoom) => element.socketId === socket.id
+            );
+            room.peopleInRoom.splice(index, 1);
+
             socket.leave(boardId);
-            if (room) io.to(boardId).emit("getInfBoard", room.infBoard);
+
+            io.to(boardId).emit(EventSocket.USER_JOIN, room.peopleInRoom);
+
+            if (room)
+              io.to(boardId).emit(EventSocket.GET_INFO_BOARD, room.infBoard);
             if (room.size === 0 && room.messages) {
               const chat: any = {
                 roomId: boardId, // roomID
@@ -291,7 +340,16 @@ export default function (io) {
       }
     );
 
-    socket.on("disconnecting", () => {
+    //Check room have password or not
+    socket.on(EventSocket.JOIN_BOARD, ({ boardID }: { boardID: string },callbackFn) => {
+      let room = io.sockets.adapter.rooms.get(boardID).infBoard;
+      if (!room) {
+        return callbackFn(null);
+      };
+      callbackFn(room.hasPassword);
+    });
+
+    socket.on(EventSocket.DISCONNECTING, () => {
       const roomId = getLastValue(socket.rooms);
       const room = io.sockets.adapter.rooms.get(roomId);
       const user = getUser(socket.id);
@@ -301,17 +359,28 @@ export default function (io) {
         } else if (room.infBoard.playerO === user.name) {
           room.infBoard.playerO = null;
         }
-        io.to(roomId).emit("getInfBoard", room.infBoard);
+        //get user in room and call
+        //io.to(roomId).emit(EventSocket.USER_JOIN,)
+        const index = room.peopleInRoom.findIndex(
+          (element: personInRoom) => element.socketId === socket.id
+        );
+        room.peopleInRoom.splice(index, 1);
+
+        socket.leave(roomId);
+
+        io.to(roomId).emit(EventSocket.USER_JOIN, room.peopleInRoom);
+
+        io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room.infBoard);
         allrooms(socket);
       }
     });
 
-    socket.on("disconnect", () => {
+    socket.on(EventSocket.DISCONNECT, () => {
       const user = removeUser(socket.id);
       if (user) {
         const users = userInRoom(user.room);
 
-        io.to(user.room).emit("roomData", {
+        io.to(user.room).emit(EventSocket.ROOM_DATA, {
           room: user.room,
           users,
         });
@@ -328,7 +397,7 @@ export default function (io) {
         resRooms.push(element.infBoard);
       }
     });
-    io.sockets.emit("allrooms", { resRooms });
+    io.sockets.emit(EventSocket.ALLROOMS, { resRooms });
   };
 }
 

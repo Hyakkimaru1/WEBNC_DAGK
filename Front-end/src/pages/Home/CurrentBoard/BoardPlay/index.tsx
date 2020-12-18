@@ -3,19 +3,21 @@ import "./style.scss";
 import AccessibleIcon from "@material-ui/icons/Accessible";
 import AirlineSeatReclineNormalIcon from "@material-ui/icons/AirlineSeatReclineNormal";
 import FitnessCenterIcon from "@material-ui/icons/FitnessCenter";
-import { useHistory } from "react-router-dom";
 import { ThemeContext } from '@/contexts/ThemeContext';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import CurrentBoardPlay from '@/types/CurrentBoardPlay';
 
-const BoardPlay: React.FC<{ player?: Number; idroom: string | null }> = ({
+const BoardPlay: React.FC<{ player?: Number;handleClickJoinRoom: (room:any) => void,room:CurrentBoardPlay }> = ({
   player = 2,
-  idroom,
+  handleClickJoinRoom,
+  room
 }) => {
-  const history = useHistory();
   const { theme } = useContext(ThemeContext);
   return (
-    <div style={{backgroundColor:theme?.backgroundColor}} onClick={() => history.push(`/room/${idroom}`)} className="boardplay">
-      <div style={{color:theme?.color}} className="boardplay__idroom">{idroom}</div>
+    <div style={{backgroundColor:theme?.backgroundColor}} onClick={() => handleClickJoinRoom(room)} className="boardplay">
+      <div style={{color:theme?.color}} className="boardplay__idroom">{room.boardID}</div>
       <div className="boardplay__table">
+        {room.hasPassword?<span style={{color:theme?.color}} className="boardplay__table--icon"><LockOutlinedIcon/></span>:null}
         <div className="boardplay__table--left">
         {player>0?<AccessibleIcon />:<></>} 
         </div>

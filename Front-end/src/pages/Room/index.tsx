@@ -5,18 +5,20 @@ import ChatBox from "./ChatBox";
 import Board from "./Board";
 import Player from "./Player";
 import socket from "@/configs/socket";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import { UserContext } from "@/contexts/UserContext";
 import { createMuiTheme, ThemeProvider } from "@material-ui/core";
 import THEME from "@/constants/Theme";
 import { toast } from "react-toastify";
+import ROUTERS from "./../../constants/routers/index";
 
 const Room: React.FC = () => {
   //const params = useParams();
   const { userTheme, theme } = useContext(ThemeContext);
   const user: any = useContext(UserContext);
   const params: any = useParams();
+  const history = useHistory();
   const [infBoard, setInfBoard] = useState<CurrentBoardPlay>({
     boardID: params.id, // roomID
     playerX: null, // store userID or username
@@ -38,6 +40,7 @@ const Room: React.FC = () => {
 
   //user online
   const roomN = "1";
+
   socket.emit("join", { token, roomN }, (error: any) =>
     console.log("error", error)
   );
@@ -45,14 +48,16 @@ const Room: React.FC = () => {
   useEffect(() => {
     async function emitTokenOnBoard() {
       const token = (await localStorage.getItem("token")) || "";
-      socket.emit("onboard", { boardID: params.id, token });
+      socket.emit("onboard", { boardID: params.id, token }, () => {
+        history.push(ROUTERS.ERROR);
+      });
     }
     emitTokenOnBoard();
 
     return () => {
       socket.emit("leaveroom", { boardId: params.id, token });
     };
-  }, [params.id, token]);
+  }, [params.id, token, history]);
 
   useEffect(() => {
     socket.on("getInfBoard", (data: any) => {
@@ -111,6 +116,7 @@ const Room: React.FC = () => {
           <Board
             isPlay={isPlay}
             board={infBoard.board}
+            current={infBoard?.i}
             onClick={handleClickBoard}
           />
         </div>
