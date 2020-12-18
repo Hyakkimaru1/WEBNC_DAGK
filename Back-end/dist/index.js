@@ -22,8 +22,7 @@ app.use(body_parser_1.default.json());
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"],
+        origin: "*"
     },
 });
 // Key

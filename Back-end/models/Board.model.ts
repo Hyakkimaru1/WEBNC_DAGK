@@ -14,16 +14,13 @@ autoIncrement.initialize(connection);
 export interface ITBoard extends Document {
   createBy: string;
   hasPassword: boolean;
-  password:string;
+  password: string;
 }
 const instance = new mongoose.Schema({
   createBy: String,
-  hasPassword:Boolean,
-  password:String
+  hasPassword: Boolean,
+  password: String,
 });
-<<<<<<< HEAD
-
-=======
 instance.plugin(autoIncrement.plugin, {
   model: "board",
   field: "name",
@@ -31,5 +28,4 @@ instance.plugin(autoIncrement.plugin, {
   incrementBy: 1,
 });
 var Board = connection.model("board", instance);
->>>>>>> cccbb1baaabaaf2052cb0ad22d53decf786a1842
 export default mongoose.model<ITBoard>("board", instance);

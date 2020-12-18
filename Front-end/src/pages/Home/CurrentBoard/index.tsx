@@ -22,6 +22,7 @@ import { callApiJoinBoard } from "@/actions/JoinBoardSlide";
 import { toast } from "react-toastify";
 import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import socket from "@/configs/socket";
+import Board from './../../HistoryFC/Board/index';
 
 const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   const { theme } = useContext(ThemeContext);
@@ -35,7 +36,22 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   const roomIdRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const passwordJoinRef = useRef<HTMLInputElement>(null);
-  const [roomJoinId,setRoomJoinID] = useState<string|null>("");
+  const [roomJoinId, setRoomJoinID] = useState<string | null>("");
+  const token = localStorage.getItem("token");
+
+  const handleQuickJoin = () => {
+    socket.emit("quickJoin", token, (boardID:string) => {
+      if (boardID) {
+        history.push(ROUTERS.ROOM_PUSH + boardID)
+      }
+      else {
+        toast.error("There is no room available!");
+        
+      }
+    }
+        
+      );
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -85,9 +101,8 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
         (value: any) => {
           if (value) {
             setOpenJoin(true);
-          }
-          else {
-            toast.error("This room is not existed")
+          } else {
+            toast.error("This room is not existed");
           }
         }
       );
@@ -105,8 +120,12 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
 
   const handleJoinRoomByPassword = () => {
     //check password in server then redirect or show error
-    if (passwordJoinRef.current ) {
-      const params = {_id:roomJoinId,password:passwordJoinRef.current.value,socketId:socket.id};
+    if (passwordJoinRef.current) {
+      const params = {
+        _id: roomJoinId,
+        password: passwordJoinRef.current.value,
+        socketId: socket.id,
+      };
       dispatch(
         callApiJoinBoard({
           params,
@@ -144,6 +163,11 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
           />
           <button onClick={handleJoinRoom} className="currentboard__button">
             Join room
+          </button>
+        </div>
+        <div className="currentboard__addboard--quick-join">
+          <button onClick={handleQuickJoin} className="currentboard__button">
+            Quick join
           </button>
         </div>
       </div>

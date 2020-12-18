@@ -18,6 +18,13 @@
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+  position: relative;
+}
+
+.boardplay__table--icon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }
 
 .boardplay__table--left {
