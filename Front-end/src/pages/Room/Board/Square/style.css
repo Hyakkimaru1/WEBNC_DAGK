@@ -1,0 +1,76 @@
+.square {
+  display: inline-block;
+  border: 1px solid #ccc;
+  height: 26px;
+  text-align: center;
+  border-width: thin;
+  position: relative;
+  cursor: pointer;
+}
+
+.square__X {
+  -webkit-transition: all .2s;
+  transition: all .2s;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 2px;
+  background-color: red;
+  -webkit-transform: translate(-50%, -50%) rotate(45deg);
+          transform: translate(-50%, -50%) rotate(45deg);
+  -webkit-animation: show .4s linear;
+          animation: show .4s linear;
+}
+
+.square__X::after {
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%) rotate(90deg);
+          transform: translate(-50%, -50%) rotate(90deg);
+  content: "";
+  display: inline-block;
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background-color: red;
+}
+
+.square__O {
+  -webkit-transition: all .2s;
+  transition: all .2s;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #37B102;
+  -webkit-animation: show .4s linear;
+          animation: show .4s linear;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+@-webkit-keyframes show {
+  0% {
+    -webkit-transform: scale(1.5) translate(-50%, -50%) rotate(45deg);
+            transform: scale(1.5) translate(-50%, -50%) rotate(45deg);
+  }
+  100% {
+    -webkit-transform: scale(1) translate(-50%, -50%) rotate(45deg);
+            transform: scale(1) translate(-50%, -50%) rotate(45deg);
+  }
+}
+
+@keyframes show {
+  0% {
+    -webkit-transform: scale(1.5) translate(-50%, -50%) rotate(45deg);
+            transform: scale(1.5) translate(-50%, -50%) rotate(45deg);
+  }
+  100% {
+    -webkit-transform: scale(1) translate(-50%, -50%) rotate(45deg);
+            transform: scale(1) translate(-50%, -50%) rotate(45deg);
+  }
+}
+/*# sourceMappingURL=style.css.map */
