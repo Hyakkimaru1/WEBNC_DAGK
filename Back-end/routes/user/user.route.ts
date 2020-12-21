@@ -6,6 +6,7 @@ import md5 from "md5";
 import { auth, provider, providerfb } from "../../firebase/firebase";
 import Board from "../../models/Board.model";
 import RoomModel from "../../models/Room.model";
+import MailerModel from './../../models/sendMail.models';
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -102,6 +103,7 @@ const routerUser = (io: any) => {
                       password: req.body.password,
                       avatar: req.body.avatar,
                       name: req.body.name,
+                      isConfirm: true,
                     },
                     (err, docs) => {
                       if (err) {
@@ -153,7 +155,7 @@ const routerUser = (io: any) => {
   });
 
   router.post("/register", (req, res) => {
-    UserModel.findOne({ user: req.body.username }, (err, doc) => {
+    UserModel.findOne({ user: req.body.user,isConfirm:true }, async (err, doc) => {
       if (err) {
         res.sendStatus(400);
       } else {
@@ -162,36 +164,80 @@ const routerUser = (io: any) => {
         } else {
           req.body.password = md5(req.body.password);
           req.body.avatar = "";
-          UserModel.create(req.body, (err) => {
-            if (err) {
-              res.sendStatus(503);
-            } else res.sendStatus(201);
-          });
+
+          const currentDate = new Date();
+          const countDownTime = 5 * 60000;
+          const randomnumber =
+            Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+          const dataUser = { ...req.body, isConfirm: false, codeConfirm: randomnumber };
+          const [result, resultSendMail] = await Promise.all([
+            UserModel.create(dataUser),
+            MailerModel.sendKeyToEmail(req.body.user, randomnumber),
+          ]);
+
+          if (resultSendMail?.accepted.length>0) {
+            setTimeout(async () => {
+              const checkConfirm = await UserModel.findById(result._id);
+              if (checkConfirm && !checkConfirm.isConfirm){
+                await UserModel.deleteOne({ _id: result._id });
+              }
+            }, countDownTime);
+          }
+          res.send({ time: countDownTime, _id: result._id });
         }
       }
     });
   });
 
-  router.post("/board", checkAuthorization, (req: any, res) => {
-    Board.create({ createBy: req.authorization.user,hasPassword: req.body.hasPassword,password:req.body.password}, (err, doc) => {
-      if (err) {
-        res.sendStatus(501);
-      } else {
-        res.send({ id: doc._id });
+  router.post("/confirm",(req,res) => {
+    UserModel.findOne({ _id:req.body._id,codeConfirm: req.body.codeConfirm }, async (err, doc) => {
+      if (err){
+        return res.sendStatus(400);
+      }
+      else {
+        if (doc){
+          doc.isConfirm = true;
+          await doc.save();
+          return res.sendStatus(201);
+        }
+        else {
+          return res.sendStatus(401);
+        }
       }
     });
+  })
+
+  router.post("/board", checkAuthorization, (req: any, res) => {
+    Board.create(
+      {
+        createBy: req.authorization.user,
+        hasPassword: req.body.hasPassword,
+        password: req.body.password,
+      },
+      (err, doc) => {
+        if (err) {
+          res.sendStatus(501);
+        } else {
+          res.send({ id: doc._id });
+        }
+      }
+    );
   });
 
   router.post("/joinboard", checkAuthorization, (req: any, res) => {
-    const uni = {_id:req.body._id,password:req.body.password};
+    const uni = { _id: req.body._id, password: req.body.password };
     Board.find(uni, (err, doc) => {
-      if (err){
+      if (err) {
         res.sendStatus(404);
         return;
-      }
-      else if (doc.length>0) {
+      } else if (doc.length > 0) {
         console.log("true");
-        io.sockets.adapter.rooms.get(req.body._id).peopleInRoom.push({socketId:req.body.socketId,user:req.authorization.user});
+        io.sockets.adapter.rooms
+          .get(req.body._id)
+          .peopleInRoom.push({
+            socketId: req.body.socketId,
+            user: req.authorization.user,
+          });
         console.log(io.sockets.adapter.rooms.get(req.body._id));
         res.sendStatus(200);
         return;
@@ -200,15 +246,22 @@ const routerUser = (io: any) => {
     });
   });
 
-  router.post("/history",checkAuthorization,(req: any, res) => {
-    RoomModel.find({$or:[{playerX:req.authorization.user},{playerO:req.authorization.user}]}, (err, doc) => {
-      if (err){
-        res.sendStatus(404);
+  router.post("/history", checkAuthorization, (req: any, res) => {
+    RoomModel.find(
+      {
+        $or: [
+          { playerX: req.authorization.user },
+          { playerO: req.authorization.user },
+        ],
+      },
+      (err, doc) => {
+        if (err) {
+          res.sendStatus(404);
+        } else {
+          res.send(doc);
+        }
       }
-      else {
-        res.send(doc);
-      }
-    });
+    );
   });
 
   function checkAuthorization(req, res, next) {

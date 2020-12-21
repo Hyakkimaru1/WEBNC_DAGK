@@ -5,6 +5,8 @@ export interface IUser extends Document {
   password: string,
   avatar: string,
   name: string,
+  isConfirm?:boolean,
+  codeConfirm?: string
 }
 
 const instance = new mongoose.Schema({
@@ -12,6 +14,8 @@ const instance = new mongoose.Schema({
   password: String,
   avatar: String,
   name: String,
+  isConfirm:Boolean,
+  codeConfirm: String
 });
 
 export default mongoose.model<IUser>("user", instance);

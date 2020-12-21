@@ -31,6 +31,11 @@ const Login: React.FC = () => {
     resolver: yupResolver(schema),
   });
 
+  const token = localStorage.getItem("token");
+  if (token){
+    router.push(ROUTERS.HOME);
+    return <></>;
+   }
   const onSubmit = handleSubmit(({ email, password }) => {
     productAPI
       .login(email, password)

@@ -29,6 +29,9 @@ export const UserProvider: React.FC<Props> = (props) => {
       <UserContext.Provider value={user}>{children}</UserContext.Provider>
     );
   }
+  else {
+    localStorage.removeItem("token");
+  }
   // Redirect to login
   history.push(ROUTERS.LOGIN);
   return <LoginForm />;
