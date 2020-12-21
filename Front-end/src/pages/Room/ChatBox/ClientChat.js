@@ -58,7 +58,6 @@ function ClientChat() {
           <div className="clientChat__info--avt">
             <Avatar
               className="newMess__popup"
-              src="https://scontent.fdad1-1.fna.fbcdn.net/v/t1.0-0/p320x320/118421125_950586378741587_120312778914174260_n.jpg?_nc_cat=106&_nc_sid=825194&_nc_ohc=3RANRYXezZMAX-ct83R&_nc_ht=scontent.fdad1-1.fna&tp=6&oh=65a20ff39d01281ad908c95fcdd919d0&oe=5F7144B3"
             />
           </div>
           <div className="clientChat__info--name">
@@ -76,13 +75,13 @@ function ClientChat() {
               document.getElementById("clientChat").style.display = "none";
               document.getElementById("newMess__popup").style.transform =
                 "scale(1)";
-              document.getElementById("showguest").style.height="80vh";
+              document.getElementById("showguest").style.height = "80vh";
             }}
           />
           <CloseIcon
             onClick={() => {
               document.getElementById("clientChat").style.display = "none";
-              document.getElementById("showguest").style.height="80vh";
+              document.getElementById("showguest").style.height = "80vh";
             }}
           />
         </div>
@@ -98,7 +97,7 @@ function ClientChat() {
         <div className="clientChat__textbox">
           <form className="clientChat__input">
             <input
-              ref = {inputRef}
+              ref={inputRef}
               type="text"
               placeholder="Aa"
               onChange={handleChange}

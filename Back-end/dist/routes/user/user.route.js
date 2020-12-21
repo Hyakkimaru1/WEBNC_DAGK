@@ -10,6 +10,7 @@ const config_1 = __importDefault(require("../../config"));
 const md5_1 = __importDefault(require("md5"));
 const firebase_1 = require("../../firebase/firebase");
 const Board_model_1 = __importDefault(require("../../models/Board.model"));
+const Room_model_1 = __importDefault(require("../../models/Room.model"));
 const router = express_1.default.Router();
 const primaryKey = config_1.default.PRIMARYKEY;
 const routerUser = (io) => {
@@ -174,7 +175,7 @@ const routerUser = (io) => {
         });
     });
     router.post("/board", checkAuthorization, (req, res) => {
-        Board_model_1.default.create({ createBy: req.authorization.user }, (err, doc) => {
+        Board_model_1.default.create({ createBy: req.authorization.user, hasPassword: req.body.hasPassword, password: req.body.password }, (err, doc) => {
             if (err) {
                 res.sendStatus(501);
             }
@@ -184,12 +185,29 @@ const routerUser = (io) => {
         });
     });
     router.post("/joinboard", checkAuthorization, (req, res) => {
-        Board_model_1.default.find(req.body, (err, doc) => {
+        const uni = { _id: req.body._id, password: req.body.password };
+        Board_model_1.default.find(uni, (err, doc) => {
+            if (err) {
+                res.sendStatus(404);
+                return;
+            }
+            else if (doc.length > 0) {
+                console.log("true");
+                io.sockets.adapter.rooms.get(req.body._id).peopleInRoom.push({ socketId: req.body.socketId, user: req.authorization.user });
+                console.log(io.sockets.adapter.rooms.get(req.body._id));
+                res.sendStatus(200);
+                return;
+            }
+            res.sendStatus(400);
+        });
+    });
+    router.post("/history", checkAuthorization, (req, res) => {
+        Room_model_1.default.find({ $or: [{ playerX: req.authorization.user }, { playerO: req.authorization.user }] }, (err, doc) => {
             if (err) {
                 res.sendStatus(404);
             }
             else {
-                res.sendStatus(200);
+                res.send(doc);
             }
         });
     });

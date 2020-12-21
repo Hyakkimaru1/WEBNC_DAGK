@@ -20,6 +20,7 @@ const EventSocket = {
     DISCONNECT: "disconnect",
     ALLROOMS: "allrooms",
     JOIN_BOARD: "joinboard",
+    QUICK_JOIN: "quickJoin",
 }
 
 export {EventSocket};

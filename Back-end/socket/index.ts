@@ -175,6 +175,37 @@ export default function (io) {
       }
     );
 
+    //vao phong nhanh
+    socket.on(EventSocket.QUICK_JOIN, (token: string, callback) => {
+      jwt.verify(token, primaryKey, async function (err, decoded) {
+        if (err) {
+        } else {
+          const rooms = io.sockets.adapter.rooms;
+          console.log("rooms", rooms);
+          rooms.forEach((value, key) => {
+            const board = value.infBoard;
+            if (
+              board &&
+              ((!board?.playerX && board?.playerO) ||
+                (board?.playerX && !board?.playerO))
+            ) {
+              callback(board.boardID);
+              return;
+            }
+          });
+          rooms.forEach((value, key) => {
+            const board = value.infBoard;
+
+            if (board && (!board?.playerX || !board?.playerO)) {
+              callback(board.boardID);
+              return;
+            }
+          });
+          callback(null);
+        }
+      });
+    });
+
     //Luc danh
     socket.on(
       EventSocket.ON_PLAY,
@@ -341,13 +372,16 @@ export default function (io) {
     );
 
     //Check room have password or not
-    socket.on(EventSocket.JOIN_BOARD, ({ boardID }: { boardID: string },callbackFn) => {
-      let room = io.sockets.adapter.rooms.get(boardID).infBoard;
-      if (!room) {
-        return callbackFn(null);
-      };
-      callbackFn(room.hasPassword);
-    });
+    socket.on(
+      EventSocket.JOIN_BOARD,
+      ({ boardID }: { boardID: string }, callbackFn) => {
+        let room = io.sockets.adapter.rooms.get(boardID).infBoard;
+        if (!room) {
+          return callbackFn(null);
+        }
+        callbackFn(room.hasPassword);
+      }
+    );
 
     socket.on(EventSocket.DISCONNECTING, () => {
       const roomId = getLastValue(socket.rooms);

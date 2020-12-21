@@ -6,11 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const instance = new mongoose_1.default.Schema({
     roomId: String,
-    playerX: String,
-    playerO: String,
-    board: [[Number]],
-    turn: Number,
-    winner: String,
+    messages: [{ user: String, message: String }],
 });
-exports.default = mongoose_1.default.model("room", instance);
-//# sourceMappingURL=Room.model.js.map
+exports.default = mongoose_1.default.model("chat", instance);
+//# sourceMappingURL=Chat.model.js.map
