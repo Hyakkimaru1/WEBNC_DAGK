@@ -11,9 +11,9 @@ import { doAxiosRequestIntercept } from "./configs/Interceptors";
 import ROUTERS from '@/constants/routers';
 import Room from "./pages/Room";
 import Home from './pages/Home';
-import Profile from "./pages/Profile";
 import HistoryFC from "./pages/HistoryFC";
 import { THEME } from '@/types/Theme';
+import InforUser from "./pages/InforUser/InforUser";
 
 const Main:React.FC<{theme?:THEME}> = ({theme}) => {
   doAxiosRequestIntercept();
@@ -29,7 +29,7 @@ const Main:React.FC<{theme?:THEME}> = ({theme}) => {
             <Room />
           </Route>
           <Route path={ROUTERS.PROFILE}>
-            <Profile />
+            <InforUser />
           </Route>
           <Route path={ROUTERS.HISTORY}>
             <HistoryFC />

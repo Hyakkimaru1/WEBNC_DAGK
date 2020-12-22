@@ -22,7 +22,6 @@ import { callApiJoinBoard } from "@/actions/JoinBoardSlide";
 import { toast } from "react-toastify";
 import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import socket from "@/configs/socket";
-import Board from './../../HistoryFC/Board/index';
 
 const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   const { theme } = useContext(ThemeContext);

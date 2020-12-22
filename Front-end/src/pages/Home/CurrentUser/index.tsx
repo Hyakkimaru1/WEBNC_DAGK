@@ -31,6 +31,11 @@ const CurrentUser: React.FC<{
     setAnchorEl(null);
     history.push(ROUTERS.LOGIN);
   }
+
+  const handleOpenProfile = () => {
+    setAnchorEl(null);
+    history.push(ROUTERS.PROFILE);
+  }
   return (
     <div
       className="currentuser"
@@ -48,7 +53,7 @@ const CurrentUser: React.FC<{
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClose}>Profile</MenuItem>
+        <MenuItem onClick={handleOpenProfile}>Profile</MenuItem>
         <MenuItem onClick={handleShowHistory}>History</MenuItem>
         <MenuItem onClick={handleLogOut}>Logout</MenuItem>
       </Menu>
