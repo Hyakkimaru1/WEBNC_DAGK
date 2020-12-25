@@ -16,6 +16,7 @@ import "./style.scss";
 import CurrentUser from "./CurrentUser/index";
 import CurrentBoard from "./CurrentBoard/index";
 import { UserContext } from "@/contexts/UserContext";
+import UserTop from "./UserTop";
 
 const useStyles = makeStyles((theme) => ({
   chat: {
@@ -79,6 +80,7 @@ const Home = () => {
           <CurrentBoard boards={boards} />
         </div>
         <div className="home__board--user">
+          <UserTop/>
           <div className="chat_title" style={{ color: theme?.text }}>
             Các tài khoản đang hoạt động:
           </div>

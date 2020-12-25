@@ -14,6 +14,7 @@ import Home from './pages/Home';
 import HistoryFC from "./pages/HistoryFC";
 import { THEME } from '@/types/Theme';
 import InforUser from "./pages/InforUser/InforUser";
+import Top from './pages/Top';
 
 const Main:React.FC<{theme?:THEME}> = ({theme}) => {
   doAxiosRequestIntercept();
@@ -33,6 +34,9 @@ const Main:React.FC<{theme?:THEME}> = ({theme}) => {
           </Route>
           <Route path={ROUTERS.HISTORY}>
             <HistoryFC />
+          </Route>
+          <Route path={ROUTERS.TOP}>
+            <Top />
           </Route>
           <Route>
             <h1>ERROR</h1>

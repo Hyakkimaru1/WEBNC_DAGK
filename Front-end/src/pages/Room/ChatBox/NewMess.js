@@ -1,15 +1,15 @@
 import React from "react";
 import "./NewMess.css";
-import EditIcon from "@material-ui/icons/Edit";
 import { Button, Avatar } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
 import ClientChat from "./ClientChat";
 
 function NewMess() {
   const handleClick = (e) => {
     document.getElementById("newMess__popup").style.transform = "scale(0)";
     document.getElementById("clientChat").style.display = "flex";
-    
-    document.getElementById("showguest").style.height="26vh";
+
+    document.getElementById("showguest").style.height = "26vh";
     let objDiv = document.getElementsByClassName("chatBox")[0];
     objDiv.scrollTop = objDiv.scrollHeight;
   };
@@ -23,12 +23,12 @@ function NewMess() {
         src=""
       />
       <Button
-        onClick={() =>
-          (document.getElementById("newMess__popup").style.transform =
-            "scale(1)")
-        }
+        variant="contained"
+        onClick={() =>{
+          //
+        }}
       >
-        <EditIcon />
+        <AddIcon />
       </Button>
       <ClientChat />
     </div>

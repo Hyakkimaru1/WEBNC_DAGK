@@ -181,7 +181,6 @@ export default function (io) {
         if (err) {
         } else {
           const rooms = io.sockets.adapter.rooms;
-          console.log("rooms", rooms);
           rooms.forEach((value, key) => {
             const board = value.infBoard;
             if (

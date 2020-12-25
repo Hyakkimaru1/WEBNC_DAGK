@@ -1,7 +1,13 @@
 import { AppThunk } from "@/configs/Redux/store";
 import { createSlice } from "@reduxjs/toolkit";
 import { productAPI } from "@/configs/productAPI";
-import { initialState } from "../AddBoardSlide";
+import { RoomLoading } from "../AddBoardSlide";
+
+export const initialState: RoomLoading = {
+  id: null,
+  isLoading: false,
+  error: null,
+};
 
 const HistoryUserSlide = createSlice({
   name: "HistoryUserSlide",

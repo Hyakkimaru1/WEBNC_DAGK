@@ -12,6 +12,9 @@
         padding: 0 5rem;
         grid-template-columns: 70% 25%;
         column-gap: 5%;
+        &--user{
+            position: relative;
+        }
     }
     & .container {
         display: flex;
