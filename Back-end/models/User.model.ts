@@ -6,7 +6,11 @@ export interface IUser extends Document {
   avatar: string,
   name: string,
   isConfirm?:boolean,
-  codeConfirm?: string
+  codeConfirm?: string,
+  joinDate: Date,
+  matchCount: number,
+  winRate: number,
+  rank: string
 }
 
 const instance = new mongoose.Schema({
@@ -15,7 +19,11 @@ const instance = new mongoose.Schema({
   avatar: String,
   name: String,
   isConfirm:Boolean,
-  codeConfirm: String
+  codeConfirm: String,
+  joinDate: Date,
+  matchCount: Number,
+  winRate: Number,
+  rank: String
 });
 
 export default mongoose.model<IUser>("user", instance);

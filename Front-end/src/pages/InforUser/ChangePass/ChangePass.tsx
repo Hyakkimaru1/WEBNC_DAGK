@@ -1,11 +1,14 @@
 import React, { useContext } from "react";
 import { toast } from "react-toastify";
 import { ThemeContext } from '@/contexts/ThemeContext';
+import { UserContext } from "@/contexts/UserContext";
 
 const ChangePass: React.FC = () => {
   //use react-hook-form here
   const { theme } = useContext(ThemeContext);
+  const user: any = useContext(UserContext);
   const handleClick = () => {
+    console.log(user);
     toast.error("Điền đủ mật khẩu và xác nhận lại");
   };
   return (
