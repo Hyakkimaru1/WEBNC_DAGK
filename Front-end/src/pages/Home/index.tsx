@@ -17,6 +17,7 @@ import CurrentUser from "./CurrentUser/index";
 import CurrentBoard from "./CurrentBoard/index";
 import { UserContext } from "@/contexts/UserContext";
 import UserTop from "./UserTop";
+import Snow from "@/pages/Top/Snow";
 
 const useStyles = makeStyles((theme) => ({
   chat: {
@@ -71,7 +72,8 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="home" style={{ backgroundColor: theme?.formBackGround }}>
+    <div className="home">
+      <Snow/>
       <div className="home__user">
         <CurrentUser theme={theme} username={user.user} avatar={user.avatar} />
       </div>

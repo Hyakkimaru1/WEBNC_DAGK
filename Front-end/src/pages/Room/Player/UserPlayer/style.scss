@@ -1,0 +1,35 @@
+.userplayer {
+  &-wrapper {
+    display: grid;
+    grid-template-columns: 20% 60% 20%;
+  }
+  &__rank {
+    &--cup {
+      font-size: 1.2rem;
+      font-weight: 500;
+      background: -webkit-linear-gradient(#ffca08, #a720c2);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  &__cup{
+    
+    a {
+        font-size: .8rem;
+        text-align: center;
+        text-decoration: none;
+        &:hover,:active{
+            color: none;
+        }
+    }
+    &--cups{
+        display: flex;
+        align-items: center;
+    }
+  }
+
+  &__countdown{
+      position: absolute;
+      right: 0;
+  }
+}

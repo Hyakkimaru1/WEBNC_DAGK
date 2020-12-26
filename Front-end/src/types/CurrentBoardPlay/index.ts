@@ -1,12 +1,17 @@
+import USERPLAY from '@/types/UserPlay/index';
+
 type CurrentBoardPlay = {
   boardID: string | null; // roomID
-  playerX: string | null;
-  playerO: string | null;
+  playerX?: USERPLAY;
+  playerO?: USERPLAY;
   turn: number | null;
   i?:number;
   hasPassword?:boolean;
   winner?:number;
   board: number[];
+  xReady?:boolean;
+  isReady?:boolean;
+  oReady?:boolean;
 };
 
 export default CurrentBoardPlay;

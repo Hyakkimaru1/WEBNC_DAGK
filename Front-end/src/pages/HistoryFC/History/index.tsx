@@ -19,10 +19,10 @@ const columns: ColDef[] = [
     sortable: false,
     width: 200,
     valueGetter: (params: ValueGetterParams) => {
-      if (params.row.playerO !== params.row.user) {
-        return params.row.playerO;
+      if (params.row.playerO.name !== params.row.user) {
+        return params.row.playerO.name;
       }
-      return params.row.playerX;
+      return params.row.playerX.name;
     },
   },
   { field: "winner", headerName: "Winner", width: 200 },

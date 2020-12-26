@@ -146,7 +146,7 @@ export default function (io) {
               room.peopleInRoom = [person];
             } else {
               //push user to room
-              if (room.infBoard.hasPassword) {
+              if (room.infBoard?.hasPassword) {
                 const finduser = room.peopleInRoom.findIndex(
                   (ele: personInRoom) => ele.user === decoded.user
                 );

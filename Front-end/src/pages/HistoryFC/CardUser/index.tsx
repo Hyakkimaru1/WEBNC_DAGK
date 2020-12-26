@@ -9,7 +9,7 @@ import { Avatar } from "@material-ui/core";
 
 const useStyles = makeStyles({
   root: {
-    maxWidth: 345,
+    maxWidth: 330,
     margin: "0 auto",
   },
   media: {
@@ -33,7 +33,7 @@ export default function CardUser({ user }: { user: any }) {
           className={classes.media}
           title="Contemplative Reptile"
         >
-          <Avatar style={{ height: '70px', width: '70px' }}/>
+          <Avatar style={{ height: '70px', width: '70px' }} src={user.avatar}/>
         </CardMedia>
         <CardContent style={{ textAlign: "center" }}>
           Hi {user.user}

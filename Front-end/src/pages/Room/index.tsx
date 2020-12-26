@@ -8,7 +8,12 @@ import socket from "@/configs/socket";
 import { useParams, useHistory } from "react-router-dom";
 import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import { UserContext } from "@/contexts/UserContext";
-import { createMuiTheme, ThemeProvider } from "@material-ui/core";
+import {
+  createMuiTheme,
+  ThemeProvider,
+  Button,
+  CircularProgress,
+} from "@material-ui/core";
 import THEME from "@/constants/Theme";
 import { toast } from "react-toastify";
 import ROUTERS from "./../../constants/routers/index";
@@ -21,10 +26,9 @@ const Room: React.FC = () => {
   const history = useHistory();
   const [infBoard, setInfBoard] = useState<CurrentBoardPlay>({
     boardID: params.id, // roomID
-    playerX: null, // store userID or username
-    playerO: null,
     turn: 1,
     board: new Array(25 * 25).fill(null),
+    isReady: false,
   });
 
   const themeMUI = React.useMemo(
@@ -67,16 +71,16 @@ const Room: React.FC = () => {
     socket.on("connect", () => {});
 
     socket.on("toastwinner", (data: any) => {
-      if (data.winner === 0 && data.playerX === user.user) {
+      if (data.winner === 0 && data.playerX.name === user.user) {
         toast.warning("😭😢😢 You are lost");
-      } else if (data.winner === 0 && data.playerO === user.user) {
+      } else if (data.winner === 0 && data.playerO.name === user.user) {
         toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
-      } else if (data.winner === 1 && data.playerX === user.user) {
+      } else if (data.winner === 1 && data.playerX.name === user.user) {
         toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
-      } else if (data.winner === 1 && data.playerO === user.user) {
+      } else if (data.winner === 1 && data.playerO.name === user.user) {
         toast.warning("😭😢😢 You are lost");
       } else {
-        toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner");
+        toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner But Not You");
       }
     });
 
@@ -95,14 +99,18 @@ const Room: React.FC = () => {
     }
   };
 
+  const readyToNewRound = () => {
+    socket.emit("ready", { roomId: params.id, token });
+  };
+
   let isPlay = true;
 
   if (!infBoard.playerX || !infBoard.playerO) {
     isPlay = false;
   } else {
     isPlay =
-      ((infBoard.playerX === user.user && infBoard.turn === 1) ||
-        (infBoard.playerO === user.user && infBoard.turn === 0)) &&
+      ((infBoard.playerX.name === user.user && infBoard.turn === 1) ||
+        (infBoard.playerO.name === user.user && infBoard.turn === 0)) &&
       infBoard.winner === null;
   }
 
@@ -110,9 +118,39 @@ const Room: React.FC = () => {
     <ThemeProvider theme={themeMUI}>
       <div className="Room" style={{ backgroundColor: theme?.backgroundColor }}>
         <div className="Room__player">
+          <div className="Room__turn">
+            <h3>Turn</h3>{" "}
+            <div className="Room__turn--turn">
+              {infBoard.turn && infBoard.turn === 1 ? (
+                <div className="square__X"></div>
+              ) : (
+                <div className="square__O"></div>
+              )}
+            </div>
+          </div>
           <Player infBoard={infBoard} />
         </div>
         <div className="Room__board">
+          <div className="Room__board--ready">
+            {(infBoard.playerO?.name === user.user &&
+              (!infBoard.oReady || infBoard.winner)) ||
+            (infBoard.playerX?.name === user.user &&
+              (!infBoard.xReady || infBoard.winner)) ? (
+              <Button
+                onClick={readyToNewRound}
+                variant="contained"
+                color="primary"
+              >
+                Ready
+              </Button>
+            ) : (
+              <></>
+            )}
+            { !infBoard.isReady && ((infBoard.xReady && infBoard.playerX?.name === user.user) ||
+              (infBoard.oReady && infBoard.playerO?.name === user.user)) && (
+              <CircularProgress color="secondary" />
+            )}
+          </div>
           <Board
             isPlay={isPlay}
             board={infBoard.board}

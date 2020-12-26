@@ -6,13 +6,16 @@ import ChangePass from "./ChangePass/ChangePass";
 import "./style.scss";
 import { UserContext } from "@/contexts/UserContext";
 import { ThemeContext } from '@/contexts/ThemeContext';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ROUTERS from '@/constants/routers';
+import { useHistory } from 'react-router-dom';
 
-//const config = require("../../config/default.json");
 
 const InforUser: React.FC = () => {
   const [option, setOption] = useState("ListOption1");
   const user: any = useContext(UserContext);
   const { theme } = useContext(ThemeContext);
+  const history = useHistory();
 
   const changeOption = (newOption: string) => {
     setOption(newOption);
@@ -32,6 +35,9 @@ const InforUser: React.FC = () => {
         };
   return (
     <div className="Box" style={{ backgroundColor: theme?.backgroundColor }}>
+      <div onClick={() => history.push(ROUTERS.HOME)} style={{top:"2%",left:"2%"}} className="button-back">
+        <ArrowBackIcon style={{ color: "white" }} />
+      </div>
       <div className="row">
         <div className="col-3-of-4">
           <div className="BoxStart">

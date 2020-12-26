@@ -15,6 +15,7 @@ import HistoryFC from "./pages/HistoryFC";
 import { THEME } from '@/types/Theme';
 import InforUser from "./pages/InforUser/InforUser";
 import Top from './pages/Top';
+import NotFound from './pages/NotFound';
 
 const Main:React.FC<{theme?:THEME}> = ({theme}) => {
   doAxiosRequestIntercept();
@@ -39,7 +40,7 @@ const Main:React.FC<{theme?:THEME}> = ({theme}) => {
             <Top />
           </Route>
           <Route>
-            <h1>ERROR</h1>
+            <NotFound/>
           </Route>
         </Switch>
       </div>

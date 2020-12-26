@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Avatar } from "@material-ui/core";
-import StarsIcon from "@material-ui/icons/Stars";
+import { ThemeContext } from '@/contexts/ThemeContext';
+import EmojiEventsTwoToneIcon from '@material-ui/icons/EmojiEventsTwoTone';
 
 const Field:React.FC<{top:number,user:string,avatar:string,win:number,point:number}> = ({top,avatar,user,win,point}) => {
-    return (
+  const {theme} = useContext(ThemeContext);
+  return (
         <li className="top__field">
             <div>
                 {
@@ -12,13 +14,13 @@ const Field:React.FC<{top:number,user:string,avatar:string,win:number,point:numb
                 </div>
             <div className="top__username">
               <Avatar src={avatar}/>
-              <span  className="top__username--name">{user}</span>
+              <span style={{color:theme?.color}} className="top__username--name">{user}</span>
             </div>
-            <div className="top__win">
+            <div style={{color:theme?.color}} className="top__win">
               {win}
             </div>
-            <div className="top__cup">
-              <StarsIcon />
+            <div style={{color:theme?.color}} className="top__cup">
+              <EmojiEventsTwoToneIcon style={{color:"#f9ca24"}}/>
               <span>{point}</span>
             </div>
           </li>

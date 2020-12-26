@@ -9,7 +9,6 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import { DialogTitleProps, Paper } from "@material-ui/core";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
 import "./style.scss";
-import HomeIcon from "@material-ui/icons/Home";
 import { ThemeContext } from "@/contexts/ThemeContext";
 import Board from "../Room/Board";
 import CardUser from "./CardUser";
@@ -24,6 +23,7 @@ import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import Avatar from "@material-ui/core/Avatar";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
   ref: React.Ref<unknown>
@@ -89,9 +89,9 @@ export default function HistoryFC() {
 
   return (
     <div className="historyfc">
-      <Button variant="contained" onClick={() => history.push(ROUTERS.HOME)}>
-        <HomeIcon color="primary" />
-      </Button>
+      <div onClick={() => history.push(ROUTERS.HOME)} className="button-back">
+        <ArrowBackIcon style={{ color: "white" }} />
+      </div>
       <div className="historyfc__user">
         <CardUser user={user} />
       </div>
@@ -111,14 +111,14 @@ export default function HistoryFC() {
           <Paper style={{ position: "relative" }} elevation={3}>
             <Avatar />{" "}
             <span className="historyfc__showUser--name">
-              {boardShow?.playerO}
+              {boardShow?.playerO.name}
             </span>
             <div className="square__O"></div>
           </Paper>
           <Paper style={{ position: "relative" }} elevation={3}>
             <Avatar />{" "}
             <span className="historyfc__showUser--name">
-              {boardShow?.playerX}
+              {boardShow?.playerX.name}
             </span>
             <div className="square__X"></div>
           </Paper>

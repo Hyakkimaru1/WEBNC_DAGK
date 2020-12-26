@@ -8,4 +8,5 @@ export type THEME = {
   gradient: string;
   BackgrounImg: string;
   backgroundBlendMode:string;
+  colorSnow: string;
 };

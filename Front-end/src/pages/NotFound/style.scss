@@ -1,1 +1,13 @@
 // no css
+.not-found-wrapper{
+    width: 100%;
+    height: 100vh;
+    color: #7B78E2;
+    text-align: center;
+    font-size: 2rem;
+    display: flex;
+    flex-direction: column;
+    a {
+        font-size: 1rem;
+    }
+}

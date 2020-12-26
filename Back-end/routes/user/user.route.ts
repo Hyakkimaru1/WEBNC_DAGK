@@ -7,6 +7,7 @@ import { auth, provider, providerfb } from "../../firebase/firebase";
 import Board from "../../models/Board.model";
 import RoomModel from "../../models/Room.model";
 import MailerModel from './../../models/sendMail.models';
+import { resolveSoa } from "dns";
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -263,6 +264,16 @@ const routerUser = (io: any) => {
       }
     );
   });
+
+  router.get("/topranking", (req,res) => {
+    UserModel.find({}).sort({cup:"desc"}).limit(20).exec((err,docs)=>{
+      if (err){
+        res.sendStatus(500);
+        return;
+      }
+      res.send(docs);
+    })
+  })
 
   function checkAuthorization(req, res, next) {
     // check header contain beader

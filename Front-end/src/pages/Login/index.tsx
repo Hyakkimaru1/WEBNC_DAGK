@@ -68,7 +68,6 @@ const Login: React.FC = () => {
               credential.idToken
             )
             .then((res: any) => {
-              console.log("res", res);
               localStorage.setItem("token", res.data.token);
               router.push(ROUTERS.HOME);
             })

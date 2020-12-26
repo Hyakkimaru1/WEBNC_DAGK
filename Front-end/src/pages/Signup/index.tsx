@@ -7,7 +7,6 @@ import ConfirmEmail from "./ConfirmEmail/index";
 const Signup: React.FC = () => {
   const [stepConfirm, setStepConfirm] = useState(false);
   const [data,setData] = useState({_id:"",time:""});
-  console.log(stepConfirm);
   return (
     <div className="login__wrapper" style={{ backgroundImage: `url(${BG})` }}>
       {!stepConfirm ? (

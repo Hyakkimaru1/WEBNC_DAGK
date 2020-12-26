@@ -34,4 +34,5 @@ export const productAPI = {
   joinBoard: (_id: string | null, password: string, socketId: string) =>
     AXIOS_INSTANCE.post(API.JOIN_THE_BOARD, { _id, password, socketId }),
   getHistory: (page: number) => AXIOS_INSTANCE.post(API.HISTORY_USER, { page }),
+  getTopRanking: () => AXIOS_INSTANCE.get(API.TOP_RANKING),
 };
