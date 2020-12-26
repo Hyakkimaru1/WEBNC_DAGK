@@ -9,10 +9,9 @@ const users: User[] = [];
 export const addUser = (user: User) => {
   const name = user.name?.trim().toLowerCase();
   const room = user.room?.trim().toLowerCase();
+  const id = user.id;
 
-  const existUser = users.find(
-    (user: User) => user.room === room && user.name === name
-  );
+  const existUser = users.find((user: User) => user.id === id);
   if (existUser) {
     return { err: "username was taken!" };
   }
@@ -27,6 +26,15 @@ export const removeUser = (id: string) => {
   if (idx !== -1) {
     return users.splice(idx, 1)[0];
   }
+};
+export const updateUser = (u: User) => {
+  const idx = users.findIndex((user: User) => user.id === u.id);
+  if (idx !== -1) {
+    return users.splice(idx, 1, u);
+  } else {
+    users.push(u);
+  }
+  return u;
 };
 
 export const getUser = (id: string) =>

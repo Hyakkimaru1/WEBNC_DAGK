@@ -21,6 +21,8 @@ const EventSocket = {
     ALLROOMS: "allrooms",
     JOIN_BOARD: "joinboard",
     QUICK_JOIN: "quickJoin",
+    READY: "ready",
+    START:"start"
 }
 
 export {EventSocket};
