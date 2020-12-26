@@ -81,6 +81,8 @@ function ClientChat() {
           <CloseIcon
             onClick={() => {
               document.getElementById("clientChat").style.display = "none";
+              document.getElementById("newMess__popup").style.transform =
+                "scale(1)";
               document.getElementById("showguest").style.height = "80vh";
             }}
           />

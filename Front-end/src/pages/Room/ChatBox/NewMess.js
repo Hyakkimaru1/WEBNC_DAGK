@@ -1,18 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import "./NewMess.css";
-import EditIcon from "@material-ui/icons/Edit";
 import { Button, Avatar } from "@material-ui/core";
+import AddIcon from '@material-ui/icons/Add';
 import ClientChat from "./ClientChat";
+import Invite from "../Invite";
 
 function NewMess() {
   const handleClick = (e) => {
     document.getElementById("newMess__popup").style.transform = "scale(0)";
     document.getElementById("clientChat").style.display = "flex";
-    
-    document.getElementById("showguest").style.height="26vh";
+
+    document.getElementById("showguest").style.height = "26vh";
     let objDiv = document.getElementsByClassName("chatBox")[0];
     objDiv.scrollTop = objDiv.scrollHeight;
   };
+
+  const [open, setOpen] = React.useState(false);
+  const handleChange = (params) => {
+    setOpen(params)
+  }
+
 
   return (
     <div className="newMess">
@@ -23,13 +30,15 @@ function NewMess() {
         src=""
       />
       <Button
-        onClick={() =>
-          (document.getElementById("newMess__popup").style.transform =
-            "scale(1)")
-        }
+        variant="contained"
+        onClick={() => {
+          setOpen(true)
+          console.log('open', open)
+        }}
       >
-        <EditIcon />
+        <AddIcon />
       </Button>
+      <Invite state={open} onChange={(state) => handleChange(state)} />
       <ClientChat />
     </div>
   );

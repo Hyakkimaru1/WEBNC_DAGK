@@ -8,6 +8,7 @@ import {
 } from "@material-ui/data-grid";
 import clone from "clone";
 import "./style.scss";
+import { useSelector } from 'react-redux';
 
 const columns: ColDef[] = [
   { field: "id", headerName: "ID", width: 70 },
@@ -38,6 +39,8 @@ const History: React.FC<{
   user: any;
   handleSelected: (id: any) => void;
 }> = ({ data, user, handleSelected }) => {
+  const { isLoading } = useSelector((state:any) => state.HistoryUserSlide);
+
   const newData = clone(data);
   if (newData.length) {
     for (let i = 0; i < newData.length; i++) {
@@ -59,6 +62,7 @@ const History: React.FC<{
         onPageChange={handlePageChange}
         columns={columns}
         pageSize={5}
+        loading={isLoading}
         onRowSelected={handleSelect}
       />
     </div>

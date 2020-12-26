@@ -22,8 +22,8 @@ import { callHistoryUserSlide } from "@/actions/HistoryUserSlide";
 import { toast } from "react-toastify";
 import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import Avatar from "@material-ui/core/Avatar";
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
   ref: React.Ref<unknown>
@@ -124,19 +124,25 @@ export default function HistoryFC() {
           </Paper>
         </div>
         <div className="historyfc__Play">
-          <Button onClick={() => {
-            if (turn > 0){
-              setTurn(turn-1);
-            }
-          }} variant="contained" >
-            <ChevronLeftIcon/>
+          <Button
+            onClick={() => {
+              if (turn > 0) {
+                setTurn(turn - 1);
+              }
+            }}
+            variant="contained"
+          >
+            <ChevronLeftIcon />
           </Button>
-          <Button onClick = {() => {
-            if (turn<boardShow.board.length-1){
-              setTurn(turn+1);
-            }
-          }} variant="contained">
-            <ChevronRightIcon/>
+          <Button
+            onClick={() => {
+              if (turn < boardShow.board.length - 1) {
+                setTurn(turn + 1);
+              }
+            }}
+            variant="contained"
+          >
+            <ChevronRightIcon />
           </Button>
         </div>
 

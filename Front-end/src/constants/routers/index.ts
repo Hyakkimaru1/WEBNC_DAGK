@@ -8,6 +8,7 @@ const ROUTERS = {
   PROFILE: "/profile",
   HISTORY: "/history",
   ERROR: "/error",
+  TOP:"/top",
 };
 
 export default ROUTERS;

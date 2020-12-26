@@ -16,6 +16,7 @@ import "./style.scss";
 import CurrentUser from "./CurrentUser/index";
 import CurrentBoard from "./CurrentBoard/index";
 import { UserContext } from "@/contexts/UserContext";
+import UserTop from "./UserTop";
 
 const useStyles = makeStyles((theme) => ({
   chat: {
@@ -79,18 +80,12 @@ const Home = () => {
           <CurrentBoard boards={boards} />
         </div>
         <div className="home__board--user">
+          <UserTop/>
           <div className="chat_title" style={{ color: theme?.text }}>
             Các tài khoản đang hoạt động:
           </div>
           <div className="container">
             <div className="container_wrap"></div>
-            {/* <input
-          value={message}
-          onChange={(event) => setmessage(event?.target.value)}
-          onKeyPress={(event) =>
-            event.key == "Enter" ? sendMessage(event) : null
-          }
-        ></input> */}
             <List
               dense
               style={{ backgroundColor: themeMUI.palette.background.paper }}
