@@ -1,3 +1,4 @@
+import { User } from "./../../socket/User";
 import express from "express";
 import UserModel from "../../models/User.model";
 import jwt from "jsonwebtoken";
@@ -272,6 +273,17 @@ const routerUser = (io: any) => {
         }
       }
     );
+  });
+
+  router.put("/changePassword", checkAuthorization, async (req: any, res) => {
+    console.log(req.body)
+    const username = req.body.username;
+    const password = req.body.password;
+    const newPassword = req.body.newPassword;
+    const update = await UserModel.updateOne({ user: username, password:md5(password) }, { password: md5(newPassword) });
+    if(update.nModified===1){
+      res.sendStatus(200);
+    } else res.sendStatus(404);
   });
 
   function checkAuthorization(req, res, next) {

@@ -8,3 +8,8 @@ export type FormDataSignUp = {
   password: string;
   confirmPassword: string;
 };
+export type FormChangePassword = {
+  password: string;
+  newPassword:string;
+  newPasswordConfirm: string;
+}

@@ -2,27 +2,61 @@ import React, { useContext } from "react";
 import { toast } from "react-toastify";
 import { ThemeContext } from '@/contexts/ThemeContext';
 import { UserContext } from "@/contexts/UserContext";
+import { useDispatch } from "react-redux";
+import { callChangePassword } from "@/actions/ChangePassword";
+import { useForm } from "react-hook-form";
 
 const ChangePass: React.FC = () => {
   //use react-hook-form here
+  const {register, handleSubmit, reset } = useForm();
+  const onSubmit = (register:any) => {
+    if (register.newPassword !== register.newPasswordConfirm) {
+     toast.error("Mật khẩu mới và xác nhận mật khẩu mới không giống nhau!");
+    } 
+    else if (register.newPassword === register.password) {
+      toast.error("Mật khẩu mới không được trùng với mật khẩu cũ!");
+    }
+    else if (register.newPassword === "") {
+      toast.error("Mật khẩu mới không được trống!");
+    }
+    else{
+      changePassword(register.password, register.newPassword);
+      reset({newPassword:"",password:"",newPasswordConfirm:""});
+    }
+  }
   const { theme } = useContext(ThemeContext);
   const user: any = useContext(UserContext);
-  const handleClick = () => {
-    console.log(user);
-    toast.error("Điền đủ mật khẩu và xác nhận lại");
+  const dispatch = useDispatch();
+  const changePassword = (password:string, newPassword:string) => {
+    const username = user.user;
+    dispatch(
+      callChangePassword({
+       username,
+       password,
+       newPassword,
+        cbSuccess: () => {
+          toast.success("Mật khẩu đã được thay đổi!");
+        },
+        cbError: () => {
+          toast.error("Điền đủ mật khẩu và xác nhận lại!");
+        },
+      })
+    );
+    
   };
   return (
     <div className="ChangePass">
-      <form style={{ marginTop: "2.4rem" }}>
+      <form style={{ marginTop: "2.4rem" }} onSubmit={handleSubmit(onSubmit)}>
         <div className="ChangePass__group">
           <input
             id="changepass_old"
             type="password"
             className="ChangePass__input"
             placeholder="Mật khẩu hiện tại"
-            name="username"
+            name="password"
             style={{color:theme?.color}}
             required
+            ref = {register}
           />
           <label  style={{color:theme?.color}} htmlFor="changepass_old" className="ChangePass__label">
             Mật khẩu hiện tại
@@ -39,9 +73,10 @@ const ChangePass: React.FC = () => {
             type="password"
             className="ChangePass__input"
             placeholder="Mật khẩu mới"
-            name="username"
+            name="newPassword"
             style={{color:theme?.color}}
             required
+            ref = {register}
           />
           <label style={{color:theme?.color}} htmlFor="changepass_new" className="ChangePass__label">
             Mật khẩu mới
@@ -58,9 +93,10 @@ const ChangePass: React.FC = () => {
             type="password"
             className="ChangePass__input"
             placeholder="Xác nhận mật khẩu mới"
-            name="username"
+            name="newPasswordConfirm"
             style={{color:theme?.color}}
             required
+            ref = {register}
           />
           <label style={{color:theme?.color}} htmlFor="changepass_confirm" className="ChangePass__label">
             Xác nhận mật khẩu mới
@@ -71,9 +107,9 @@ const ChangePass: React.FC = () => {
             className="ChangePass__error"
           ></span>
         </div>
-        <div onClick={handleClick} className="bt__default">
+        <button onClick={handleSubmit(onSubmit)} className="bt__default">
           Cập nhật
-        </div>
+        </button>
       </form>
     </div>
   );
