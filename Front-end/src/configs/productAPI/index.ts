@@ -35,4 +35,5 @@ export const productAPI = {
     AXIOS_INSTANCE.post(API.JOIN_THE_BOARD, { _id, password, socketId }),
   getHistory: (page: number) => AXIOS_INSTANCE.post(API.HISTORY_USER, { page }),
   getTopRanking: () => AXIOS_INSTANCE.get(API.TOP_RANKING),
+  newPassword: (username: string, password:string, newPassword: string) => AXIOS_INSTANCE.put(API.CHANGE_PASSWORD, {username, password, newPassword}),
 };

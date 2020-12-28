@@ -7,6 +7,7 @@ export interface IUser extends Document {
   name: string;
   isConfirm?: boolean;
   codeConfirm?: string;
+  joinDate?: string;
   wins?: number;
   cups?: number;
 }
@@ -18,6 +19,7 @@ const instance = new mongoose.Schema({
   name: String,
   isConfirm: Boolean,
   codeConfirm: String,
+  joinDate: Date,
   wins: Number,
   cups: Number,
 });

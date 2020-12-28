@@ -6,5 +6,6 @@ export const API: { [key: string]: string } = {
   JOIN_THE_BOARD: "/user/joinboard",
   HISTORY_USER: "/user/history",
   CONFIRM_CODE: "/user/confirm",
-  TOP_RANKING: "/user/topranking"
+  TOP_RANKING: "/user/topranking",
+  CHANGE_PASSWORD: "/user/changePassword",
 };
