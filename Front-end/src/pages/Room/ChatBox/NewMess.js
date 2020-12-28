@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import "./NewMess.css";
 import { Button, Avatar } from "@material-ui/core";
 import AddIcon from '@material-ui/icons/Add';
 import ClientChat from "./ClientChat";
+import Invite from "../Invite";
 
 function NewMess() {
   const handleClick = (e) => {
@@ -14,6 +15,12 @@ function NewMess() {
     objDiv.scrollTop = objDiv.scrollHeight;
   };
 
+  const [open, setOpen] = React.useState(false);
+  const handleChange = (params) => {
+    setOpen(params)
+  }
+
+
   return (
     <div className="newMess">
       <Avatar
@@ -24,12 +31,14 @@ function NewMess() {
       />
       <Button
         variant="contained"
-        onClick={() =>{
-          //
+        onClick={() => {
+          setOpen(true)
+          console.log('open', open)
         }}
       >
         <AddIcon />
       </Button>
+      <Invite state={open} onChange={(state) => handleChange(state)} />
       <ClientChat />
     </div>
   );

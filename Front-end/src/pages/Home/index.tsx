@@ -88,13 +88,6 @@ const Home = () => {
           </div>
           <div className="container">
             <div className="container_wrap"></div>
-            {/* <input
-          value={message}
-          onChange={(event) => setmessage(event?.target.value)}
-          onKeyPress={(event) =>
-            event.key == "Enter" ? sendMessage(event) : null
-          }
-        ></input> */}
             <List
               dense
               style={{ backgroundColor: themeMUI.palette.background.paper }}

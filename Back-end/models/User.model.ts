@@ -1,12 +1,14 @@
 import mongoose, { Document } from "mongoose";
 
 export interface IUser extends Document {
-  user: string,
-  password: string,
-  avatar: string,
-  name: string,
-  isConfirm?:boolean,
-  codeConfirm?: string
+  user: string;
+  password: string;
+  avatar: string;
+  name: string;
+  isConfirm?: boolean;
+  codeConfirm?: string;
+  wins?: number;
+  cups?: number;
 }
 
 const instance = new mongoose.Schema({
@@ -14,8 +16,10 @@ const instance = new mongoose.Schema({
   password: String,
   avatar: String,
   name: String,
-  isConfirm:Boolean,
-  codeConfirm: String
+  isConfirm: Boolean,
+  codeConfirm: String,
+  wins: Number,
+  cups: Number,
 });
 
 export default mongoose.model<IUser>("user", instance);
