@@ -21,7 +21,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*"
+    origin: "*",
   },
 });
 
@@ -33,13 +33,14 @@ mongoose.connect(connect_URL, {
   useCreateIndex: true,
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  useFindAndModify: false,
 });
 
 mongoose.connection.once("open", () => {
   console.log("connected");
 });
 socket(io);
-routesMdw(app,io);
+routesMdw(app, io);
 
 app.get("/", (req, res) => res.send("Typescript"));
 server.listen(PORT, () => {

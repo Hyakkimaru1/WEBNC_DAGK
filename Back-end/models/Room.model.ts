@@ -4,7 +4,7 @@ export interface Room extends Document {
   roomId: string; // roomID
   playerX: User; // store userID or username
   playerO: User;
-  board: number[];
+  board: number[][];
   winner: string;
   startChat: number;
   endChat: number;
@@ -25,7 +25,7 @@ const instance = new mongoose.Schema({
   roomId: String, // roomID
   playerX: User, // store userID or username
   playerO: User,
-  board: [Number],
+  board: [[Number]],
   turn: Number,
   winner: String,
   startChat: Number,

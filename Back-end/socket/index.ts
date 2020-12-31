@@ -183,7 +183,7 @@ export default function (io) {
                   }
                 } else room.peopleInRoom.push(person);
               }
-              console.log("room", room);
+              // console.log("room", room);
 
               //toast all users in room know about new user has joined
               io.to(boardID).emit(EventSocket.USER_JOIN, room.peopleInRoom);
@@ -228,32 +228,51 @@ export default function (io) {
         }
         if (room.oReady && room.xReady) {
           room.isReady = true;
+          room.board = new Array(25 * 25).fill(null);
+          room.winner = null;
+          room.turn = 1;
+          io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room);
           io.to(roomId).emit(EventSocket.START, { messages: "start" });
-          /*
+
           const r = io.sockets.adapter.rooms.get(roomId);
           let t = 10;
           const time = {
             timeX: t,
             timeO: t,
           };
-          r.time.timeX = t;
-          r.time.timeO = t;
-          r.timer = setInterval(() => {
-            r.time.timeX -= 1;
-            console.log("r.time.timeX", r.time.timeX);
-            if (r.time.timeX === 0) {
-              room.winner = 0;
-              io.to(roomId).emit(EventSocket.TOAST_WINNER, room);
-
-              clearInterval(r.timer);
-            }
-          }, 1000); */
+          r.time = time;
+          setTimer(roomId);
         }
         io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room);
       } catch (error) {
         console.log("error", error);
       }
     });
+
+    const setTimer = (roomId) => {
+      const r = io.sockets.adapter.rooms.get(roomId);
+      r.timer = setInterval(() => {
+        if (r.infBoard.turn) {
+          r.time.timeX -= 1;
+        } else {
+          r.time.timeO -= 1;
+        }
+        let time = r.infBoard.turn ? r.time.timeX : r.time.timeO;
+        console.log("r.time", r.time);
+        console.log(r.infBoard.turn ? "X" : "O", time);
+        if (time === 0) {
+          r.infBoard.winner = 1 - r.infBoard.turn;
+          r.infBoard.xReady = false;
+          r.infBoard.oReady = false;
+          r.infBoard.isReady = false;
+          saveOnWin(r.infBoard);
+          io.to(r.infBoard.boardID).emit(EventSocket.TOAST_WINNER, r.infBoard);
+          io.to(roomId).emit(EventSocket.GET_INFO_BOARD, r.infBoard);
+
+          clearInterval(r.timer);
+        }
+      }, 1000);
+    };
 
     //vao phong nhanh
     socket.on(EventSocket.QUICK_JOIN, (token: string, callback) => {
@@ -330,62 +349,18 @@ export default function (io) {
               infBoard.winner = infBoard.turn;
               io.to(infBoard.boardID).emit(EventSocket.TOAST_WINNER, infBoard);
               try {
-                const room: any = {
-                  roomId: infBoard.boardID, // roomID
-                  playerX: infBoard.playerX, // store userID or username
-                  playerO: infBoard.playerO,
-                  board: roomH.history,
-                  winner: decoded.user,
-                  startChat: 1,
-                  endChat: 10,
-                };
-
-                //xu ly cong diem luc thang
-                let winner, loser;
-                if (infBoard.playerX.name === decoded.user) {
-                  winner = infBoard.playerX;
-                  loser = infBoard.playerO;
-                } else {
-                  winner = infBoard.playerO;
-                  loser = infBoard.playerX;
-                }
-                const wRank = Math.floor(winner.cups / 100);
-                const lRank = Math.floor(loser.cups / 100);
-                let point = 1;
-                if (wRank < lRank) {
-                  point += wRank - lRank;
-                }
-                winner.cups += point;
-                winner.wins += 1;
-                loser.cups -= point;
-                loser.wins -= 1;
-                const updateUserWin = await UserModel.findByIdAndUpdate(
-                  decoded._id,
-                  { $inc: { wins: 1, cups: point } }
-                );
-                const updateUserLose = await UserModel.findOneAndUpdate(
-                  {
-                    user: loser.name,
-                    cups: { $gt: 0 },
-                  },
-                  { $inc: { cups: -point } }
-                );
-
-                RoomModel.create(room, (err) => {
-                  if (err) {
-                    console.log("err", err);
-                  }
-                });
+                clearInterval(roomH.timer);
+                saveOnWin(infBoard);
               } catch (error) {
                 console.log("error", error);
               }
             }
-
+            const room = io.sockets.adapter.rooms.get(infBoard.boardID);
+            // console.log("roomH", roomH);
             //count turn
             infBoard.turn = 1 - infBoard.turn;
             infBoard.i = i;
             io.to(infBoard.boardID).emit(EventSocket.GET_INFO_BOARD, infBoard);
-            const room = io.sockets.adapter.rooms.get(infBoard.boardID);
             if (room) room.infBoard = infBoard;
           }
         });
@@ -618,6 +593,60 @@ export default function (io) {
       }
     });
     io.sockets.emit(EventSocket.ALLROOMS, { resRooms });
+  };
+
+  //luu khi co nguoi thang
+  const saveOnWin = async (infBoard) => {
+    const roomH = io.sockets.adapter.rooms.get(infBoard.boardID);
+    const winUser = infBoard.winner
+      ? infBoard.playerX.name
+      : infBoard.playerO.name;
+    const room: any = {
+      roomId: infBoard.boardID, // roomID
+      playerX: infBoard.playerX, // store userID or username
+      playerO: infBoard.playerO,
+      board: roomH.history,
+      winner: winUser,
+      startChat: 1,
+      endChat: 10,
+    };
+
+    //xu ly cong diem luc thang
+    let winner, loser;
+    if (infBoard.playerX.name === winUser) {
+      winner = infBoard.playerX;
+      loser = infBoard.playerO;
+    } else {
+      winner = infBoard.playerO;
+      loser = infBoard.playerX;
+    }
+    const wRank = Math.floor(winner.cups / 100);
+    const lRank = Math.floor(loser.cups / 100);
+    let point = 1;
+    if (wRank < lRank) {
+      point += wRank - lRank;
+    }
+    winner.cups += point;
+    winner.wins += 1;
+    loser.cups -= point;
+    loser.wins -= 1;
+    const updateUserWin = await UserModel.findOneAndUpdate(
+      { user: winner.name },
+      { $inc: { wins: 1, cups: point } }
+    );
+    const updateUserLose = await UserModel.findOneAndUpdate(
+      {
+        user: loser.name,
+        cups: { $gt: 0 },
+      },
+      { $inc: { cups: -point } }
+    );
+
+    RoomModel.create(room, (err) => {
+      if (err) {
+        console.log("err", err);
+      }
+    });
   };
 }
 
