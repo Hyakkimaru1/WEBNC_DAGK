@@ -22,6 +22,12 @@ export type personInRoom = {
   user: string;
 };
 
+export type User = {
+  id?: string;
+  avatar?: string;
+  name?: string;
+  room?: string;
+};
 
 export const initialCurrentBoardPlay = {
   boardID:"",

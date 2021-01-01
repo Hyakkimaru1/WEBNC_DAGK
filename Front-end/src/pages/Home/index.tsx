@@ -18,6 +18,9 @@ import CurrentBoard from "./CurrentBoard/index";
 import { UserContext } from "@/contexts/UserContext";
 import UserTop from "./UserTop";
 import Snow from "@/pages/Top/Snow";
+import { toast } from "react-toastify";
+import { useHistory } from "react-router-dom";
+import ROUTERS from "@/constants/routers";
 
 const useStyles = makeStyles((theme) => ({
   chat: {
@@ -35,6 +38,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const Home = () => {
   const classes = useStyles();
+  const history = useHistory();
   const { userTheme, theme } = useContext(ThemeContext);
   const user: any = useContext(UserContext);
   const [boards, setBoards] = useState([]);
@@ -65,6 +69,28 @@ const Home = () => {
       if (message) setusers(message.users);
     });
 
+    //Luc duoc moi vao phong
+    socket.on(
+      "showInvite",
+      ({ invitor, roomId }: { roomId: string; invitor: string }) => {
+        try {
+          console.log("id,invitor", roomId, invitor);
+          toast.info(` ${invitor} 🦄 invites you his room! Click to join.`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            onClick: () => history.push(ROUTERS.ROOM_PUSH + roomId),
+          });
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+    );
+
     return () => {
       socket.off("roomData");
       socket.off("allrooms");
@@ -73,7 +99,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      <Snow/>
+      <Snow />
       <div className="home__user">
         <CurrentUser theme={theme} username={user.user} avatar={user.avatar} />
       </div>
@@ -82,7 +108,7 @@ const Home = () => {
           <CurrentBoard boards={boards} />
         </div>
         <div className="home__board--user">
-          <UserTop/>
+          <UserTop />
           <div className="chat_title" style={{ color: theme?.text }}>
             Các tài khoản đang hoạt động:
           </div>

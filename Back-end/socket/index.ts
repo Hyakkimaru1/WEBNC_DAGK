@@ -49,6 +49,7 @@ export default function (io) {
   io.on(EventSocket.CONNECTION, (socket) => {
     socket.on(EventSocket.JOIN, ({ name, room }, callback) => {
       try {
+        let avatar = "";
         name &&
           jwt.verify(name, primaryKey, function (err, decoded) {
             if (err) {
@@ -57,10 +58,12 @@ export default function (io) {
               // return;
             } else {
               name = decoded.user;
+              avatar = decoded.avatar;
             }
           });
         let newUser = {
           id: socket.id,
+          avatar,
           name,
           room: "1",
         };
@@ -121,6 +124,40 @@ export default function (io) {
       }
     });
 
+    //danh sach user o phong cho
+    socket.on(EventSocket.WAITINGROOM, (callback) => {
+      try {
+        // io.to(roomId).emit(EventSocket.MESSAGE, { messages: roomH.messages });
+        callback(userInRoom("1"));
+      } catch (error) {
+        console.log("error", error);
+      }
+    });
+
+    //Luc duoc moi vao phong
+    socket.on(
+      EventSocket.INVITE,
+      ({
+        id,
+        invitor,
+        roomId,
+      }: {
+        id: string;
+        invitor: string;
+        roomId: string;
+      }) => {
+        try {
+          io.to(id).emit(EventSocket.SHOW_INVITE, {
+            invitor,
+            roomId,
+          });
+          console.log("id,invitor", id, invitor);
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+    );
+
     //luc vao phong
     socket.on(
       EventSocket.ON_BOARD,
@@ -131,6 +168,7 @@ export default function (io) {
             try {
               let newUser = await {
                 id: socket.id,
+                avatar: decoded.avatar,
                 name: decoded.user,
                 room: boardID,
               };
@@ -183,7 +221,6 @@ export default function (io) {
                   }
                 } else room.peopleInRoom.push(person);
               }
-              // console.log("room", room);
 
               //toast all users in room know about new user has joined
               io.to(boardID).emit(EventSocket.USER_JOIN, room.peopleInRoom);
@@ -198,6 +235,8 @@ export default function (io) {
                   .to(boardID)
                   .emit(EventSocket.MESSAGE, { messages: room?.messages });
               allrooms(socket);
+
+              // console.log("getAllUsers", getAllUsers);
             } catch (error) {
               console.log("error", error);
             }
@@ -249,6 +288,7 @@ export default function (io) {
       }
     });
 
+    // count time, setInterval
     const setTimer = (roomId) => {
       const r = io.sockets.adapter.rooms.get(roomId);
       r.timer = setInterval(() => {
@@ -433,6 +473,7 @@ export default function (io) {
 
             let newUser = {
               id: socket.id,
+              avatar: decoded.avatar,
               name: decoded.user,
               room: "1",
             };
@@ -539,7 +580,7 @@ export default function (io) {
       }
     });
 
-    //get cups and wins
+    //vao phong nhanh
     socket.on(EventSocket.QUICK_JOIN, (token: string, callback) => {
       jwt.verify(token, primaryKey, async function (err, decoded) {
         if (err) {

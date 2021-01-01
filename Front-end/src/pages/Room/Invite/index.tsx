@@ -1,18 +1,21 @@
+import socket from "@/configs/socket";
+import { User } from "@/types/CurrentBoardPlay";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
+import IconButton from "@material-ui/core/IconButton";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import React, { useEffect } from "react";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-import IconButton from "@material-ui/core/IconButton";
-import socket from "@/configs/socket";
+import React, { useEffect, useContext } from "react";
+import { UserContext } from "@/contexts/UserContext";
+import { useParams } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -23,16 +26,22 @@ const useStyles = makeStyles((theme: Theme) =>
       textAlign: "center",
       margin: "auto",
     },
+    btn: {
+      color: "blue",
+    },
   })
 );
 const Invite: React.FC<{
   state: boolean;
   onChange: any;
 }> = ({ state, onChange }) => {
-  const [users, setUsers] = React.useState([]);
+  const user: any = useContext(UserContext);
+  const [users, setUsers] = React.useState<User[]>([]);
   const handleClose = () => {
     onChange(false);
   };
+  const params: any = useParams();
+
   const classes = useStyles();
   const descriptionElementRef = React.useRef<HTMLElement>(null);
   React.useEffect(() => {
@@ -45,9 +54,19 @@ const Invite: React.FC<{
   }, [state]);
 
   useEffect(() => {
+    socket.emit("waitingroom", (waitingroom: User[]) => {
+      setUsers(waitingroom);
+      console.log("waitingroom", users);
+    });
+  }, [state]);
 
+  const handleInvite = (id: any, index: any) => {
+    console.log("id", id);
+    const btn: any = document.getElementById(`invite-btn-${index}`);
+    btn.style.display = "none";
+    socket.emit("invite", { id, invitor: user.user, roomId: params.id });
+  };
 
-  }, []);
   return (
     <div>
       <Dialog
@@ -59,21 +78,28 @@ const Invite: React.FC<{
         aria-labelledby="scroll-dialog-title"
         aria-describedby="scroll-dialog-description"
       >
-        <DialogTitle id="scroll-dialog-title">Kỳ thủ đang ở sảnh chờ</DialogTitle>
+        <DialogTitle id="scroll-dialog-title">
+          Kỳ thủ đang ở sảnh chờ
+        </DialogTitle>
         <List dense className={classes.root}>
-          {[0, 1, 2, 3].map((value) => {
-            const labelId = `checkbox-list-secondary-label-${value}`;
+          {users.map((user, index) => {
+            const labelId = `checkbox-list-secondary-label-${index}`;
+            const btnId = `invite-btn-${index}`;
             return (
-              <ListItem key={value} button>
+              <ListItem key={index} button>
                 <ListItemAvatar>
-                  <Avatar
-                    alt={`Avatar n°${value + 1}`}
-                    src={`/static/images/avatar/${value + 1}.jpg`}
-                  />
+                  <Avatar alt={`Avatar n°${index + 1}`} src={user.avatar} />
                 </ListItemAvatar>
-                <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
-                <ListItemSecondaryAction>
-                  <IconButton edge="end" aria-label="add">
+                <ListItemText id={labelId} primary={user.name} />
+                <ListItemSecondaryAction
+                  id={btnId}
+                  onClick={(e) => handleInvite(user.id, index)}
+                >
+                  <IconButton
+                    className={classes.btn}
+                    edge="end"
+                    aria-label="add"
+                  >
                     <AddBoxIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -101,11 +127,11 @@ Praesent commodo cursus magna, vel scelerisque nisl consectetur et.`
 
         <DialogActions>
           <Button onClick={handleClose} color="primary">
-            Cancel
+            Close
           </Button>
-          <Button onClick={handleClose} color="primary">
+          {/* <Button onClick={handleClose} color="primary">
             Subscribe
-          </Button>
+          </Button> */}
         </DialogActions>
       </Dialog>
     </div>
