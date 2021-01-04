@@ -202,9 +202,8 @@ export default function (io) {
                     i: null,
                     winner: null,
                   };
-                  io.sockets.adapter.rooms.get(
-                    boardID
-                  ).infBoard = initialValueCurrentBoardPlay;
+                  room.infBoard = initialValueCurrentBoardPlay;
+                  room.messages = [];
                 } else {
                   return callback();
                 }
@@ -235,7 +234,7 @@ export default function (io) {
                   .to(boardID)
                   .emit(EventSocket.MESSAGE, { messages: room?.messages });
               allrooms(socket);
-
+              console.log("io.sockets.adapter.rooms", io.sockets.adapter.rooms);
               // console.log("getAllUsers", getAllUsers);
             } catch (error) {
               console.log("error", error);
@@ -274,11 +273,16 @@ export default function (io) {
           io.to(roomId).emit(EventSocket.START, { messages: "start" });
 
           const r = io.sockets.adapter.rooms.get(roomId);
-          let t = 10;
+          let t = 1000;
+          const chatHistory = {
+            startChat: r.messages.length,
+            endChat: null,
+          };
           const time = {
             timeX: t,
             timeO: t,
           };
+          r.chatHistory = chatHistory;
           r.time = time;
           setTimer(roomId);
         }
@@ -648,8 +652,8 @@ export default function (io) {
       playerO: infBoard.playerO,
       board: roomH.history,
       winner: winUser,
-      startChat: 1,
-      endChat: 10,
+      startChat: roomH.chatHistory.startChat,
+      endChat: roomH.messages.length - 1,
     };
 
     //xu ly cong diem luc thang
