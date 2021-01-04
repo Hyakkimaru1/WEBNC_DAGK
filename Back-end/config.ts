@@ -26,6 +26,8 @@ const EventSocket = {
   WAITINGROOM: "waitingroom",
   INVITE: "invite",
   SHOW_INVITE: "showInvite",
+  UPDATE_TIME: "updateTime",
+  ACCEPT_INVITE:"acceptInvite",
 };
 
 export { EventSocket };

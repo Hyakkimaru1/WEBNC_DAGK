@@ -2,7 +2,7 @@ import React from "react";
 import "./style.scss";
 
 const Square: React.FC<{
-  isPlay: boolean;
+  isPlay?: boolean;
   value?: number;
   onClick: any;
   location: number;

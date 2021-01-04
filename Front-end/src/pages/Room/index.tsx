@@ -17,6 +17,7 @@ import {
 import THEME from "@/constants/Theme";
 import { toast } from "react-toastify";
 import ROUTERS from "./../../constants/routers/index";
+import Time from "@/types/Time";
 
 const Room: React.FC = () => {
   //const params = useParams();
@@ -24,6 +25,7 @@ const Room: React.FC = () => {
   const user: any = useContext(UserContext);
   const params: any = useParams();
   const history = useHistory();
+  const [time, setTime] = useState<Time>({ timeX: 0, timeO: 0 });
   const [infBoard, setInfBoard] = useState<CurrentBoardPlay>({
     boardID: params.id, // roomID
     turn: 1,
@@ -52,8 +54,10 @@ const Room: React.FC = () => {
   useEffect(() => {
     async function emitTokenOnBoard() {
       const token = (await localStorage.getItem("token")) || "";
-      socket.emit("onboard", { boardID: params.id, token }, () => {
-        history.push(ROUTERS.ERROR);
+      socket.emit("onboard", { boardID: params.id, token }, (data: any) => {
+        if (data) {
+          setTime(data);
+        } else history.push(ROUTERS.ERROR);
       });
     }
     emitTokenOnBoard();
@@ -67,7 +71,6 @@ const Room: React.FC = () => {
     socket.on("getInfBoard", (data: any) => {
       setInfBoard(data);
     });
-
     socket.on("connect", () => {});
 
     socket.on("toastwinner", (data: any) => {
@@ -83,6 +86,10 @@ const Room: React.FC = () => {
         toast("🐣🐥🐔🐓🦃 Winner Winner Chicken Dinner But Not You");
       }
     });
+
+    socket.on("updateTime",(data:Time) => {
+      setTime(data);
+    })
 
     return () => {
       socket.off("toastwinner");
@@ -103,7 +110,7 @@ const Room: React.FC = () => {
     socket.emit("ready", { roomId: params.id, token });
   };
 
-  let isPlay = true;
+  let isPlay: boolean | undefined;
 
   if (!infBoard.playerX || !infBoard.playerO) {
     isPlay = false;
@@ -111,7 +118,8 @@ const Room: React.FC = () => {
     isPlay =
       ((infBoard.playerX.name === user.user && infBoard.turn === 1) ||
         (infBoard.playerO.name === user.user && infBoard.turn === 0)) &&
-      infBoard.winner === null;
+      infBoard.winner === null &&
+      infBoard.isReady;
   }
 
   return (
@@ -128,7 +136,7 @@ const Room: React.FC = () => {
               )}
             </div>
           </div>
-          <Player infBoard={infBoard} />
+          <Player time={time} infBoard={infBoard} />
         </div>
         <div className="Room__board">
           <div className="Room__board--ready">
@@ -146,10 +154,11 @@ const Room: React.FC = () => {
             ) : (
               <></>
             )}
-            { !infBoard.isReady && ((infBoard.xReady && infBoard.playerX?.name === user.user) ||
-              (infBoard.oReady && infBoard.playerO?.name === user.user)) && (
-              <CircularProgress color="secondary" />
-            )}
+            {!infBoard.isReady &&
+              ((infBoard.xReady && infBoard.playerX?.name === user.user) ||
+                (infBoard.oReady && infBoard.playerO?.name === user.user)) && (
+                <CircularProgress color="secondary" />
+              )}
           </div>
           <Board
             isPlay={isPlay}

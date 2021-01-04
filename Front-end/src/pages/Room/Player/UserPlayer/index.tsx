@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import "./style.scss";
 import { Card, CardContent, Typography, Avatar } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -33,28 +33,11 @@ const UserPlayer: React.FC<{
   playKey?: number;
   turn: number | null;
   isReady?: boolean;
+  time: number;
   onClick: () => void;
-}> = ({ user, playKey = 1,turn,isReady, onClick }) => {
-  const [timeLeft, setTimeLeft] = useState(500);
+}> = ({ user, playKey = 1, onClick,time }) => {
   const classes = useStyles();
   const { theme } = useContext(ThemeContext);
-
-  useEffect(() => {
-    // exit early when we reach 0
-    if (!isReady || turn !== playKey || !timeLeft) return;
-
-    // save intervalId to clear the interval when the
-    // component re-renders
-    const intervalId = setInterval(() => {
-      setTimeLeft(timeLeft - 1);
-    }, 1000);
-
-    // clear interval on re-render to avoid memory leaks
-    return () => clearInterval(intervalId);
-    // add timeLeft as a dependency to re-rerun the effect
-    // when we update it
-  }, [timeLeft,turn,playKey,isReady]);
-
   if (user) {
     return (
       <div>
@@ -108,7 +91,7 @@ const UserPlayer: React.FC<{
             <div style={{ position: "relative", marginTop: "1rem" }}>
               <div className="userplayer__countdown">
                 {" "}
-                {moment.utc(timeLeft * 1000).format("mm:ss")}{" "}
+                {moment.utc(time * 1000).format("mm:ss")}{" "}
               </div>
               {playKey === 1 ? (
                 <div className="square__X"></div>

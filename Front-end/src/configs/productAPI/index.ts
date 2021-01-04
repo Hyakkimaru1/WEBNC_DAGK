@@ -26,8 +26,8 @@ export const productAPI = {
   register: (user: string, password: string) => {
     return AXIOS_INSTANCE.post(API.REGISTER, { user, password });
   },
-  createNewBoard: (hasPassword: boolean, password: string) => {
-    return AXIOS_INSTANCE.post(API.CREATE_A_BOARD, { hasPassword, password });
+  createNewBoard: (hasPassword: boolean, password: string, time: number) => {
+    return AXIOS_INSTANCE.post(API.CREATE_A_BOARD, { hasPassword, password,time });
   },
   confirmCode: (codeConfirm: string, _id: string) =>
     AXIOS_INSTANCE.post(API.CONFIRM_CODE, { codeConfirm, _id }),

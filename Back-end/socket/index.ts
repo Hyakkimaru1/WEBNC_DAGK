@@ -134,7 +134,47 @@ export default function (io) {
       }
     });
 
-    //Luc duoc moi vao phong
+    //Chap nhan loi moi
+    socket.on(
+      EventSocket.ACCEPT_INVITE,
+      (
+        {
+          token,
+          roomId,
+        }: {
+          token: string;
+          roomId: string;
+        },
+        callback
+      ) => {
+        try {
+          let user: string = null;
+          token &&
+            jwt.verify(token, primaryKey, function (err, decoded) {
+              if (err) {
+                console.log("err", err);
+                // callback(err);
+                // return;
+              } else {
+                user = decoded.user;
+              }
+            });
+          const room = io.sockets.adapter.rooms.get(roomId);
+          const person: personInRoom = {
+            socketId: socket.id,
+            user,
+          };
+
+          //push user to room
+          room.peopleInRoom.push(person);
+          callback(1);
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+    );
+
+    //show invite
     socket.on(
       EventSocket.INVITE,
       ({
@@ -220,7 +260,6 @@ export default function (io) {
                   }
                 } else room.peopleInRoom.push(person);
               }
-
               //toast all users in room know about new user has joined
               io.to(boardID).emit(EventSocket.USER_JOIN, room.peopleInRoom);
 
@@ -566,6 +605,7 @@ export default function (io) {
 
           io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room.infBoard);
           allrooms(socket);
+          console.log("io.sockets.adapter.rooms", io.sockets.adapter.rooms);
         }
       } catch (error) {
         console.log("error", error);
