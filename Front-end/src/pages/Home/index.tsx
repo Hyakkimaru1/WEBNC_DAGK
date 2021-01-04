@@ -95,6 +95,7 @@ const Home = () => {
       socket.off("roomData");
       socket.off("allrooms");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

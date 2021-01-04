@@ -56,7 +56,6 @@ const Invite: React.FC<{
   useEffect(() => {
     socket.emit("waitingroom", (waitingroom: User[]) => {
       setUsers(waitingroom);
-      console.log("waitingroom", users);
     });
   }, [state]);
 

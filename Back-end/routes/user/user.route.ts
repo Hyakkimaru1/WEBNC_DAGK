@@ -226,6 +226,7 @@ const routerUser = (io: any) => {
         createBy: req.authorization.user,
         hasPassword: req.body.hasPassword,
         password: req.body.password,
+        time: req.body.time
       },
       (err, doc) => {
         if (err) {

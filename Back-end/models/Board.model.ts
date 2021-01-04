@@ -15,11 +15,13 @@ export interface ITBoard extends Document {
   createBy: string;
   hasPassword: boolean;
   password: string;
+  time: number;
 }
 const instance = new mongoose.Schema({
   createBy: String,
   hasPassword: Boolean,
   password: String,
+  time: Number
 });
 instance.plugin(autoIncrement.plugin, {
   model: "board",

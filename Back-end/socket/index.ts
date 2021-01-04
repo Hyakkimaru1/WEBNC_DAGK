@@ -38,6 +38,7 @@ type CurrentBoardPlay = {
   i: number;
   hasPassword?: boolean;
   winner: number;
+  time?: number;
 };
 
 type time = {
@@ -151,7 +152,7 @@ export default function (io) {
             invitor,
             roomId,
           });
-          console.log("id,invitor", id, invitor);
+          //console.log("id,invitor", id, invitor);
         } catch (error) {
           console.log("error", error);
         }
@@ -191,6 +192,7 @@ export default function (io) {
                 if (doc) {
                   const initialValueCurrentBoardPlay: CurrentBoardPlay = {
                     boardID,
+                    time: doc.time,
                     playerX: player,
                     playerO: null,
                     xReady: false,
@@ -202,11 +204,14 @@ export default function (io) {
                     i: null,
                     winner: null,
                   };
-                  io.sockets.adapter.rooms.get(
-                    boardID
-                  ).infBoard = initialValueCurrentBoardPlay;
+                  const time = {
+                    timeX: doc.time,
+                    timeO: doc.time,
+                  };
+                  room.time = time;
+                  room.infBoard = initialValueCurrentBoardPlay;
                 } else {
-                  return callback();
+                  return callback(null);
                 }
                 //add initial array person
                 room.peopleInRoom = [person];
@@ -222,6 +227,7 @@ export default function (io) {
                 } else room.peopleInRoom.push(person);
               }
 
+              callback(room.time);
               //toast all users in room know about new user has joined
               io.to(boardID).emit(EventSocket.USER_JOIN, room.peopleInRoom);
 
@@ -260,26 +266,26 @@ export default function (io) {
             }
           });
         const room = io.sockets.adapter.rooms.get(roomId).infBoard;
-        if (room.playerX.name === user) {
-          room.xReady = !room.xReady;
+        if (room.playerX?.name === user) {
+          room.xReady = true;
+          room.winner = null;
         } else {
-          room.oReady = !room.oReady;
+          room.oReady = true;
+          room.winner = null;
         }
         if (room.oReady && room.xReady) {
           room.isReady = true;
           room.board = new Array(25 * 25).fill(null);
-          room.winner = null;
           room.turn = 1;
+          room.i = null;
           io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room);
-          io.to(roomId).emit(EventSocket.START, { messages: "start" });
-
-          const r = io.sockets.adapter.rooms.get(roomId);
-          let t = 10;
           const time = {
-            timeX: t,
-            timeO: t,
+            timeX: room.time,
+            timeO: room.time,
           };
-          r.time = time;
+          io.sockets.adapter.rooms.get(roomId).time = time;
+          io.to(roomId).emit(EventSocket.START, { message: "start" });
+          io.to(roomId).emit(EventSocket.UPDATE_TIME, time);
           setTimer(roomId);
         }
         io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room);
@@ -298,8 +304,14 @@ export default function (io) {
           r.time.timeO -= 1;
         }
         let time = r.infBoard.turn ? r.time.timeX : r.time.timeO;
-        console.log("r.time", r.time);
-        console.log(r.infBoard.turn ? "X" : "O", time);
+        //console.log("r.time", r.time);
+        //console.log(r.infBoard.turn ? "X" : "O", time);
+        if (r.infBoard.winner || !r.infBoard.isReady ){
+          clearInterval(r.timer);
+          return;
+        }
+
+        io.to(roomId).emit(EventSocket.UPDATE_TIME, r.time);
         if (time === 0) {
           r.infBoard.winner = 1 - r.infBoard.turn;
           r.infBoard.xReady = false;
@@ -387,6 +399,9 @@ export default function (io) {
             while (board.length) newArr.push(board.splice(0, 25));
             if (checkWin(newArr, x, y, infBoard.turn)) {
               infBoard.winner = infBoard.turn;
+              infBoard.isReady = false;
+              infBoard.oReady = false;
+              infBoard.xReady = false;
               io.to(infBoard.boardID).emit(EventSocket.TOAST_WINNER, infBoard);
               try {
                 clearInterval(roomH.timer);
@@ -412,7 +427,7 @@ export default function (io) {
       allrooms(socket);
     });
 
-    // Host doi vi tri
+    // Hoan doi vi tri
     socket.on(
       EventSocket.JOIN_PLAY_AS,
       ({ id, value, token }: { id: string; value: number; token: string }) => {
@@ -449,11 +464,16 @@ export default function (io) {
               } else if (room.playerO?.name === decoded.user) {
                 room.playerO = null;
               }
-              room.xReady = false;
-              room.oReady = false;
-              room.isReady = false;
             }
-
+            room.xReady = false;
+            room.oReady = false;
+            room.isReady = false;
+            const time = {
+              timeX: room.time,
+              timeO: room.time,
+            };
+            io.sockets.adapter.rooms.get(id).time = time;
+            io.to(id).emit(EventSocket.UPDATE_TIME, time);
             io.to(id).emit(EventSocket.GET_INFO_BOARD, room);
             allrooms(socket);
           }
@@ -640,8 +660,8 @@ export default function (io) {
   const saveOnWin = async (infBoard) => {
     const roomH = io.sockets.adapter.rooms.get(infBoard.boardID);
     const winUser = infBoard.winner
-      ? infBoard.playerX.name
-      : infBoard.playerO.name;
+      ? infBoard.playerX?.name
+      : infBoard.playerO?.name;
     const room: any = {
       roomId: infBoard.boardID, // roomID
       playerX: infBoard.playerX, // store userID or username
@@ -693,13 +713,16 @@ export default function (io) {
 
 const getUserInfo = async (id) => {
   const userInfo = await UserModel.findById(id);
-  const host: User = {
-    name: userInfo.user,
-    avatar: userInfo.avatar,
-    cups: userInfo.cups || 0,
-    wins: userInfo.wins || 0,
-  };
-  return host;
+  if (userInfo) {
+    const host: User = {
+      name: userInfo.user,
+      avatar: userInfo.avatar,
+      cups: userInfo.cups || 0,
+      wins: userInfo.wins || 0,
+    };
+    return host;
+  }
+  // make user logout
 };
 
 const getLastValue = (set) => {

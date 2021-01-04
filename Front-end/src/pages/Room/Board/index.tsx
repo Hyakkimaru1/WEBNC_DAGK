@@ -3,7 +3,7 @@ import "./style.scss";
 import Square from "./Square/index";
 
 const Board: React.FC<{
-  isPlay: boolean;
+  isPlay?: boolean;
   board?: number[];
   current?:number
   onClick: (i: number) => void;

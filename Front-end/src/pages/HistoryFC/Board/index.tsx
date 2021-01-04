@@ -14,6 +14,7 @@ const Board: React.FC<{
         isPlay={isPlay}
         key={`square${i}`}
         location={i}
+        current={false}
         value={board[i]}
         onClick={onClick}
       />

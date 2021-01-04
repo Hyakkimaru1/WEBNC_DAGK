@@ -9,8 +9,9 @@ import { useHistory, useParams } from "react-router-dom";
 import ROUTERS from "@/constants/routers/index";
 import socket from "@/configs/socket";
 import { ThemeContext } from "@/contexts/ThemeContext";
+import Time from '@/types/Time';
 
-const Player: React.FC<{ infBoard: CurrentBoardPlay }> = ({ infBoard }) => {
+const Player: React.FC<{ infBoard: CurrentBoardPlay,time:Time }> = ({ infBoard,time }) => {
   const history = useHistory();
   const token = localStorage.getItem("token");
   const params: any = useParams();
@@ -19,7 +20,6 @@ const Player: React.FC<{ infBoard: CurrentBoardPlay }> = ({ infBoard }) => {
     //call socket here
     socket.emit("joinplayas", { id: params.id, value, token });
   };
-
   return (
     <div className="player">
       <div className="player__user">
@@ -28,6 +28,7 @@ const Player: React.FC<{ infBoard: CurrentBoardPlay }> = ({ infBoard }) => {
           playKey={0}
           turn={infBoard.turn}
           user={infBoard.playerO}
+          time={time.timeO}
           isReady= {infBoard.isReady}
         />
       </div>
@@ -42,6 +43,7 @@ const Player: React.FC<{ infBoard: CurrentBoardPlay }> = ({ infBoard }) => {
           onClick={() => handleJoinAs(1)}
           turn={infBoard.turn}
           user={infBoard.playerX}
+          time={time.timeX}
           isReady= {infBoard.isReady}
         />
       </div>
@@ -65,4 +67,4 @@ const Player: React.FC<{ infBoard: CurrentBoardPlay }> = ({ infBoard }) => {
   );
 };
 
-export default Player;
+export default React.memo(Player);
