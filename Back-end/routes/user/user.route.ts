@@ -1,4 +1,3 @@
-import { User } from "./../../socket/User";
 import express from "express";
 import UserModel from "../../models/User.model";
 import jwt from "jsonwebtoken";
@@ -8,6 +7,7 @@ import { auth, provider, providerfb } from "../../firebase/firebase";
 import Board from "../../models/Board.model";
 import RoomModel from "../../models/Room.model";
 import MailerModel from "./../../models/sendMail.models";
+import TokenPasswordModel from "../../models/TokenPassword.model";
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -245,12 +245,10 @@ const routerUser = (io: any) => {
         res.sendStatus(404);
         return;
       } else if (doc.length > 0) {
-        console.log("true");
         io.sockets.adapter.rooms.get(req.body._id).peopleInRoom.push({
           socketId: req.body.socketId,
           user: req.authorization.user,
         });
-        console.log(io.sockets.adapter.rooms.get(req.body._id));
         res.sendStatus(200);
         return;
       }
@@ -287,7 +285,6 @@ const routerUser = (io: any) => {
   })
   
   router.put("/changePassword", checkAuthorization, async (req: any, res) => {
-    console.log(req.body)
     const username = req.body.username;
     const password = req.body.password;
     const newPassword = req.body.newPassword;
@@ -295,6 +292,55 @@ const routerUser = (io: any) => {
     if(update.nModified===1){
       res.sendStatus(200);
     } else res.sendStatus(404);
+  });
+
+  router.post("/forgotPassword",async (req: any, res) => {
+    if (req.body.email)
+    {
+      UserModel.findOne({user:req.body.email}, async (err,doc)=>{
+        if (err) return res.sendStatus(400);
+        if (doc) {
+          const dataToken = {_idUser:doc._id,user:doc.user};
+          await TokenPasswordModel.deleteOne({dataToken});
+          const data = await TokenPasswordModel.create(dataToken);
+          const resultSendMail = await MailerModel.sendForgetPasswordToEmail(doc.user,data._id);
+          if (resultSendMail?.accepted.length > 0){
+            res.sendStatus(201);
+            setTimeout(async()=>{
+              await TokenPasswordModel.deleteOne(dataToken);
+            },3600000)
+          }
+          else res.sendStatus(500);
+        }
+      })
+    }
+    else {
+      res.sendStatus(400);
+    }
+  });
+
+  router.put("/password_reset/:token",async (req: any, res) => {
+    if (req.body.password)
+    {
+      await TokenPasswordModel.findById(req.params.token, async (err,doc)=>{
+        if (err) return res.sendStatus(400);
+        if (doc){
+          const user = await UserModel.findById(doc._idUser);
+          if (user){
+            await TokenPasswordModel.deleteOne(doc);
+            user.password = md5(req.body.password);
+            user.save();
+            res.sendStatus(200);
+          }
+          else {
+            res.sendStatus(500);
+          }
+        }
+      });
+    }
+    else {
+      res.sendStatus(400);
+    }
   });
 
   function checkAuthorization(req, res, next) {

@@ -2,6 +2,8 @@ export default {
   PRIMARYKEY: "hahahaaaa",
 };
 
+export const BASE_URL_CLIENT = "http://localhost:3000"
+
 const EventSocket = {
   CONNECTION: "connection",
   JOIN: "join",

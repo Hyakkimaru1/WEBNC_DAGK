@@ -36,4 +36,6 @@ export const productAPI = {
   getHistory: (page: number) => AXIOS_INSTANCE.post(API.HISTORY_USER, { page }),
   getTopRanking: () => AXIOS_INSTANCE.get(API.TOP_RANKING),
   newPassword: (username: string, password:string, newPassword: string) => AXIOS_INSTANCE.put(API.CHANGE_PASSWORD, {username, password, newPassword}),
+  forgotPassword: (email:string) => AXIOS_INSTANCE.post(API.FORGOT_PASSWORD,{email}),
+  resetPassword: (params:string,password:string) => AXIOS_INSTANCE.put(`${API.RESET_PASSWORD}/${params}`,{password}),
 };

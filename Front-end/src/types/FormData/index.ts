@@ -10,6 +10,15 @@ export type FormDataSignUp = {
 };
 export type FormChangePassword = {
   password: string;
-  newPassword:string;
+  newPassword: string;
   newPasswordConfirm: string;
-}
+};
+
+export type FormForgotPassword = {
+  email: string;
+};
+
+export type FormResetPassword = {
+  password: string;
+  confirmpassword: string;
+};

@@ -1,4 +1,5 @@
 import mailer from "nodemailer";
+import { BASE_URL_CLIENT } from "../config";
 
 const transporter = mailer.createTransport({
   // config mail server
@@ -63,8 +64,26 @@ const MailerModel = {
         key +
         "</h2></div>",
     };
-    console.log(mainOptions);
 
+    return transporter.sendMail(mainOptions);
+  },
+  sendForgetPasswordToEmail: (email, token) => {
+    var mainOptions = {
+      // thiết lập đối tượng, nội dung gửi mail
+      from: "Caro-3D",
+      to: email,
+      subject: "Please reset your password",
+      text: "Mail được gửi từ Caro-3D",
+      html:
+        `<p>We heard that you lost your Caro3D password. Sorry about that!</p>
+
+        <p>But don’t worry! You can use the following link to reset your password:</p>
+        <br/>
+        ${BASE_URL_CLIENT}/password_reset/${token}
+        <br/>
+        <p>If you don’t use this link within 1 hour, it will expire.</p>`
+    };
+   
     return transporter.sendMail(mainOptions);
   },
 };

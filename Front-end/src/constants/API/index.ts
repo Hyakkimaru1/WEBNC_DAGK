@@ -8,4 +8,6 @@ export const API: { [key: string]: string } = {
   CONFIRM_CODE: "/user/confirm",
   TOP_RANKING: "/user/topranking",
   CHANGE_PASSWORD: "/user/changePassword",
+  FORGOT_PASSWORD: "/user/forgotPassword",
+  RESET_PASSWORD: "/user/password_reset",
 };

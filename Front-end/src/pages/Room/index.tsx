@@ -44,13 +44,6 @@ const Room: React.FC = () => {
   );
   const token = localStorage.getItem("token");
 
-  //user online
-  const roomN = "1";
-
-  socket.emit("join", { token, roomN }, (error: any) =>
-    console.log("error", error)
-  );
-
   useEffect(() => {
     async function emitTokenOnBoard() {
       const token = (await localStorage.getItem("token")) || "";
