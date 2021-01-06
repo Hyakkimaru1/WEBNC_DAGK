@@ -38,7 +38,6 @@ type CurrentBoardPlay = {
   i: number;
   hasPassword?: boolean;
   winner: number;
-  time?: number;
 };
 
 type time = {
@@ -135,7 +134,47 @@ export default function (io) {
       }
     });
 
-    //Luc duoc moi vao phong
+    //Chap nhan loi moi
+    socket.on(
+      EventSocket.ACCEPT_INVITE,
+      (
+        {
+          token,
+          roomId,
+        }: {
+          token: string;
+          roomId: string;
+        },
+        callback
+      ) => {
+        try {
+          let user: string = null;
+          token &&
+            jwt.verify(token, primaryKey, function (err, decoded) {
+              if (err) {
+                console.log("err", err);
+                // callback(err);
+                // return;
+              } else {
+                user = decoded.user;
+              }
+            });
+          const room = io.sockets.adapter.rooms.get(roomId);
+          const person: personInRoom = {
+            socketId: socket.id,
+            user,
+          };
+
+          //push user to room
+          room.peopleInRoom.push(person);
+          callback(1);
+        } catch (error) {
+          console.log("error", error);
+        }
+      }
+    );
+
+    //show invite
     socket.on(
       EventSocket.INVITE,
       ({
@@ -152,7 +191,7 @@ export default function (io) {
             invitor,
             roomId,
           });
-          //console.log("id,invitor", id, invitor);
+          console.log("id,invitor", id, invitor);
         } catch (error) {
           console.log("error", error);
         }
@@ -192,7 +231,6 @@ export default function (io) {
                 if (doc) {
                   const initialValueCurrentBoardPlay: CurrentBoardPlay = {
                     boardID,
-                    time: doc.time,
                     playerX: player,
                     playerO: null,
                     xReady: false,
@@ -204,14 +242,10 @@ export default function (io) {
                     i: null,
                     winner: null,
                   };
-                  const time = {
-                    timeX: doc.time,
-                    timeO: doc.time,
-                  };
-                  room.time = time;
                   room.infBoard = initialValueCurrentBoardPlay;
+                  room.messages = [];
                 } else {
-                  return callback(null);
+                  return callback();
                 }
                 //add initial array person
                 room.peopleInRoom = [person];
@@ -226,8 +260,6 @@ export default function (io) {
                   }
                 } else room.peopleInRoom.push(person);
               }
-
-              callback(room.time);
               //toast all users in room know about new user has joined
               io.to(boardID).emit(EventSocket.USER_JOIN, room.peopleInRoom);
 
@@ -241,7 +273,7 @@ export default function (io) {
                   .to(boardID)
                   .emit(EventSocket.MESSAGE, { messages: room?.messages });
               allrooms(socket);
-
+              console.log("io.sockets.adapter.rooms", io.sockets.adapter.rooms);
               // console.log("getAllUsers", getAllUsers);
             } catch (error) {
               console.log("error", error);
@@ -266,26 +298,31 @@ export default function (io) {
             }
           });
         const room = io.sockets.adapter.rooms.get(roomId).infBoard;
-        if (room.playerX?.name === user) {
-          room.xReady = true;
-          room.winner = null;
+        if (room.playerX.name === user) {
+          room.xReady = !room.xReady;
         } else {
-          room.oReady = true;
-          room.winner = null;
+          room.oReady = !room.oReady;
         }
         if (room.oReady && room.xReady) {
           room.isReady = true;
           room.board = new Array(25 * 25).fill(null);
+          room.winner = null;
           room.turn = 1;
-          room.i = null;
           io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room);
-          const time = {
-            timeX: room.time,
-            timeO: room.time,
+          io.to(roomId).emit(EventSocket.START, { messages: "start" });
+
+          const r = io.sockets.adapter.rooms.get(roomId);
+          let t = 1000;
+          const chatHistory = {
+            startChat: r.messages.length,
+            endChat: null,
           };
-          io.sockets.adapter.rooms.get(roomId).time = time;
-          io.to(roomId).emit(EventSocket.START, { message: "start" });
-          io.to(roomId).emit(EventSocket.UPDATE_TIME, time);
+          const time = {
+            timeX: t,
+            timeO: t,
+          };
+          r.chatHistory = chatHistory;
+          r.time = time;
           setTimer(roomId);
         }
         io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room);
@@ -304,14 +341,8 @@ export default function (io) {
           r.time.timeO -= 1;
         }
         let time = r.infBoard.turn ? r.time.timeX : r.time.timeO;
-        //console.log("r.time", r.time);
-        //console.log(r.infBoard.turn ? "X" : "O", time);
-        if (r.infBoard.winner || !r.infBoard.isReady ){
-          clearInterval(r.timer);
-          return;
-        }
-
-        io.to(roomId).emit(EventSocket.UPDATE_TIME, r.time);
+        console.log("r.time", r.time);
+        console.log(r.infBoard.turn ? "X" : "O", time);
         if (time === 0) {
           r.infBoard.winner = 1 - r.infBoard.turn;
           r.infBoard.xReady = false;
@@ -331,6 +362,8 @@ export default function (io) {
       jwt.verify(token, primaryKey, async function (err, decoded) {
         if (err) {
         } else {
+          let minDis = 100000;
+          let board = null;
           const rooms = io.sockets.adapter.rooms;
           const player: User = await getUserInfo(decoded._id);
 
@@ -399,9 +432,6 @@ export default function (io) {
             while (board.length) newArr.push(board.splice(0, 25));
             if (checkWin(newArr, x, y, infBoard.turn)) {
               infBoard.winner = infBoard.turn;
-              infBoard.isReady = false;
-              infBoard.oReady = false;
-              infBoard.xReady = false;
               io.to(infBoard.boardID).emit(EventSocket.TOAST_WINNER, infBoard);
               try {
                 clearInterval(roomH.timer);
@@ -427,7 +457,7 @@ export default function (io) {
       allrooms(socket);
     });
 
-    // Hoan doi vi tri
+    // Host doi vi tri
     socket.on(
       EventSocket.JOIN_PLAY_AS,
       ({ id, value, token }: { id: string; value: number; token: string }) => {
@@ -464,16 +494,11 @@ export default function (io) {
               } else if (room.playerO?.name === decoded.user) {
                 room.playerO = null;
               }
+              room.xReady = false;
+              room.oReady = false;
+              room.isReady = false;
             }
-            room.xReady = false;
-            room.oReady = false;
-            room.isReady = false;
-            const time = {
-              timeX: room.time,
-              timeO: room.time,
-            };
-            io.sockets.adapter.rooms.get(id).time = time;
-            io.to(id).emit(EventSocket.UPDATE_TIME, time);
+
             io.to(id).emit(EventSocket.GET_INFO_BOARD, room);
             allrooms(socket);
           }
@@ -582,6 +607,7 @@ export default function (io) {
 
           io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room.infBoard);
           allrooms(socket);
+          console.log("io.sockets.adapter.rooms", io.sockets.adapter.rooms);
         }
       } catch (error) {
         console.log("error", error);
@@ -660,16 +686,16 @@ export default function (io) {
   const saveOnWin = async (infBoard) => {
     const roomH = io.sockets.adapter.rooms.get(infBoard.boardID);
     const winUser = infBoard.winner
-      ? infBoard.playerX?.name
-      : infBoard.playerO?.name;
+      ? infBoard.playerX.name
+      : infBoard.playerO.name;
     const room: any = {
       roomId: infBoard.boardID, // roomID
       playerX: infBoard.playerX, // store userID or username
       playerO: infBoard.playerO,
       board: roomH.history,
       winner: winUser,
-      startChat: 1,
-      endChat: 10,
+      startChat: roomH.chatHistory.startChat,
+      endChat: roomH.messages.length - 1,
     };
 
     //xu ly cong diem luc thang
@@ -713,16 +739,13 @@ export default function (io) {
 
 const getUserInfo = async (id) => {
   const userInfo = await UserModel.findById(id);
-  if (userInfo) {
-    const host: User = {
-      name: userInfo.user,
-      avatar: userInfo.avatar,
-      cups: userInfo.cups || 0,
-      wins: userInfo.wins || 0,
-    };
-    return host;
-  }
-  // make user logout
+  const host: User = {
+    name: userInfo.user,
+    avatar: userInfo.avatar,
+    cups: userInfo.cups || 0,
+    wins: userInfo.wins || 0,
+  };
+  return host;
 };
 
 const getLastValue = (set) => {

@@ -226,7 +226,7 @@ const routerUser = (io: any) => {
         createBy: req.authorization.user,
         hasPassword: req.body.hasPassword,
         password: req.body.password,
-        time: req.body.time
+        time: req.body.time,
       },
       (err, doc) => {
         if (err) {
@@ -245,7 +245,11 @@ const routerUser = (io: any) => {
         res.sendStatus(404);
         return;
       } else if (doc.length > 0) {
-        io.sockets.adapter.rooms.get(req.body._id).peopleInRoom.push({
+        const room = io.sockets.adapter.rooms.get(req.body._id);
+        if (!room?.peopleInRoom) {
+          room.peopleInRoom = [];
+        }
+        room.peopleInRoom.push({
           socketId: req.body.socketId,
           user: req.authorization.user,
         });
@@ -274,22 +278,28 @@ const routerUser = (io: any) => {
     );
   });
 
-  router.get("/topranking", (req,res) => {
-    UserModel.find({}).sort({cup:"desc"}).limit(20).exec((err,docs)=>{
-      if (err){
-        res.sendStatus(500);
-        return;
-      }
-      res.send(docs);
-    })
-  })
-  
+  router.get("/topranking", (req, res) => {
+    UserModel.find({})
+      .sort({ cup: "desc" })
+      .limit(20)
+      .exec((err, docs) => {
+        if (err) {
+          res.sendStatus(500);
+          return;
+        }
+        res.send(docs);
+      });
+  });
+
   router.put("/changePassword", checkAuthorization, async (req: any, res) => {
     const username = req.body.username;
     const password = req.body.password;
     const newPassword = req.body.newPassword;
-    const update = await UserModel.updateOne({ user: username, password:md5(password) }, { password: md5(newPassword) });
-    if(update.nModified===1){
+    const update = await UserModel.updateOne(
+      { user: username, password: md5(password) },
+      { password: md5(newPassword) }
+    );
+    if (update.nModified === 1) {
       res.sendStatus(200);
     } else res.sendStatus(404);
   });
