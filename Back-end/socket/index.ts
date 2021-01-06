@@ -362,6 +362,8 @@ export default function (io) {
       jwt.verify(token, primaryKey, async function (err, decoded) {
         if (err) {
         } else {
+          let minDis = 100000;
+          let board = null;
           const rooms = io.sockets.adapter.rooms;
           const player: User = await getUserInfo(decoded._id);
 
