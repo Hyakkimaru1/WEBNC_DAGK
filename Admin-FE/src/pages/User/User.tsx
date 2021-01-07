@@ -1,5 +1,5 @@
 import { callGetUser } from "@/actions/GetUser";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import clone from "clone";
 import "./style.scss"
@@ -15,6 +15,7 @@ import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import SearchIcon from '@material-ui/icons/Search';
 import DirectionsIcon from '@material-ui/icons/Directions';
+import { timeout } from "d3";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -55,7 +56,11 @@ const User = () => {
         },
       })
     );
-  }, []);
+  }, [typeValue]);
+
+  function handleChange(e:any){
+    setTypeValue(e.target.value);   
+  }
 
   const columns: ColDef[] = [
     { field: "id", headerName: "ID", width: 70 },
@@ -105,8 +110,11 @@ const User = () => {
       </IconButton>
       <InputBase
         className={classes.input}
-        placeholder="Search Google Maps"
+        placeholder="Type to search"
         inputProps={{ 'aria-label': 'search google maps' }}
+        value = {typeValue}
+        onChange = {handleChange}
+        onClick = {handleChange}
       />
       <IconButton type="submit" className={classes.iconButton} aria-label="search">
         <SearchIcon />
