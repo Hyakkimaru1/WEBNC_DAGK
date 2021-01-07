@@ -58,6 +58,18 @@ export default function (io) {
               // callback(err);
               // return;
             } else {
+              const name = await decoded.user;
+              const allRoom = io.sockets.adapter.rooms;
+              allRoom.forEach((room, index) => {
+                const info = room.infBoard;
+                if (
+                  info &&
+                  (info.playerX?.name === name || info.playerO?.name === name)
+                ) {
+                  callback(info.boardID);
+                }
+              });
+
               let newUser = await {
                 id: socket.id,
                 avatar: decoded.avatar,
@@ -66,7 +78,6 @@ export default function (io) {
               };
               const user: any = addUser(newUser);
               if (user?.err) {
-                callback(user.err);
                 updateUser(newUser);
               }
               socket.join("1");
@@ -79,7 +90,6 @@ export default function (io) {
           });
       } catch (error) {
         console.log(error);
-        callback(error);
       }
     });
 
@@ -192,14 +202,15 @@ export default function (io) {
           if (err) {
           } else {
             try {
+              const name = await decoded.user;
+
               let newUser = await {
                 id: socket.id,
                 avatar: decoded.avatar,
-                name: decoded.user,
+                name,
                 room: boardID,
               };
               updateUser(newUser);
-              console.log("boardID", boardID);
               socket.join(boardID);
               const room = io.sockets.adapter.rooms.get(boardID);
 
@@ -240,6 +251,11 @@ export default function (io) {
                 //add initial array person
                 room.peopleInRoom = [person];
               } else {
+                if (room.size === 2) {
+                  if (!room.infBoard.playerO) room.infBoard.playerO = player;
+                  else if (!room.infBoard.playerX)
+                    room.infBoard.playerX = player;
+                }
                 //push user to room
                 const finduser = room.peopleInRoom.findIndex(
                   (ele: personInRoom) => ele.user === decoded.user
@@ -290,6 +306,7 @@ export default function (io) {
         timeX: doc.time,
         timeO: doc.time,
       };
+      room.messages = [];
       room.peopleInRoom = [];
       room.time = time;
       room.infBoard = initialValueCurrentBoardPlay;
