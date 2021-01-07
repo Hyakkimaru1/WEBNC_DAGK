@@ -8,6 +8,10 @@ import { Provider } from "react-redux";
 import {store} from "@/configs/Redux/store";
 import "./styles/main.scss";
 import { doAxiosRequestIntercept } from "./configs/Interceptors";
+import Home from "./pages/Home";
+import History from "./pages/History/History";
+import User from "./pages/User/User";
+import Account from "./pages/Account/Account"
 
 
 const Main = () => {
@@ -16,9 +20,18 @@ const Main = () => {
     <Provider store={store}>
       <div className="main-wrapper">
         <Switch>
-          {
-            // route here
-          }
+        <Route exact path="/">
+            <Home/>
+          </Route>
+          <Route exact path="/history">
+            <History/>
+          </Route>
+          <Route exact path="/user">
+            <User/>
+          </Route>
+          <Route exact path="/account">
+            <Account/>
+          </Route>
         </Switch>
       </div>
     </Provider>

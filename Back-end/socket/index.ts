@@ -692,14 +692,19 @@ export default function (io) {
 }
 
 const getUserInfo = async (id) => {
-  const userInfo = await UserModel.findById(id);
-  const host: User = {
-    name: userInfo.user,
-    avatar: userInfo.avatar,
-    cups: userInfo.cups || 0,
-    wins: userInfo.wins || 0,
-  };
-  return host;
+  try {
+    const userInfo = await UserModel.findById(id);
+    const host: User = {
+      name: userInfo.user,
+      avatar: userInfo.avatar,
+      cups: userInfo.cups || 0,
+      wins: userInfo.wins || 0,
+    };
+    return host;
+  } catch (error) {
+    console.log('error', error);
+  }
+ 
 };
 
 const getLastValue = (set) => {

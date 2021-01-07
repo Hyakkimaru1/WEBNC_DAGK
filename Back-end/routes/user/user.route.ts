@@ -142,19 +142,24 @@ const routerUser = (io: any) => {
   });
 
   router.get("/loginagain", checkAuthorization, (req: any, res) => {
-    UserModel.findById(req.authorization._id, (err, doc) => {
-      if (err) {
-        res.sendStatus(404);
-      } else {
-        res.send({
-          _id: doc._id,
-          user: doc.user,
-          avatar: doc.avatar,
-          name: doc.name,
-          old: doc.old,
-        });
-      }
-    });
+    try {
+      UserModel.findById(req.authorization._id, (err, doc) => {
+        if (err) {
+          res.sendStatus(404);
+        } else {
+          res.send({
+            _id: doc._id,
+            user: doc.user,
+            avatar: doc.avatar,
+            name: doc.name,
+            old: doc.old,
+          });
+        }
+      });
+    } catch (error) {
+      console.log('error', error)
+    }
+    
   });
 
   router.post("/register", (req, res) => {
@@ -291,9 +296,11 @@ const routerUser = (io: any) => {
     const password = req.body.password;
     const newPassword = req.body.newPassword;
     const update = await UserModel.updateOne({ user: username, password:md5(password) }, { password: md5(newPassword) });
-    if(update.nModified===1){
+    if(update.nModified===1)
+    {
       res.sendStatus(200);
-    } else res.sendStatus(404);
+    }
+    else res.sendStatus(404);
   });
 
   function checkAuthorization(req, res, next) {

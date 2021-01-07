@@ -26,12 +26,15 @@ const Login: React.FC = () => {
   const { register, handleSubmit, errors } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
-
+  const router = useHistory();
   const onSubmit = handleSubmit(({ email, password }) => {
     //console.log(email, password);
     productAPI
       .login(email, password)
-      .then((result: AxiosResponse<any>) => {})
+      .then((result: AxiosResponse<any>) => {
+        localStorage.setItem("token", result.data.token);
+        router.push(ROUTERS.HOME);
+      })
       .catch((err) => {
         console.log(err.response.status);
         if (err.response.status === 404) {
@@ -119,7 +122,6 @@ const Login: React.FC = () => {
         <Button type="submit" variant="contained" color="primary">
           Sign in
         </Button>
-        <Link to={ROUTERS.SIGNUP}>Sign up</Link>
         <br />
         <div className="login__form--button">
           <Button

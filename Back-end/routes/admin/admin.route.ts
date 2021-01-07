@@ -1,5 +1,6 @@
 import express from "express";
 import adminModel from "../../models/Admin.model";
+import userModel from "../../models/User.model";
 import jwt from "jsonwebtoken";
 import config from "../../config";
 import md5 from "md5";
@@ -170,6 +171,24 @@ const routerAdmin = (io: any) => {
         }
       }
     });
+  });
+
+  router.get("/getusers", (req: any, res) => {
+    try {
+      if (req.query.typeValue === "") {
+        userModel.find((error, doc) => {
+          if (error) {
+            res.sendStatus(404);
+          } else {
+            res.send(doc);
+          }
+        });
+      } else {
+        console.log(req.query.typeValue);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   function checkAuthorization(req, res, next) {
