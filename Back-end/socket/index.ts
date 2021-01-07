@@ -12,6 +12,7 @@ import {
   removeUser,
   updateUser,
   userInRoom,
+  getUserByName,
 } from "./User";
 
 const primaryKey = config.PRIMARYKEY;
@@ -159,7 +160,7 @@ export default function (io) {
       }
     );
 
-    //Luc duoc moi vao phong
+    //Thong bao loi moi toi nguoi choi
     socket.on(
       EventSocket.INVITE,
       ({
@@ -198,6 +199,7 @@ export default function (io) {
                 room: boardID,
               };
               updateUser(newUser);
+              console.log("boardID", boardID);
               socket.join(boardID);
               const room = io.sockets.adapter.rooms.get(boardID);
 
@@ -230,26 +232,7 @@ export default function (io) {
               if (room.size === 1) {
                 const doc: any = await BoardModel.findById(boardID);
                 if (doc) {
-                  const initialValueCurrentBoardPlay: CurrentBoardPlay = {
-                    boardID,
-                    time: doc.time,
-                    playerX: player,
-                    playerO: null,
-                    xReady: false,
-                    oReady: false,
-                    isReady: false,
-                    board: new Array(25 * 25).fill(null),
-                    turn: 1,
-                    hasPassword: doc.hasPassword,
-                    i: null,
-                    winner: null,
-                  };
-                  const time = {
-                    timeX: doc.time,
-                    timeO: doc.time,
-                  };
-                  room.time = time;
-                  room.infBoard = initialValueCurrentBoardPlay;
+                  initBoard(doc, player, null, room);
                 } else {
                   return callback(null);
                 }
@@ -287,6 +270,30 @@ export default function (io) {
         });
       }
     );
+
+    const initBoard = (doc, player, player2, room) => {
+      const initialValueCurrentBoardPlay: CurrentBoardPlay = {
+        boardID: doc._id,
+        time: doc.time,
+        playerX: player,
+        playerO: player2,
+        xReady: false,
+        oReady: false,
+        isReady: false,
+        board: new Array(25 * 25).fill(null),
+        turn: 1,
+        hasPassword: doc.hasPassword,
+        i: null,
+        winner: null,
+      };
+      const time = {
+        timeX: doc.time,
+        timeO: doc.time,
+      };
+      room.peopleInRoom = [];
+      room.time = time;
+      room.infBoard = initialValueCurrentBoardPlay;
+    };
 
     //luc ready
     socket.on(EventSocket.READY, ({ roomId, token }, callback) => {
@@ -374,58 +381,115 @@ export default function (io) {
       jwt.verify(token, primaryKey, async function (err, decoded) {
         if (err) {
         } else {
-          const rooms = io.sockets.adapter.rooms;
-          const player: User = await getUserInfo(decoded._id);
-          let chosenBoard = null;
-          let minDis = 100000;
-          rooms.forEach((value, key) => {
-            const board = value.infBoard;
-            if (
-              board &&
-              !board.hasPassword &&
-              ((!board?.playerX && board?.playerO) ||
-                (board?.playerX && !board?.playerO))
-            ) {
-              if (board?.playerX) {
-                const dis = Math.abs(board.playerX.cups - player.cups);
-                if (dis < minDis) {
-                  minDis = dis;
-                  chosenBoard = board;
-                }
-              } else {
-                const dis = Math.abs(board.playerO.cups - player.cups);
-                if (dis < minDis) {
-                  minDis = dis;
-                  chosenBoard = board;
-                }
-              }
-            }
-          });
-          if (chosenBoard) {
-            if (!chosenBoard?.playerX) {
-              chosenBoard.playerX = player;
-            } else {
-              chosenBoard.playerO = player;
-            }
-            callback(chosenBoard.boardID);
-            return;
-          }
-
-          rooms.forEach((value, key) => {
-            const board = value.infBoard;
-
-            if (
-              board &&
-              !board.hasPassword &&
-              (!board?.playerX || !board?.playerO)
-            ) {
-              board.playerX = player;
-              callback(board.boardID);
+          try {
+            const rooms = io.sockets.adapter.rooms;
+            const player: User = await getUserInfo(decoded._id);
+            const home = io.sockets.adapter.rooms.get("1");
+            let chosenBoard = null;
+            let chosenPlayer = null;
+            let minDis = 100000;
+            if (!home?.quickJoin) {
+              home.quickJoin = [player];
               return;
             }
-          });
 
-          callback(null);
+            home.quickJoin.forEach((pl, key) => {
+              const dis = Math.abs(pl.cups - player.cups);
+              if (dis < minDis) {
+                minDis = dis;
+                chosenPlayer = pl;
+              }
+            });
+            if (chosenPlayer) {
+              const player2 = getUserByName(chosenPlayer.name);
+              // const board: any = await createBoard(player);
+              const board: any = await BoardModel.create({
+                createBy: player.name,
+                hasPassword: false,
+                password: "",
+                time: 300000,
+              });
+              const roomId = String(board._id);
+              callback(roomId);
+              socket.join(roomId);
+              const room = io.sockets.adapter.rooms.get(roomId);
+
+              initBoard(board, player, player2, room);
+              const pl2 = await getUserByName(player2.name);
+
+              const idx = home.quickJoin.findIndex(
+                (user: User) => user.name === player2.name
+              );
+              if (idx !== -1) {
+                home.quickJoin.splice(idx, 1);
+              }
+              setTimeout(() => {
+                io.to(pl2.id).emit(EventSocket.QUICK_JOIN_FOUND, roomId);
+              }, 500);
+              return;
+            }
+            home.quickJoin.push(player);
+
+            home.qTimeOut = setTimeout(() => {
+              rooms.forEach((value, key) => {
+                const board = value.infBoard;
+                if (
+                  board &&
+                  !board.hasPassword &&
+                  ((!board?.playerX && board?.playerO) ||
+                    (board?.playerX && !board?.playerO))
+                ) {
+                  if (board?.playerX) {
+                    const dis = Math.abs(board.playerX.cups - player.cups);
+                    if (dis < minDis) {
+                      minDis = dis;
+                      chosenBoard = board;
+                    }
+                  } else {
+                    const dis = Math.abs(board.playerO.cups - player.cups);
+                    if (dis < minDis) {
+                      minDis = dis;
+                      chosenBoard = board;
+                    }
+                  }
+                }
+              });
+              if (chosenBoard) {
+                if (!chosenBoard?.playerX) {
+                  chosenBoard.playerX = player;
+                } else {
+                  chosenBoard.playerO = player;
+                }
+                const idx = home.quickJoin.findIndex(
+                  (user: User) => user.name === player.name
+                );
+                if (idx !== -1) {
+                  home.quickJoin.splice(idx, 1);
+                }
+                callback(chosenBoard.boardID);
+
+                return;
+              }
+
+              // rooms.forEach((value, key) => {
+              //   const board = value.infBoard;
+
+              //   if (
+              //     board &&
+              //     !board.hasPassword &&
+              //     (!board?.playerX || !board?.playerO)
+              //   ) {
+              //     board.playerX = player;
+              //     callback(board.boardID);
+              //     return;
+              //   }
+              // });
+              console.log("home.quickJoin", home.quickJoin);
+              callback(null);
+            }, 10000);
+          } catch (error) {
+            console.log("error", error);
+          }
         }
       });
     });
@@ -570,7 +634,11 @@ export default function (io) {
               }
               allrooms(socket);
             }
-
+            const users = getAllUsers;
+            io.to("1").emit(EventSocket.ROOM_DATA, {
+              room: "1",
+              users,
+            });
             const index = room.peopleInRoom.findIndex(
               (element: personInRoom) => element.socketId === socket.id
             );
@@ -678,45 +746,20 @@ export default function (io) {
       }
     });
 
-    //vao phong nhanh
-    socket.on(EventSocket.QUICK_JOIN, (token: string, callback) => {
+    // Cancel quick join
+    socket.on(EventSocket.QUICK_JOIN_CANCEL, (token: string) => {
       jwt.verify(token, primaryKey, async function (err, decoded) {
         if (err) {
         } else {
-          const rooms = io.sockets.adapter.rooms;
+          const home = io.sockets.adapter.rooms.get("1");
           const player: User = await getUserInfo(decoded._id);
 
-          rooms.forEach((value, key) => {
-            const board = value.infBoard;
-            if (
-              board &&
-              !board.hasPassword &&
-              ((!board?.playerX && board?.playerO) ||
-                (board?.playerX && !board?.playerO))
-            ) {
-              if (!board?.playerX && board?.playerO) {
-                board.playerX = player;
-              } else {
-                board.playerO = player;
-              }
-              callback(board.boardID);
-              return;
-            }
-          });
-          rooms.forEach((value, key) => {
-            const board = value.infBoard;
-
-            if (
-              board &&
-              !board.hasPassword &&
-              (!board?.playerX || !board?.playerO)
-            ) {
-              board.playerX = player;
-              callback(board.boardID);
-              return;
-            }
-          });
-          callback(null);
+          const idx = home.quickJoin.findIndex(
+            (user: User) => user.name === player.name
+          );
+          if (idx !== -1) {
+            home.quickJoin.splice(idx, 1);
+          }
         }
       });
     });
@@ -807,4 +850,25 @@ const getLastValue = (set) => {
   let value;
   for (value of set);
   return value;
+};
+
+const createBoard = async (player) => {
+  await BoardModel.create(
+    {
+      createBy: player.name,
+      hasPassword: false,
+      password: "",
+      time: 300000,
+    },
+    (err, doc) => {
+      if (err) {
+        console.log("err", err);
+
+        return null;
+      } else {
+        console.log("doc", doc);
+        return doc;
+      }
+    }
+  );
 };

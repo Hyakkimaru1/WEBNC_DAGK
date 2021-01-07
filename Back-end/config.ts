@@ -2,7 +2,7 @@ export default {
   PRIMARYKEY: "hahahaaaa",
 };
 
-export const BASE_URL_CLIENT = "http://localhost:3000"
+export const BASE_URL_CLIENT = "http://localhost:3000";
 
 const EventSocket = {
   CONNECTION: "connection",
@@ -29,7 +29,9 @@ const EventSocket = {
   INVITE: "invite",
   SHOW_INVITE: "showInvite",
   UPDATE_TIME: "updateTime",
-  ACCEPT_INVITE:"acceptInvite",
+  ACCEPT_INVITE: "acceptInvite",
+  QUICK_JOIN_FOUND: "quickJoinFound",
+  QUICK_JOIN_CANCEL: "quickJoinCancel",
 };
 
 export { EventSocket };
