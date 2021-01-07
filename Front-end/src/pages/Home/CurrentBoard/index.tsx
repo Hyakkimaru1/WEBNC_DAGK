@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useEffect } from "react";
 import BoardPlay from "./BoardPlay";
 import "./style.scss";
 import { ThemeContext } from "@/contexts/ThemeContext";
@@ -25,11 +25,13 @@ import { callApiJoinBoard } from "@/actions/JoinBoardSlide";
 import { toast } from "react-toastify";
 import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import socket from "@/configs/socket";
+import QuickJoinDialog from "./QuickJoinDialog";
 
 const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   const { theme } = useContext(ThemeContext);
   const [open, setOpen] = React.useState(false);
   const [openJoin, setOpenJoin] = React.useState(false);
+  const [openQJDialog, setopenQJDialog] = useState(false);
   const [value, setValue] = useState(false);
   const history = useHistory();
   const dispatch = useDispatch();
@@ -56,12 +58,14 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   };
 
   const handleQuickJoin = () => {
+    setopenQJDialog(true);
     socket.emit("quickJoin", token, (boardID: string) => {
       if (boardID) {
         history.push(ROUTERS.ROOM_PUSH + boardID);
-      } else {
-        toast.error("There is no room available!");
       }
+      // else {
+      //   toast.error("There is no room available!");
+      // }
     });
   };
 
@@ -82,7 +86,7 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
       const params = {
         hasPassword: value,
         password: passwordRef.current.value,
-        time:time.time,
+        time: time.time,
       };
       dispatch(
         callApiCreateBoard({
@@ -91,14 +95,14 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
           cbError: () => {
             toast.error("😢 Something wrong!");
             setOpen(false);
-          }
+          },
         })
       );
     } else {
       const params = {
         hasPassword: value,
         password: "",
-        time:time.time
+        time: time.time,
       };
       dispatch(
         callApiCreateBoard({
@@ -158,6 +162,15 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
     }
   };
 
+  useEffect(() => {
+    socket.on("quickJoinFound", (id: string) => {
+      console.log("id", id);
+      if (id) {
+        history.push(ROUTERS.ROOM_PUSH + id);
+      }
+    });
+  }, []);
+
   return (
     <div className="currentboard">
       <Backdrop
@@ -188,6 +201,10 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
             Quick join
           </button>
         </div>
+        <QuickJoinDialog
+          state={openQJDialog}
+          onChange={(state: boolean) => setopenQJDialog(state)}
+        />
       </div>
       <div
         style={{ backgroundColor: theme?.backgroundColor }}
