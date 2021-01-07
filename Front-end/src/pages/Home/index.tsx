@@ -53,13 +53,9 @@ const Home = () => {
   );
 
   const [users, setusers] = useState<any>([]);
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    const name = localStorage.getItem("token") || "";
-    const room = "1";
-    socket.emit("join", { name, room }, (error: any) =>
-      console.log("error", error)
-    );
     socket.emit("onhome");
     socket.on("allrooms", (data: any) => {
       //setBoard here;
@@ -74,7 +70,6 @@ const Home = () => {
       "showInvite",
       ({ invitor, roomId }: { roomId: string; invitor: string }) => {
         try {
-          console.log("id,invitor", roomId, invitor);
           toast.info(` ${invitor} 🦄 invites you his room! Click to join.`, {
             position: "top-right",
             autoClose: 5000,
@@ -83,7 +78,16 @@ const Home = () => {
             pauseOnHover: true,
             draggable: true,
             progress: undefined,
-            onClick: () => history.push(ROUTERS.ROOM_PUSH + roomId),
+            onClick: () => {
+              socket.emit("acceptInvite",{roomId,token},(req:any)=>{
+                if(req){
+                  history.push(ROUTERS.ROOM_PUSH + roomId);
+                }
+                else {
+                  toast.error("SORRY! 😫😩 THE ROOM IS CANCEL")
+                }
+              });
+            },
           });
         } catch (error) {
           console.log("error", error);
@@ -94,7 +98,9 @@ const Home = () => {
     return () => {
       socket.off("roomData");
       socket.off("allrooms");
+      socket.off("showInvite");
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

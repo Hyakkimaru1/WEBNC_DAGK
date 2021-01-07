@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import "./NewMess.css";
 import { Button, Avatar } from "@material-ui/core";
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from "@material-ui/icons/Add";
 import ClientChat from "./ClientChat";
 import Invite from "../Invite";
 
@@ -17,9 +17,8 @@ function NewMess() {
 
   const [open, setOpen] = React.useState(false);
   const handleChange = (params) => {
-    setOpen(params)
-  }
-
+    setOpen(params);
+  };
 
   return (
     <div className="newMess">
@@ -32,8 +31,8 @@ function NewMess() {
       <Button
         variant="contained"
         onClick={() => {
-          setOpen(true)
-          console.log('open', open)
+          setOpen(true);
+          console.log("open", open);
         }}
       >
         <AddIcon />

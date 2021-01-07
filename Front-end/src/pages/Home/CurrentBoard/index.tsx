@@ -14,6 +14,9 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  FormControl,
+  NativeSelect,
+  InputLabel,
 } from "@material-ui/core";
 import { callApiCreateBoard } from "@/actions/AddBoardSlide";
 import { useHistory } from "react-router-dom";
@@ -37,19 +40,29 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   const passwordJoinRef = useRef<HTMLInputElement>(null);
   const [roomJoinId, setRoomJoinID] = useState<string | null>("");
   const token = localStorage.getItem("token");
+  const [time, setTime] = React.useState<{ time: number; name: string }>({
+    time: 300,
+    name: "5 min",
+  });
+
+  const handleChange = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>
+  ) => {
+    const name = event.target.name as keyof typeof state;
+    setTime({
+      ...state,
+      [name]: event.target.value,
+    });
+  };
 
   const handleQuickJoin = () => {
-    socket.emit("quickJoin", token, (boardID:string) => {
+    socket.emit("quickJoin", token, (boardID: string) => {
       if (boardID) {
-        history.push(ROUTERS.ROOM_PUSH + boardID)
-      }
-      else {
+        history.push(ROUTERS.ROOM_PUSH + boardID);
+      } else {
         toast.error("There is no room available!");
-        
       }
-    }
-        
-      );
+    });
   };
 
   const handleClickOpen = () => {
@@ -69,17 +82,23 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
       const params = {
         hasPassword: value,
         password: passwordRef.current.value,
+        time:time.time,
       };
       dispatch(
         callApiCreateBoard({
           params,
           cbSuccess: (id: string) => history.push(ROUTERS.ROOM_PUSH + id),
+          cbError: () => {
+            toast.error("😢 Something wrong!");
+            setOpen(false);
+          }
         })
       );
     } else {
       const params = {
         hasPassword: value,
         password: "",
+        time:time.time
       };
       dispatch(
         callApiCreateBoard({
@@ -142,7 +161,7 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
   return (
     <div className="currentboard">
       <Backdrop
-        style={{ backgroundColor: "rgba(255,255,255,.75", zIndex: 111 }}
+        style={{ backgroundColor: "rgba(255,255,255,.75", zIndex: 100000 }}
         open={state.isLoading || stateJoin.isLoading}
       >
         <CircularProgress color="inherit" />
@@ -211,20 +230,37 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
         aria-labelledby="form-dialog-title"
       >
         <DialogTitle style={{ width: 370 }}>Create A Room</DialogTitle>
+
         <DialogContent>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={value}
-                onChange={() => {
-                  setValue(!value);
-                }}
-                color="primary"
-                inputProps={{ "aria-label": "secondary checkbox" }}
-              />
-            }
-            label="Password"
-          />
+          <div style={{ display: "grid", gridTemplateColumns: "60% 40%" }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={value}
+                  onChange={() => {
+                    setValue(!value);
+                  }}
+                  color="primary"
+                  inputProps={{ "aria-label": "secondary checkbox" }}
+                />
+              }
+              label="Password"
+            />
+            <FormControl>
+              <InputLabel htmlFor="age-native-simple">Play time</InputLabel>
+              <NativeSelect
+                value={time.time}
+                onChange={handleChange}
+                name="time"
+                inputProps={{ "aria-label": "time" }}
+              >
+                <option value={300}>5 min</option>
+                <option value={420}>7 min</option>
+                <option value={600}>10 min</option>
+              </NativeSelect>
+            </FormControl>
+          </div>
+
           {value ? (
             <TextField
               autoFocus

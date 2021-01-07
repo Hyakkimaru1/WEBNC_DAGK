@@ -142,7 +142,11 @@ const Login: React.FC = () => {
         <Button type="submit" variant="contained" color="primary">
           Sign in
         </Button>
+        <div>
+        <Link to={ROUTERS.FORGET_PASSWORD}>Forgot password?</Link>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <Link to={ROUTERS.SIGNUP}>Sign up</Link>
+        </div>
         <br />
         <div className="login__form--button">
           <Button

@@ -26,8 +26,8 @@ export const productAPI = {
   register: (user: string, password: string) => {
     return AXIOS_INSTANCE.post(API.REGISTER, { user, password });
   },
-  createNewBoard: (hasPassword: boolean, password: string) => {
-    return AXIOS_INSTANCE.post(API.CREATE_A_BOARD, { hasPassword, password });
+  createNewBoard: (hasPassword: boolean, password: string, time: number) => {
+    return AXIOS_INSTANCE.post(API.CREATE_A_BOARD, { hasPassword, password,time });
   },
   confirmCode: (codeConfirm: string, _id: string) =>
     AXIOS_INSTANCE.post(API.CONFIRM_CODE, { codeConfirm, _id }),
@@ -36,4 +36,6 @@ export const productAPI = {
   getHistory: (page: number) => AXIOS_INSTANCE.post(API.HISTORY_USER, { page }),
   getTopRanking: () => AXIOS_INSTANCE.get(API.TOP_RANKING),
   newPassword: (username: string, password:string, newPassword: string) => AXIOS_INSTANCE.put(API.CHANGE_PASSWORD, {username, password, newPassword}),
+  forgotPassword: (email:string) => AXIOS_INSTANCE.post(API.FORGOT_PASSWORD,{email}),
+  resetPassword: (params:string,password:string) => AXIOS_INSTANCE.put(`${API.RESET_PASSWORD}/${params}`,{password}),
 };

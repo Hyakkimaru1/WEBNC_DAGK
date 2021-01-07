@@ -1,30 +1,43 @@
 // libs import
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Switch } from "react-router-dom";
-import { Provider } from "react-redux";
 // routers
 // interceptors
 // others
-import { store } from "@/configs/Redux/store";
 import "./styles/main.scss";
 import { doAxiosRequestIntercept } from "./configs/Interceptors";
-import ROUTERS from '@/constants/routers';
+import ROUTERS from "@/constants/routers";
 import Room from "./pages/Room";
-import Home from './pages/Home';
+import Home from "./pages/Home";
 import HistoryFC from "./pages/HistoryFC";
-import { THEME } from '@/types/Theme';
+import { THEME } from "@/types/Theme";
 import InforUser from "./pages/InforUser/InforUser";
-import Top from './pages/Top';
-import NotFound from './pages/NotFound';
+import Top from "./pages/Top";
+import NotFound from "./pages/NotFound";
+import socket from "@/configs/socket";
 
-const Main:React.FC<{theme?:THEME}> = ({theme}) => {
+const Main: React.FC<{ theme?: THEME }> = ({ theme }) => {
   doAxiosRequestIntercept();
+  useEffect(() => {
+    //user online
+    const room = "1";
+    const name = localStorage.getItem("token") || "";
+    socket.emit("join", { name, room }, (info: any) =>
+      {
+        if (info){
+        
+        }
+      }
+    );
+  }, []);
   return (
-    <Provider store={store}>
-      <div style={{backgroundColor:theme?.formBackGround}} className="main-wrapper">
+      <div
+        style={{ backgroundColor: theme?.formBackGround }}
+        className="main-wrapper"
+      >
         <Switch>
           <Route exact path={ROUTERS.HOME}>
-             <Home /> 
+            <Home />
             {/* <Chat /> */}
           </Route>
           <Route path={ROUTERS.ROOM}>
@@ -40,11 +53,10 @@ const Main:React.FC<{theme?:THEME}> = ({theme}) => {
             <Top />
           </Route>
           <Route>
-            <NotFound/>
+            <NotFound />
           </Route>
         </Switch>
       </div>
-    </Provider>
   );
 };
 

@@ -39,17 +39,20 @@ export const { addboard, loadingCreateBoard, errorCreateBoard } = actions;
 export const callApiCreateBoard = ({
   params,
   cbSuccess,
+  cbError,
 }: {
   params: {
     hasPassword: boolean;
     password: string;
+    time:number
   };
   cbSuccess?: (...args: Array<any>) => any;
+  cbError?:any;
 }): AppThunk => async (dispatch) => {
   try {
     dispatch(loadingCreateBoard());
     await productAPI
-      .createNewBoard(params.hasPassword, params.password)
+      .createNewBoard(params.hasPassword, params.password,params.time)
       .then((res: any) => {
         dispatch(addboard(res.data.id));
         if (cbSuccess) {
@@ -57,6 +60,9 @@ export const callApiCreateBoard = ({
         }
       });
   } catch (err) {
+    if (cbError){
+      cbError(err.response);
+    }
     dispatch(errorCreateBoard({ error: err.response?.data }));
   }
 };
