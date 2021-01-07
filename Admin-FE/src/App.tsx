@@ -9,10 +9,11 @@ import ProcessingLoader from "@/components/ProcessingLoader";
 import Home from "./pages/Home";
 import ROUTERS from './constants/routers';
 import Login from './pages/Login';
-import Signup from './pages/Signup';
 import '@/styles/App.scss';
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { UserProvider } from "./contexts/UserContext";
+import Main from "./Main";
 
 // generate app routes
 
@@ -21,15 +22,12 @@ const App = () => (
     <Suspense fallback={<ProcessingLoader message="Suspense fallback" />}>
       <ToastContainer/>
       <Switch>
-          <Route exact path="/">
-            <Home/>
-          </Route>
           <Route exact path={ROUTERS.LOGIN}>
             <Login/>
           </Route>
-          <Route exact path={ROUTERS.SIGNUP}>
-            <Signup/>
-          </Route>
+          <UserProvider>
+                <Main/>
+          </UserProvider>
       </Switch>
     </Suspense>
   </Router>

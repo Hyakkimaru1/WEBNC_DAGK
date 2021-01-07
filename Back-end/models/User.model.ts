@@ -1,4 +1,4 @@
-import mongoose, { Document } from "mongoose";
+import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
   user: string;
@@ -10,6 +10,7 @@ export interface IUser extends Document {
   joinDate?: string;
   wins?: number;
   cups?: number;
+  isActive?:boolean;
 }
 
 const instance = new mongoose.Schema({
@@ -22,6 +23,7 @@ const instance = new mongoose.Schema({
   joinDate: Date,
   wins: Number,
   cups: Number,
+  isActive: Boolean,
 });
 
 export default mongoose.model<IUser>("user", instance);

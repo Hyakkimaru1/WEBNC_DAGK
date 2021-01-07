@@ -29,4 +29,7 @@ export const productAPI = {
       password,
     });
   },
+  getUsers: (typeValue: string) => {
+    return AXIOS_INSTANCE.get(`${API.GETUSERS}?typeValue=${typeValue}`);
+  },
 };
