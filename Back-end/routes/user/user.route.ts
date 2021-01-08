@@ -245,43 +245,74 @@ const routerUser = (io: any) => {
   });
 
   router.post("/board", checkAuthorization, (req: any, res) => {
-    Board.create(
-      {
-        createBy: req.authorization.user,
-        hasPassword: req.body.hasPassword,
-        password: req.body.password,
-        time: req.body.time,
-      },
-      (err, doc) => {
-        if (err) {
-          res.sendStatus(501);
-        } else {
-          res.send({ id: doc._id });
+    try {
+      const name = req.authorization.user;
+      const allRoom = io.sockets.adapter.rooms;
+      let f = false;
+      for (let index = 0; index < allRoom.length; index++) {
+        const room = allRoom[index];
+        const info = room.peopleInRoom;
+        if (info) {
+          const idx = info.findIndex((user: any) => user.user == name);
+          if (idx !== -1) {
+            res.send(400);
+            f = true;
+            return;
+          }
         }
       }
-    );
+      Board.create(
+        {
+          createBy: name,
+          hasPassword: req.body.hasPassword,
+          password: req.body.password,
+          time: req.body.time,
+        },
+        (err, doc) => {
+          if (err) {
+            res.sendStatus(501);
+          } else {
+            res.send({ id: doc._id });
+          }
+        }
+      );
+    } catch (error) {
+      res.sendStatus(400);
+    }
   });
 
   router.post("/joinboard", checkAuthorization, (req: any, res) => {
-    const uni = { _id: req.body._id, password: req.body.password };
-    Board.find(uni, (err, doc) => {
-      if (err) {
-        res.sendStatus(404);
-        return;
-      } else if (doc.length > 0) {
-        const room = io.sockets.adapter.rooms.get(req.body._id);
-        if (!room?.peopleInRoom) {
-          room.peopleInRoom = [];
+    try {
+      const uni = { _id: req.body._id, password: req.body.password };
+      Board.find(uni, async (err, doc) => {
+        if (err) {
+          res.sendStatus(404);
+          return;
+        } else if (doc.length > 0) {
+          const room = io.sockets.adapter.rooms.get(req.body._id);
+          if (!room?.peopleInRoom) {
+            room.peopleInRoom = [];
+          }
+          const index = await room.peopleInRoom.findIndex(
+            (ele) => ele.user === req.authorization.user
+          );
+          if (index !== -1) {
+            room.peopleInRoom.push({
+              socketId: req.body.socketId,
+              user: req.authorization.user,
+            });
+          } else {
+            room.peopleInRoom[index].socketId++;
+          }
+          res.sendStatus(200);
+          return;
         }
-        room.peopleInRoom.push({
-          socketId: req.body.socketId,
-          user: req.authorization.user,
-        });
-        res.sendStatus(200);
-        return;
-      }
-      res.sendStatus(400);
-    });
+        res.sendStatus(400);
+      });
+    } catch (error) {
+      res.sendStatus(404);
+      console.log("error", error);
+    }
   });
 
   router.post("/history", checkAuthorization, (req: any, res) => {
@@ -374,9 +405,12 @@ const routerUser = (io: any) => {
     }
   });
 
-  router.put("/update", checkAuthorization, async(req: any, res) => {
-    const update = await UserModel.updateOne({ _id: req.authorization }, req.body);
-    if (update.ok){
+  router.put("/update", checkAuthorization, async (req: any, res) => {
+    const update = await UserModel.updateOne(
+      { _id: req.authorization },
+      req.body
+    );
+    if (update.ok) {
       return res.sendStatus(200);
     }
     return res.sendStatus(500);

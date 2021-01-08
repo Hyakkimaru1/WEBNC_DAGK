@@ -18,7 +18,7 @@ import {
 const primaryKey = config.PRIMARYKEY;
 
 type personInRoom = {
-  socketId: string;
+  socketId: number;
   user: string;
 };
 type User = {
@@ -202,9 +202,9 @@ export default function (io) {
           if (err) {
           } else {
             try {
-              const name = await decoded.user;
+              const name = decoded.user;
 
-              let newUser = await {
+              let newUser = {
                 id: socket.id,
                 avatar: decoded.avatar,
                 name,
@@ -217,7 +217,7 @@ export default function (io) {
               //declare person with their socketId and user (allow invite or primary chat)
               const person: personInRoom = {
                 socketId: socket.id,
-                user: decoded.user,
+                user: name,
               };
 
               //get user info and create user, add to board info
@@ -226,16 +226,19 @@ export default function (io) {
               if (!room.userLeft) {
                 room.userLeft = [];
               }
-              const index = room.userLeft.indexOf(decoded.user);
+              const index = room.userLeft.indexOf(name);
               if (index > -1) {
                 room.userLeft.splice(index, 1);
                 const idx = room.peopleInRoom.findIndex(
-                  (elm: personInRoom) => elm.user === decoded.user
+                  (elm: personInRoom) => elm.user === name
                 );
                 if (idx !== -1) {
-                  room.peopleInRoom.splice(idx, 1);
-                }
-                if (room.infBoard.hasPassword) {
+                  if (room.peopleInRoom[idx].socketId === 1)
+                    room.peopleInRoom.splice(idx, 1);
+                  else {
+                    room.peopleInRoom[idx].socketId--;
+                  }
+                } else if (room.infBoard.hasPassword) {
                   room.peopleInRoom.push(person);
                 }
               }
@@ -251,14 +254,18 @@ export default function (io) {
                 //add initial array person
                 room.peopleInRoom = [person];
               } else {
-                if (room.size === 2) {
+                if (
+                  room.size >= 2 &&
+                  room.infBoard.playerO?.name !== name &&
+                  room.infBoard.playerX?.name !== name
+                ) {
                   if (!room.infBoard.playerO) room.infBoard.playerO = player;
                   else if (!room.infBoard.playerX)
                     room.infBoard.playerX = player;
                 }
                 //push user to room
                 const finduser = room.peopleInRoom.findIndex(
-                  (ele: personInRoom) => ele.user === decoded.user
+                  (ele: personInRoom) => ele.user === name
                 );
                 if (room.infBoard.hasPassword) {
                   if (finduser === -1) {
@@ -266,6 +273,9 @@ export default function (io) {
                   }
                 } else {
                   if (finduser === -1) room.peopleInRoom.push(person);
+                  else {
+                    room.peopleInRoom[finduser].finduser++;
+                  }
                 }
               }
               callback(room.time);
@@ -273,6 +283,10 @@ export default function (io) {
               io.to(boardID).emit(EventSocket.USER_JOIN, room.peopleInRoom);
               //send inf board for user join room
               io.to(boardID).emit(EventSocket.GET_INFO_BOARD, room.infBoard);
+              socket.broadcast.emit("userjoinroom", {
+                user: name,
+                room: boardID,
+              });
               room?.messages &&
                 io
                   .to(boardID)
@@ -627,28 +641,31 @@ export default function (io) {
     socket.on(
       EventSocket.LEAVE_ROOM,
       ({ boardId, token }: { boardId: string; token: string }) => {
-        jwt.verify(token, primaryKey, function (err, decoded) {
+        jwt.verify(token, primaryKey, async function (err, decoded) {
           if (err) {
           } else {
             let room = io.sockets.adapter.rooms.get(boardId);
             if (!room && !room?.infBoard) return;
-
+            const name = await decoded.user;
             let newUser = {
               id: socket.id,
               avatar: decoded.avatar,
-              name: decoded.user,
+              name,
               room: "1",
             };
             updateUser(newUser);
             if (
-              room.infBoard.playerX?.name === decoded.user ||
-              room.infBoard.playerO?.name === decoded.user
+              room.infBoard?.playerX?.name === name ||
+              room.infBoard?.playerO?.name === name
             ) {
-              if (room.infBoard.playerX?.name === decoded.user) {
+              if (room.infBoard.playerX?.name === name) {
                 room.infBoard.playerX = null;
-              } else if (room.infBoard.playerO?.name === decoded.user) {
+              } else if (room.infBoard.playerO?.name === name) {
                 room.infBoard.playerO = null;
               }
+              room.infBoard.xReady = false;
+              room.infBoard.oReady = false;
+              room.infBoard.isReady = false;
               allrooms(socket);
             }
             const users = getAllUsers;
@@ -657,10 +674,11 @@ export default function (io) {
               users,
             });
             const index = room.peopleInRoom.findIndex(
-              (element: personInRoom) => element.socketId === socket.id
+              (element: personInRoom) => element.user === name
             );
-            room.peopleInRoom.splice(index, 1);
-
+            if (index !== -1) {
+              room.peopleInRoom.splice(index, 1);
+            }
             socket.leave(boardId);
 
             io.to(boardId).emit(EventSocket.USER_JOIN, room.peopleInRoom);
@@ -728,20 +746,30 @@ export default function (io) {
                   }
                 );
                 if (index !== -1) {
-                  if (room.infBoard.playerX?.name === userName) {
-                    room.infBoard.playerX = null;
-                  } else if (room.infBoard.playerO?.name === userName) {
-                    room.infBoard.playerO = null;
+                  if (room.peopleInRoom[index].socketId === 1) {
+                    room.peopleInRoom.splice(index, 1);
+                    if (room.infBoard.playerX?.name === userName) {
+                      room.infBoard.playerX = null;
+                    } else if (room.infBoard.playerO?.name === userName) {
+                      room.infBoard.playerO = null;
+                    }
+                    const user = removeUser(socket.id);
+
+                    socket.leave(roomId);
+
+                    io.to(roomId).emit(
+                      EventSocket.USER_JOIN,
+                      room.peopleInRoom
+                    );
+
+                    io.to(roomId).emit(
+                      EventSocket.GET_INFO_BOARD,
+                      room.infBoard
+                    );
+                    allrooms(socket);
+                  } else {
+                    room.peopleInRoom[index].socketId--;
                   }
-                  room.peopleInRoom.splice(index, 1);
-                  const user = removeUser(socket.id);
-
-                  socket.leave(roomId);
-
-                  io.to(roomId).emit(EventSocket.USER_JOIN, room.peopleInRoom);
-
-                  io.to(roomId).emit(EventSocket.GET_INFO_BOARD, room.infBoard);
-                  allrooms(socket);
                 }
               }
             }, 6000);
