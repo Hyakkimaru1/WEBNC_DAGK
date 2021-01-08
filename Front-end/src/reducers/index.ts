@@ -5,6 +5,8 @@ import TopRanking from "@/actions/TopRanking";
 import ChangePassword from "@/actions/ChangePassword";
 import ForgotPassword from "@/actions/ForgotPassword";
 import ResetPassword from "@/actions/ResetPassword";
+import UserProfile from "@/actions/UserProfile";
+import UpdateUserProfile from "@/actions/UpdateUserProfile";
 
 export {
   AddBoardSlide,
@@ -14,4 +16,6 @@ export {
   ChangePassword,
   ForgotPassword,
   ResetPassword,
+  UserProfile,
+  UpdateUserProfile
 };

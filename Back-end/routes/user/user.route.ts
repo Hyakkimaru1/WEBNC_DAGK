@@ -8,6 +8,7 @@ import Board from "../../models/Board.model";
 import RoomModel from "../../models/Room.model";
 import MailerModel from "./../../models/sendMail.models";
 import TokenPasswordModel from "../../models/TokenPassword.model";
+import moment from "moment";
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -57,6 +58,21 @@ const routerUser = (io: any) => {
     }
   });
 
+  router.get("/id/:id", (req, res) => {
+    UserModel.findById(req.params.id, (err, doc) => {
+      if (err) return res.sendStatus(404);
+      if (doc) {
+        const userProfile = { ...doc._doc };
+        delete userProfile.password;
+        delete userProfile.isActive;
+        delete userProfile.isConfirm;
+        delete userProfile.__v;
+        delete userProfile.codeConfirm;
+        return res.send(userProfile);
+      } else return res.sendStatus(403);
+    });
+  });
+
   router.post("/loginGGFB", (req, res) => {
     if (req.body.username && req.body.password) {
       req.body.password = md5(req.body.password);
@@ -98,6 +114,7 @@ const routerUser = (io: any) => {
                     }
                   });
                 } else {
+                  const joinDate = moment().format("MM-DD-YYYY");
                   UserModel.create(
                     {
                       user: req.body.username,
@@ -105,6 +122,7 @@ const routerUser = (io: any) => {
                       avatar: "https://loremflickr.com/320/240/dog",
                       name: req.body.name,
                       isConfirm: true,
+                      joinDate,
                       wins: 0,
                       cups: 0,
                     },
@@ -157,9 +175,8 @@ const routerUser = (io: any) => {
         }
       });
     } catch (error) {
-      console.log('error', error)
+      console.log("error", error);
     }
-    
   });
 
   router.post("/register", (req, res) => {
@@ -181,8 +198,10 @@ const routerUser = (io: any) => {
             const countDownTime = 5 * 60000;
             const randomnumber =
               Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+            const joinDate = moment().format("MM-DD-YYYY");
             const dataUser = {
               ...req.body,
+              joinDate,
               isConfirm: false,
               codeConfirm: randomnumber,
             };
@@ -306,57 +325,61 @@ const routerUser = (io: any) => {
     );
     if (update.nModified === 1) {
       res.sendStatus(200);
-    }
-    else res.sendStatus(404);
+    } else res.sendStatus(404);
   });
 
-  router.post("/forgotPassword",async (req: any, res) => {
-    if (req.body.email)
-    {
-      UserModel.findOne({user:req.body.email}, async (err,doc)=>{
+  router.post("/forgotPassword", async (req: any, res) => {
+    if (req.body.email) {
+      UserModel.findOne({ user: req.body.email }, async (err, doc) => {
         if (err) return res.sendStatus(400);
         if (doc) {
-          const dataToken = {_idUser:doc._id,user:doc.user};
-          await TokenPasswordModel.deleteOne({dataToken});
+          const dataToken = { _idUser: doc._id, user: doc.user };
+          await TokenPasswordModel.deleteOne({ dataToken });
           const data = await TokenPasswordModel.create(dataToken);
-          const resultSendMail = await MailerModel.sendForgetPasswordToEmail(doc.user,data._id);
-          if (resultSendMail?.accepted.length > 0){
+          const resultSendMail = await MailerModel.sendForgetPasswordToEmail(
+            doc.user,
+            data._id
+          );
+          if (resultSendMail?.accepted.length > 0) {
             res.sendStatus(201);
-            setTimeout(async()=>{
+            setTimeout(async () => {
               await TokenPasswordModel.deleteOne(dataToken);
-            },3600000)
-          }
-          else res.sendStatus(500);
+            }, 3600000);
+          } else res.sendStatus(500);
         }
-      })
-    }
-    else {
+      });
+    } else {
       res.sendStatus(400);
     }
   });
 
-  router.put("/password_reset/:token",async (req: any, res) => {
-    if (req.body.password)
-    {
-      await TokenPasswordModel.findById(req.params.token, async (err,doc)=>{
+  router.put("/password_reset/:token", async (req: any, res) => {
+    if (req.body.password) {
+      await TokenPasswordModel.findById(req.params.token, async (err, doc) => {
         if (err) return res.sendStatus(400);
-        if (doc){
+        if (doc) {
           const user = await UserModel.findById(doc._idUser);
-          if (user){
+          if (user) {
             await TokenPasswordModel.deleteOne(doc);
             user.password = md5(req.body.password);
             user.save();
             res.sendStatus(200);
-          }
-          else {
+          } else {
             res.sendStatus(500);
           }
         }
       });
-    }
-    else {
+    } else {
       res.sendStatus(400);
     }
+  });
+
+  router.put("/update", checkAuthorization, async(req: any, res) => {
+    const update = await UserModel.updateOne({ _id: req.authorization }, req.body);
+    if (update.ok){
+      return res.sendStatus(200);
+    }
+    return res.sendStatus(500);
   });
 
   function checkAuthorization(req, res, next) {

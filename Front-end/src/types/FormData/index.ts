@@ -22,3 +22,7 @@ export type FormResetPassword = {
   password: string;
   confirmpassword: string;
 };
+
+export type UserForm = {
+  name:string;
+};

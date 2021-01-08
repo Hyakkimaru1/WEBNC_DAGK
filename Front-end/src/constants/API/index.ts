@@ -10,4 +10,6 @@ export const API: { [key: string]: string } = {
   CHANGE_PASSWORD: "/user/changePassword",
   FORGOT_PASSWORD: "/user/forgotPassword",
   RESET_PASSWORD: "/user/password_reset",
+  USER_PROFILE: "/user/id",
+  UPDATE_USER_PROFILE: "/user/update",
 };

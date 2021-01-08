@@ -248,6 +248,19 @@ $default-font-size: 1rem;
 .Showroom {
   font-size: 1rem;
   margin-bottom: 5rem;
+  &__base{
+    display: grid;
+    grid-template-columns: 30% 80%;
+    align-items: center;
+    color: #aaa;
+    &--field{
+      display: flex;
+      align-items: center;
+    }
+    &--strong{
+      color: #74b9ff;
+    }
+  }
   &__info {
     display: flex;
     flex-direction: column;

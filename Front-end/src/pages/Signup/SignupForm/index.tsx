@@ -18,6 +18,9 @@ const schema = yup.object().shape({
     .required("This field is required")
     .email("Please enter an email"),
   password: yup.string().required("This field is required"),
+  name: yup
+      .string()
+      .required("This field is required"),
   confirmPassword: yup.string().required("This field is required"),
 });
 
@@ -61,8 +64,17 @@ const SignupForm: React.FC<{handleConfirm:(data:any)=>void}> = ({handleConfirm})
         <h3 style={{ color: theme?.color }}>SIGN UP FORM</h3>
         <TextField
           inputRef={register}
+          name="name"
+          label="Name"
+          required
+          type="text"
+        />
+        <br />
+        <TextField
+          inputRef={register}
           name="email"
           label="Email"
+          required
           type="email"
         />
         <br />
@@ -71,6 +83,7 @@ const SignupForm: React.FC<{handleConfirm:(data:any)=>void}> = ({handleConfirm})
           name="password"
           label="Password"
           type="password"
+          required
           autoComplete="current-password"
         />
         <br />
@@ -78,6 +91,7 @@ const SignupForm: React.FC<{handleConfirm:(data:any)=>void}> = ({handleConfirm})
           inputRef={register}
           name="confirmPassword"
           label="Confirm Password"
+          required
           type="password"
         />
         <br />

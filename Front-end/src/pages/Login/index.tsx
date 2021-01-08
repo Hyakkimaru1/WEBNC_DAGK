@@ -35,7 +35,7 @@ const Login: React.FC = () => {
   if (token){
     router.push(ROUTERS.HOME);
     return <></>;
-   }
+  }
   const onSubmit = handleSubmit(({ email, password }) => {
     productAPI
       .login(email, password)
@@ -127,6 +127,7 @@ const Login: React.FC = () => {
           inputRef={register}
           name="email"
           label="Email"
+          required
           type="email"
         />
         <br />
@@ -135,6 +136,7 @@ const Login: React.FC = () => {
           name="password"
           label="Password"
           type="password"
+          required
           autoComplete="current-password"
           color="secondary"
         />
