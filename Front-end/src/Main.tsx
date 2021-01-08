@@ -29,6 +29,7 @@ const Main: React.FC<{ theme?: THEME }> = ({ theme }) => {
         history.push(ROUTERS.ROOM_PUSH + roomId);
       }
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div

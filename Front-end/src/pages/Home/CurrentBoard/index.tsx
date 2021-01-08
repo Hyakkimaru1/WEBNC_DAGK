@@ -47,6 +47,16 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
     name: "5 min",
   });
 
+  useEffect(() => {
+    socket.on("quickJoinFound", (id: string) => {
+      console.log("id", id);
+      if (id) {
+        history.push(ROUTERS.ROOM_PUSH + id);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleChange = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>
   ) => {
@@ -161,15 +171,6 @@ const CurrentBoard: React.FC<{ boards: CurrentBoardPlay[] }> = ({ boards }) => {
       );
     }
   };
-
-  useEffect(() => {
-    socket.on("quickJoinFound", (id: string) => {
-      console.log("id", id);
-      if (id) {
-        history.push(ROUTERS.ROOM_PUSH + id);
-      }
-    });
-  }, []);
 
   return (
     <div className="currentboard">
