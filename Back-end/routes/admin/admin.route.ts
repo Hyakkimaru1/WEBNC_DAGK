@@ -183,8 +183,24 @@ const routerAdmin = (io: any) => {
             res.send(doc);
           }
         });
-      } else {
-        console.log(req.query.typeValue);
+      } else 
+      {
+        const input = req.query.typeValue;
+        console.log(input);
+        userModel.find(
+          { $or: 
+            [{ "name": { $regex: '.*' + input + '.*' }},
+            {"user": { $regex: '.*' + input + '.*' }},
+            { "name": { $regex: input + '.*' }}] },
+          (error, doc) => {
+            console.log(doc);
+            if (error) {
+              res.sendStatus(404);
+            } else {
+              res.send(doc);
+            }
+          }
+        );
       }
     } catch (error) {
       console.log(error);

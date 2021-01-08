@@ -13,50 +13,50 @@ import HistoryFC from "./pages/HistoryFC";
 import { THEME } from "@/types/Theme";
 import InforUser from "./pages/InforUser/InforUser";
 import Top from "./pages/Top";
+import { useHistory } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import socket from "@/configs/socket";
 
 const Main: React.FC<{ theme?: THEME }> = ({ theme }) => {
+  const history = useHistory();
   doAxiosRequestIntercept();
   useEffect(() => {
     //user online
     const room = "1";
     const name = localStorage.getItem("token") || "";
-    socket.emit("join", { name, room }, (info: any) =>
-      {
-        if (info){
-        
-        }
+    socket.emit("join", { name, room }, (roomId: string) => {
+      if (roomId) {
+        history.push(ROUTERS.ROOM_PUSH + roomId);
       }
-    );
+    });
   }, []);
   return (
-      <div
-        style={{ backgroundColor: theme?.formBackGround }}
-        className="main-wrapper"
-      >
-        <Switch>
-          <Route exact path={ROUTERS.HOME}>
-            <Home />
-            {/* <Chat /> */}
-          </Route>
-          <Route path={ROUTERS.ROOM}>
-            <Room />
-          </Route>
-          <Route path={ROUTERS.PROFILE}>
-            <InforUser />
-          </Route>
-          <Route path={ROUTERS.HISTORY}>
-            <HistoryFC />
-          </Route>
-          <Route path={ROUTERS.TOP}>
-            <Top />
-          </Route>
-          <Route>
-            <NotFound />
-          </Route>
-        </Switch>
-      </div>
+    <div
+      style={{ backgroundColor: theme?.formBackGround }}
+      className="main-wrapper"
+    >
+      <Switch>
+        <Route exact path={ROUTERS.HOME}>
+          <Home />
+          {/* <Chat /> */}
+        </Route>
+        <Route path={ROUTERS.ROOM}>
+          <Room />
+        </Route>
+        <Route path={ROUTERS.PROFILE}>
+          <InforUser />
+        </Route>
+        <Route path={ROUTERS.HISTORY}>
+          <HistoryFC />
+        </Route>
+        <Route path={ROUTERS.TOP}>
+          <Top />
+        </Route>
+        <Route>
+          <NotFound />
+        </Route>
+      </Switch>
+    </div>
   );
 };
 

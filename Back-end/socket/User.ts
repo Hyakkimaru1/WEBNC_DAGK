@@ -40,6 +40,9 @@ export const updateUser = (u: User) => {
 export const getUser = (id: string) =>
   users.find((user: User) => user.id === id);
 
+export const getUserByName = (name: string) =>
+  users.find((user: User) => user.name === name);
+
 export const userInRoom = (room: string) =>
   users.filter((user: User) => user.room === room);
 
