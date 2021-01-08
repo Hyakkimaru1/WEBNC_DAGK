@@ -24,11 +24,15 @@ const Main: React.FC<{ theme?: THEME }> = ({ theme }) => {
     //user online
     const room = "1";
     const name = localStorage.getItem("token") || "";
+    socket.open();
     socket.emit("join", { name, room }, (roomId: string) => {
       if (roomId) {
         history.push(ROUTERS.ROOM_PUSH + roomId);
       }
     });
+    return () => {
+      socket.close();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (

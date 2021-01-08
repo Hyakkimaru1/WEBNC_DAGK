@@ -79,12 +79,11 @@ const Home = () => {
             draggable: true,
             progress: undefined,
             onClick: () => {
-              socket.emit("acceptInvite",{roomId,token},(req:any)=>{
-                if(req){
+              socket.emit("acceptInvite", { roomId, token }, (req: any) => {
+                if (req) {
                   history.push(ROUTERS.ROOM_PUSH + roomId);
-                }
-                else {
-                  toast.error("SORRY! 😫😩 THE ROOM IS CANCEL")
+                } else {
+                  toast.error("SORRY! 😫😩 THE ROOM IS CANCEL");
                 }
               });
             },
@@ -95,10 +94,17 @@ const Home = () => {
       }
     );
 
+    socket.on("userjoinroom", (data: any) => {
+      if (user.user === data.user) {
+        history.push(`/room/${data.room}`);
+      }
+    });
+
     return () => {
       socket.off("roomData");
       socket.off("allrooms");
       socket.off("showInvite");
+      socket.off("userjoinroom");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
