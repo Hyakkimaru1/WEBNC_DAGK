@@ -1,20 +1,28 @@
 import { AppThunk } from "@/configs/Redux/store";
 import { createSlice } from "@reduxjs/toolkit";
 import { productAPI } from "@/configs/productAPI";
-import USER from "@/types/USER";
+import USER, { userInitial } from "@/types/USER";
+
+type TOP_RANKING = {
+  listTops: USER[];
+  userRanking?: USER;
+};
 
 export interface TopRanking {
   id: number | null;
   isLoading: boolean;
   error: string | null;
-  data: USER[]
+  data: TOP_RANKING;
 }
 
 const initialState: TopRanking = {
   id: null,
   isLoading: false,
   error: null,
-  data: []
+  data: {
+    listTops: [],
+    userRanking: userInitial,
+  },
 };
 
 const topRanking = createSlice({
@@ -29,7 +37,10 @@ const topRanking = createSlice({
       state.isLoading = true;
     },
     errorTopRanking: (state, action) => {
-      state.data = [];
+      state.data = {
+        listTops: [],
+        userRanking: userInitial,
+      };
       state.isLoading = false;
       state.error = action.payload.error;
     },
@@ -46,11 +57,9 @@ export const getAllTopRanking = ({
 }): AppThunk => async (dispatch) => {
   try {
     dispatch(loadingTopRanking());
-    await productAPI
-      .getTopRanking()
-      .then((res: any) => {
-        dispatch(getTopRanking(res.data));
-      });
+    await productAPI.getTopRanking().then((res: any) => {
+      dispatch(getTopRanking(res.data));
+    });
   } catch (err) {
     dispatch(errorTopRanking({ error: err.response?.data }));
     if (cbError) {

@@ -3,7 +3,7 @@ import { Avatar } from "@material-ui/core";
 import { ThemeContext } from '@/contexts/ThemeContext';
 import EmojiEventsTwoToneIcon from '@material-ui/icons/EmojiEventsTwoTone';
 
-const Field:React.FC<{top:number,user:string,avatar:string,win:number,point:number}> = ({top,avatar,user,win,point}) => {
+const Field:React.FC<{top:number,user:string,avatar:string,win?:number,point?:number}> = ({top,avatar,user,win,point}) => {
   const {theme} = useContext(ThemeContext);
   return (
         <li className="top__field">

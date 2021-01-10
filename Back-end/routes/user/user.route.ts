@@ -333,17 +333,12 @@ const routerUser = (io: any) => {
     );
   });
 
-  router.get("/topranking", (req, res) => {
-    UserModel.find({})
-      .sort({ cup: "desc" })
-      .limit(20)
-      .exec((err, docs) => {
-        if (err) {
-          res.sendStatus(500);
-          return;
-        }
-        res.send(docs);
-      });
+  router.get("/topranking", checkAuthorization, async (req: any, res) => {
+    const [listTops, userRanking] = await Promise.all([
+      UserModel.find({}).sort({ cups: "desc" }).limit(15).select("-password"),
+      UserModel.findById(req.authorization._id).select("-password"),
+    ]);
+    res.send({ listTops, userRanking });
   });
 
   router.put("/changePassword", checkAuthorization, async (req: any, res) => {
@@ -407,7 +402,7 @@ const routerUser = (io: any) => {
 
   router.put("/update", checkAuthorization, async (req: any, res) => {
     const update = await UserModel.updateOne(
-      { _id: req.authorization },
+      { _id: req.authorization._id },
       req.body
     );
     if (update.ok) {
