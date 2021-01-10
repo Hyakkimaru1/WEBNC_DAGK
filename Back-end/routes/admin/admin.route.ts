@@ -207,6 +207,21 @@ const routerAdmin = (io: any) => {
     }
   });
 
+  router.post("/disableuser", (req,res) => {
+    try {
+      userModel.findOneAndUpdate({"user":req.body.username},{"isActive":!req.body.status},{},(err,doc) => {
+        if (err) {
+          res.sendStatus(404);
+        } else {
+          res.send(doc);
+        }
+      });
+   
+    } catch (error) {
+      console.log(error);
+    }
+  })
+
   function checkAuthorization(req, res, next) {
     // check header contain beader
     if (

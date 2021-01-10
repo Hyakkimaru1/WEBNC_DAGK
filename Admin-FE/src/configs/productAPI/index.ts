@@ -32,4 +32,7 @@ export const productAPI = {
   getUsers: (typeValue: string) => {
     return AXIOS_INSTANCE.get(`${API.GETUSERS}?typeValue=${typeValue}`);
   },
+  disableUser: (username: string, status:boolean) => {
+    return AXIOS_INSTANCE.post(API.DISABLEUSER,{username,status});
+  }
 };

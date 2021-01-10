@@ -1,3 +1,4 @@
 import GetUser from "../actions/GetUser"
-export {GetUser};
+import DisableUser from "../actions/DisableUser"
+export {GetUser, DisableUser};
 export { BranchReducer } from "./BranchReducer";
