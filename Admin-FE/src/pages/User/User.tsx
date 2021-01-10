@@ -89,7 +89,7 @@ const User = () => {
   }
   const detailClick = (id:any) => {
     const username = id;
-    history.push(`/user/detail/${id}`);  
+    history.push(`/user/${id}`);  
   }
 
   const columns: ColDef[] = [

@@ -251,6 +251,18 @@ const routerAdmin = (io: any) => {
   });
 
   router.get("/getuserhistory", (req: any, res) => {
+   if (req.query.id === "")
+   {
+    RoomModel.find((error, doc) => {
+      if (error) {
+        res.sendStatus(404);
+      } else {
+        res.send(doc);
+      }
+    });
+   }
+   else
+   {
     let username = null;
     userModel.find({"_id" : req.query.id},
       (error, doc) => {
@@ -276,6 +288,7 @@ const routerAdmin = (io: any) => {
         }
       }
     );
+   }
  
   });
 

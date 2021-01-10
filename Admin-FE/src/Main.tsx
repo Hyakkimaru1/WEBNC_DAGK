@@ -9,12 +9,11 @@ import {store} from "@/configs/Redux/store";
 import "./styles/main.scss";
 import { doAxiosRequestIntercept } from "./configs/Interceptors";
 import Home from "./pages/Home";
-import History from "./pages/History/History";
+import History from "./pages/History";
 import HistoryDetail from "./pages/History/HistoryDetail";
 import User from "./pages/User/User";
 import UserDetail from "./pages/User/UserDetail";
-import Account from "./pages/Account/Account"
-
+import Account from "./pages/Account/Account";
 
 const Main = () => {
   doAxiosRequestIntercept();
@@ -31,10 +30,10 @@ const Main = () => {
           <Route exact path="/user">
             <User/>
           </Route>
-          <Route path="/user/detail/:id">
+          <Route path="/user/:id">
             <UserDetail/>
           </Route>
-          <Route path="/user/detail/history/:id">
+          <Route path="/history/:id">
             <HistoryDetail/>
           </Route>
           <Route exact path="/account">
