@@ -23,7 +23,6 @@ const routerUser = (io: any) => {
     // username,password
     if (req.body.username && req.body.password) {
       req.body.password = md5(req.body.password);
-
       UserModel.find(
         { user: req.body.username, password: req.body.password },
         (err, docs: any) => {
@@ -32,21 +31,29 @@ const routerUser = (io: any) => {
           } else {
             // send jwt
             if (docs.length > 0) {
-              docs[0].password = "";
-              jwt.sign(docs[0].toJSON(), primaryKey, (err: any, token: any) => {
-                if (err) {
-                  res.sendStatus(503);
-                } else {
-                  res.send({
-                    token,
-                    _id: docs[0]._id,
-                    user: docs[0].user,
-                    avatar: docs[0].avatar,
-                    name: docs[0].name,
-                    old: docs[0].old,
-                  });
-                }
-              });
+              // Check if user is disabled
+              if (!docs[0].isActive) res.sendStatus(403);
+              else {
+                docs[0].password = "";
+                jwt.sign(
+                  docs[0].toJSON(),
+                  primaryKey,
+                  (err: any, token: any) => {
+                    if (err) {
+                      res.sendStatus(503);
+                    } else {
+                      res.send({
+                        token,
+                        _id: docs[0]._id,
+                        user: docs[0].user,
+                        avatar: docs[0].avatar,
+                        name: docs[0].name,
+                        old: docs[0].old,
+                      });
+                    }
+                  }
+                );
+              }
             } else {
               res.sendStatus(401);
             }
@@ -98,21 +105,24 @@ const routerUser = (io: any) => {
               } else {
                 // send jwt
                 if (docs.length > 0) {
-                  docs[0].password = "";
-                  jwt.sign(docs[0].toJSON(), primaryKey, (err, token) => {
-                    if (err) {
-                      res.sendStatus(503);
-                    } else {
-                      res.send({
-                        token,
-                        _id: docs[0]._id,
-                        user: docs[0].user,
-                        avatar: docs[0].avatar,
-                        name: docs[0].name,
-                        old: docs[0].old,
-                      });
-                    }
-                  });
+                  if (!docs[0].isActive) res.sendStatus(403);
+                  else {
+                    docs[0].password = "";
+                    jwt.sign(docs[0].toJSON(), primaryKey, (err, token) => {
+                      if (err) {
+                        res.sendStatus(503);
+                      } else {
+                        res.send({
+                          token,
+                          _id: docs[0]._id,
+                          user: docs[0].user,
+                          avatar: docs[0].avatar,
+                          name: docs[0].name,
+                          old: docs[0].old,
+                        });
+                      }
+                    });
+                  }
                 } else {
                   const joinDate = moment().format("MM-DD-YYYY");
                   UserModel.create(

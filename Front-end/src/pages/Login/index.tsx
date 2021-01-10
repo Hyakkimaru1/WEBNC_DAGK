@@ -44,8 +44,8 @@ const Login: React.FC = () => {
         router.push(ROUTERS.HOME);
       })
       .catch((err) => {
-        if (err.response?.status === 404) {
-          toast.error("😢 Wrong username or password");
+        if (err.response?.status === 403) {
+          toast.error("😢 Your account is disabled! Contact us for detail!");
         } else {
           toast.error("😢 Wrong username or password");
         }
