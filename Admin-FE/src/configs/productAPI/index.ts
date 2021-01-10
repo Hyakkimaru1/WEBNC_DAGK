@@ -34,5 +34,11 @@ export const productAPI = {
   },
   disableUser: (username: string, status:boolean) => {
     return AXIOS_INSTANCE.post(API.DISABLEUSER,{username,status});
-  }
+  },
+  getUserDetail: (id: string) => {
+    return AXIOS_INSTANCE.get(`${API.GETUSERDETAIL}?id=${id}`);
+  },
+  getUserHistory: (id: string) => {
+    return AXIOS_INSTANCE.get(`${API.GETUSERHISTORY}?id=${id}`);
+  },
 };

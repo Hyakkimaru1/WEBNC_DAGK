@@ -22,6 +22,7 @@ import DirectionsIcon from "@material-ui/icons/Directions";
 import { timeout } from "d3";
 import { Button, Switch } from "@material-ui/core";
 import { callDisableUser } from "@/actions/DisableUser";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -49,6 +50,7 @@ const User = () => {
   const classes = useStyles();
   const [userList, setUserList] = useState([]);
   const dispatch = useDispatch();
+  const history = useHistory();
   const [typeValue, setTypeValue] = useState("");
   const [click,setClick] = useState(false);
   useEffect(() => {
@@ -84,6 +86,10 @@ const User = () => {
         },
       })
     );
+  }
+  const detailClick = (id:any) => {
+    const username = id;
+    history.push(`/user/detail/${id}`);  
   }
 
   const columns: ColDef[] = [
@@ -128,12 +134,17 @@ const User = () => {
       ),
     },
     {
-      field: "view",
-      headerName: "    View",
-      width: 100,
+      field: "matches",
+      headerName: "Matches",
+      width: 120,
       renderCell: (params: ValueFormatterParams) => (
         <strong>
-          <Button variant="contained" color="primary" size="small">
+          <Button 
+          variant="contained" 
+          color="primary" 
+          size="small"
+          onClick= {() => detailClick(params.row._id)}
+          >
             Detail
           </Button>
         </strong>
@@ -146,11 +157,10 @@ const User = () => {
       newData[i].id = i;
     }
   }
-  const isLoading = userList === [] ? true : false;
+  const isLoading = (newData.length)? false : true;
   return (
     <div className="user">
       <div className="user__header">
-        <h3> USER LIST</h3>
       </div>
       <div className="user__search">
         <Paper component="form" className={classes.root}>
@@ -196,6 +206,7 @@ const User = () => {
           pageSize={10}
           autoPageSize={true}
           loading={isLoading}
+          hideFooterSelectedRowCount = {true}
         />
       </div>
     </div>

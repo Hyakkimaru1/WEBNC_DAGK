@@ -1,0 +1,9 @@
+.user{
+    &__detail{
+        display: flex;
+        align-items: center;
+        >div{
+            padding:20px;
+        }
+    }
+}

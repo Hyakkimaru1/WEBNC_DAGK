@@ -1,6 +1,7 @@
 import express from "express";
 import adminModel from "../../models/Admin.model";
 import userModel from "../../models/User.model";
+import RoomModel from "../../models/Room.model";
 import jwt from "jsonwebtoken";
 import config from "../../config";
 import md5 from "md5";
@@ -186,7 +187,6 @@ const routerAdmin = (io: any) => {
       } else 
       {
         const input = req.query.typeValue;
-        console.log(input);
         userModel.find(
           { $or: 
             [{ "name": { $regex: '.*' + input + '.*' }},
@@ -221,6 +221,63 @@ const routerAdmin = (io: any) => {
       console.log(error);
     }
   })
+
+  router.get("/getuserdetail", (req: any, res) => {
+    try {
+      if (req.query.id === "") {
+        userModel.find((error, doc) => {
+          if (error) {
+            res.sendStatus(404);
+          } else {
+            res.send(doc);
+          }
+        });
+      } else 
+      {
+        const input = req.query.id;
+        userModel.find({ "_id": input },
+          (error, doc) => {
+            if (error) {
+              res.sendStatus(404);
+            } else {
+              res.send(doc);
+            }
+          }
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+
+  router.get("/getuserhistory", (req: any, res) => {
+    let username = null;
+    userModel.find({"_id" : req.query.id},
+      (error, doc) => {
+        if (doc) username = doc[0].user
+        if (error) {
+          res.sendStatus(404);
+        } else {
+          RoomModel.find(
+            {
+              $or: [
+                { "playerX.name": username},
+                { "playerO.name": username},
+              ],
+            },
+            (err, doc) => {
+              if (err) {
+                res.sendStatus(404);
+              } else {
+                res.send(doc);
+              }
+            }
+          );
+        }
+      }
+    );
+ 
+  });
 
   function checkAuthorization(req, res, next) {
     // check header contain beader

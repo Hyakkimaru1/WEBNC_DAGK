@@ -10,7 +10,9 @@ import "./styles/main.scss";
 import { doAxiosRequestIntercept } from "./configs/Interceptors";
 import Home from "./pages/Home";
 import History from "./pages/History/History";
+import HistoryDetail from "./pages/History/HistoryDetail";
 import User from "./pages/User/User";
+import UserDetail from "./pages/User/UserDetail";
 import Account from "./pages/Account/Account"
 
 
@@ -28,6 +30,12 @@ const Main = () => {
           </Route>
           <Route exact path="/user">
             <User/>
+          </Route>
+          <Route path="/user/detail/:id">
+            <UserDetail/>
+          </Route>
+          <Route path="/user/detail/history/:id">
+            <HistoryDetail/>
           </Route>
           <Route exact path="/account">
             <Account/>
