@@ -14,12 +14,14 @@ import HistoryDetail from "./pages/History/HistoryDetail";
 import User from "./pages/User/User";
 import UserDetail from "./pages/User/UserDetail";
 import Account from "./pages/Account/Account";
+import Header from "./pages/Home/Header";
 
 const Main = () => {
   doAxiosRequestIntercept();
   return (
     <Provider store={store}>
       <div className="main-wrapper">
+      <Header/>
         <Switch>
         <Route exact path="/">
             <Home/>

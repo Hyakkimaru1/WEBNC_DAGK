@@ -307,7 +307,7 @@ const routerAdmin = (io: any) => {
             if (err) {
               res.sendStatus(404);
             } else {
-              if (doc.messages) {
+              if (doc && doc.messages) {
                 let chat = doc.messages;
                 res.send(chat.slice(startChat - 1, endChat));
               } else res.send(null);
