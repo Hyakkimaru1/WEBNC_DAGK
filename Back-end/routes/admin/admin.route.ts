@@ -8,6 +8,7 @@ import md5 from "md5";
 import { auth, provider, providerfb } from "../../firebase/firebase";
 import { resolveSoa } from "dns";
 import firebase from "firebase";
+import ChatModel from "../../models/Chat.model";
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -184,14 +185,16 @@ const routerAdmin = (io: any) => {
             res.send(doc);
           }
         });
-      } else 
-      {
+      } else {
         const input = req.query.typeValue;
         userModel.find(
-          { $or: 
-            [{ "name": { $regex: '.*' + input + '.*' }},
-            {"user": { $regex: '.*' + input + '.*' }},
-            { "name": { $regex: input + '.*' }}] },
+          {
+            $or: [
+              { name: { $regex: ".*" + input + ".*" } },
+              { user: { $regex: ".*" + input + ".*" } },
+              { name: { $regex: input + ".*" } },
+            ],
+          },
           (error, doc) => {
             console.log(doc);
             if (error) {
@@ -207,20 +210,24 @@ const routerAdmin = (io: any) => {
     }
   });
 
-  router.post("/disableuser", (req,res) => {
+  router.post("/disableuser", (req, res) => {
     try {
-      userModel.findOneAndUpdate({"user":req.body.username},{"isActive":!req.body.status},{},(err,doc) => {
-        if (err) {
-          res.sendStatus(404);
-        } else {
-          res.send(doc);
+      userModel.findOneAndUpdate(
+        { user: req.body.username },
+        { isActive: !req.body.status },
+        {},
+        (err, doc) => {
+          if (err) {
+            res.sendStatus(404);
+          } else {
+            res.send(doc);
+          }
         }
-      });
-   
+      );
     } catch (error) {
       console.log(error);
     }
-  })
+  });
 
   router.get("/getuserdetail", (req: any, res) => {
     try {
@@ -232,18 +239,15 @@ const routerAdmin = (io: any) => {
             res.send(doc);
           }
         });
-      } else 
-      {
+      } else {
         const input = req.query.id;
-        userModel.find({ "_id": input },
-          (error, doc) => {
-            if (error) {
-              res.sendStatus(404);
-            } else {
-              res.send(doc);
-            }
+        userModel.find({ _id: input }, (error, doc) => {
+          if (error) {
+            res.sendStatus(404);
+          } else {
+            res.send(doc);
           }
-        );
+        });
       }
     } catch (error) {
       console.log(error);
@@ -251,31 +255,24 @@ const routerAdmin = (io: any) => {
   });
 
   router.get("/getuserhistory", (req: any, res) => {
-   if (req.query.id === "")
-   {
-    RoomModel.find((error, doc) => {
-      if (error) {
-        res.sendStatus(404);
-      } else {
-        res.send(doc);
-      }
-    });
-   }
-   else
-   {
-    let username = null;
-    userModel.find({"_id" : req.query.id},
-      (error, doc) => {
-        if (doc) username = doc[0].user
+    if (req.query.id === "") {
+      RoomModel.find((error, doc) => {
+        if (error) {
+          res.sendStatus(404);
+        } else {
+          res.send(doc);
+        }
+      });
+    } else {
+      let username = null;
+      userModel.find({ _id: req.query.id }, (error, doc) => {
+        if (doc[0].user) username = doc[0].user;
         if (error) {
           res.sendStatus(404);
         } else {
           RoomModel.find(
             {
-              $or: [
-                { "playerX.name": username},
-                { "playerO.name": username},
-              ],
+              $or: [{ "playerX.name": username }, { "playerO.name": username }],
             },
             (err, doc) => {
               if (err) {
@@ -286,10 +283,39 @@ const routerAdmin = (io: any) => {
             }
           );
         }
-      }
-    );
-   }
- 
+      });
+    }
+  });
+
+  router.get("/gethistorydetail", (req: any, res) => {
+    let startChat = null;
+    let endChat = null;
+    let room = null;
+    if (req.query.id === "") {
+      res.sendStatus(404);
+    } else {
+      RoomModel.findOne({ _id: req.query.id }, (err, doc) => {
+        if (err) {
+          res.sendStatus(404);
+        } else {
+          startChat = doc.startChat;
+          endChat = doc.endChat;
+          room = doc.roomId;
+        }
+        if (startChat && endChat && room) {
+          ChatModel.findOne({ roomId: room }, (err, doc) => {
+            if (err) {
+              res.sendStatus(404);
+            } else {
+              if (doc.messages) {
+                let chat = doc.messages;
+                res.send(chat.slice(startChat - 1, endChat));
+              } else res.send(null);
+            }
+          });
+        } else res.sendStatus(403);
+      });
+    }
   });
 
   function checkAuthorization(req, res, next) {

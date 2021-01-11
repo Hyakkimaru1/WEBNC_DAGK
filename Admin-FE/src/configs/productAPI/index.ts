@@ -41,4 +41,7 @@ export const productAPI = {
   getUserHistory: (id: string) => {
     return AXIOS_INSTANCE.get(`${API.GETUSERHISTORY}?id=${id}`);
   },
+  getHistoryDetail: (id: string) => {
+    return AXIOS_INSTANCE.get(`${API.GETHISTORYDETAIL}?id=${id}`);
+  },
 };

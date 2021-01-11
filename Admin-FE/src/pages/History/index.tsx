@@ -85,7 +85,7 @@ const History = () => {
     },
     {
       field: "seedetail",
-      headerName: "Detail",
+      headerName: "Chat",
       width: 120,
       renderCell: (params: ValueFormatterParams) => (
         <strong>

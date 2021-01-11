@@ -6,4 +6,5 @@ GETUSERS: '/admin/getusers',
 DISABLEUSER: '/admin/disableuser',
 GETUSERDETAIL: '/admin/getuserdetail',
 GETUSERHISTORY: '/admin/getuserhistory',
+GETHISTORYDETAIL: '/admin/gethistorydetail',
 };
