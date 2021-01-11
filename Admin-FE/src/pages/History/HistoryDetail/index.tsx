@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import "./styles.scss";
 import ModeCommentIcon from "@material-ui/icons/ModeComment";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -43,7 +44,7 @@ const HistoryDetail = () => {
           console.log(data);
         },
         cbError: () => {
-          console.log("Load history detail failed");
+          toast.error("Load history detail failed");
         },
       })
     );
@@ -51,22 +52,24 @@ const HistoryDetail = () => {
   const messages: any = data;
   return (
     <div className="chat">
-        <h1 className="chat__header">
-            Chat of game: {id}
-        </h1>
-      <List component="nav" className={classes.root}>
-        {messages.map((chat: any) => (
-          <ListItem button key={chat.id}>
-            <ListItemAvatar>
-              <Avatar>
-                <ModeCommentIcon />
-              </Avatar>
-            </ListItemAvatar>
-            <ListItemText> {chat.user} </ListItemText>
-            <ListItemText> {chat.message} </ListItemText>
-          </ListItem>
-        ))}
-      </List>
+      <div>
+        <h2 className="chat__header">Chat of game: {id}</h2>
+      </div>
+      <div className="chat__list">
+        <List component="nav" className={classes.root}>
+          {messages.map((chat: any) => (
+            <ListItem button key={chat.id}>
+              <ListItemAvatar>
+                <Avatar>
+                  <ModeCommentIcon />
+                </Avatar>
+              </ListItemAvatar>
+              <ListItemText> {chat.user} </ListItemText>
+              <ListItemText> {chat.message} </ListItemText>
+            </ListItem>
+          ))}
+        </List>
+      </div>
     </div>
   );
 };

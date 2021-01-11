@@ -1,0 +1,13 @@
+.home {
+  display: flex;
+  > img {
+      padding-top: 10px;
+    height: 70%;
+    width: 70%;
+  }
+  &__intro {
+    text-align: center;
+    padding-top: 20%;
+    padding-left: 5%;
+  }
+}

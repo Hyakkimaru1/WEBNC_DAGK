@@ -14,6 +14,7 @@ import clone from "clone";
 import { Button, createStyles, makeStyles, Switch, Theme } from "@material-ui/core";
 import "./style.scss"
 import { callDisableUser } from "@/actions/DisableUser";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -54,7 +55,7 @@ const UserDetail = () => {
           setDetail(data[0]);
         },
         cbError: () => {
-          console.log("Load user detail failed");
+          toast.error("Load user detail failed!");
         },
       })
     );
@@ -66,7 +67,7 @@ const UserDetail = () => {
           setHistoryList(data);
         },
         cbError: () => {
-          console.log("Load user detail failed");
+          toast.error("Load user detail failed!");
         },
       })
     );

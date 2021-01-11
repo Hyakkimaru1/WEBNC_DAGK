@@ -31,7 +31,7 @@
     "react-toastify": "^6.1.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "toast": "^0.3.30",
+    "toast": "^0.3.39",
     "yup": "^0.32.1"
   },
   "scripts": {

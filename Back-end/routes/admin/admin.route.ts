@@ -196,7 +196,6 @@ const routerAdmin = (io: any) => {
             ],
           },
           (error, doc) => {
-            console.log(doc);
             if (error) {
               res.sendStatus(404);
             } else {

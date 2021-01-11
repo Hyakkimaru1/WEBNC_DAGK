@@ -23,6 +23,7 @@ import { timeout } from "d3";
 import { Button, Switch } from "@material-ui/core";
 import { callDisableUser } from "@/actions/DisableUser";
 import { useHistory } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -61,7 +62,7 @@ const User = () => {
           setUserList(data);
         },
         cbError: () => {
-          console.log("Load user list failed");
+          toast.error("Load user list failed");
         },
       })
     );
@@ -79,10 +80,10 @@ const User = () => {
         username,
         status,
         cbSuccess: (data: any) => {
-          console.log("OK");
+          toast.success(" Modify user completed! 💡");
         },
         cbError: () => {
-          console.log("Failed");
+          toast.info("Action failed! Try again.");
         },
       })
     );
@@ -160,8 +161,8 @@ const User = () => {
   const isLoading = (newData.length)? false : true;
   return (
     <div className="user">
-      <div className="user__header">
-      </div>
+      <h3 className="user__header"> USER LIST
+      </h3>
       <div className="user__search">
         <Paper component="form" className={classes.root}>
           <IconButton className={classes.iconButton} aria-label="menu">

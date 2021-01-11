@@ -1,11 +1,12 @@
-.user{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    &__header{
-        padding: 1%;
-    }
-    &__search{
-        padding: 1%;
-    }
+.user {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  &__header {
+    text-align: center;
+    padding-top: 20px;
+  }
+  &__search {
+    padding: 1%;
+  }
 }

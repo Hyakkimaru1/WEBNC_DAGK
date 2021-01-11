@@ -11,6 +11,8 @@ import {
 } from "@material-ui/data-grid";
 import clone from "clone";
 import { Button, createStyles, makeStyles, Theme } from "@material-ui/core";
+import { toast } from "react-toastify";
+import "./styles.scss";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -51,7 +53,7 @@ const History = () => {
           setHistoryList(data);
         },
         cbError: () => {
-          console.log("Load user detail failed");
+          toast.error("Load history list failed");
         },
       })
     );
@@ -109,11 +111,16 @@ const History = () => {
   }
   const isLoading = (newData.length)? false : true;
   return (
-    <div className = ""> History
+    <div className = "historylist"> 
+     <div>
+     <h2 className="historylist__header">
+            History list
+        </h2>
+     </div>
      <div
           style={{
             height: 500,
-            width: 1050,
+            width: "75%",
             margin: "0 auto",
             textAlign: "center",
           }}
