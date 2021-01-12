@@ -35,7 +35,7 @@
         "yup": "^0.32.1"
     },
     "scripts": {
-        "start": "set PORT=3005 && craco start",
+        "start": "craco start",
         "build": "craco build",
         "test": "craco test",
         "lint": "npm run lint:js && npm run lint:style",
@@ -46,11 +46,6 @@
         "lint-staged:ts": "eslint --cache --fix --ext .ts,.tsx",
         "lint-staged:style": "stylelint --fix --syntax scss",
         "lint-staged:prettier": "prettier -c --write"
-    },
-    "husky": {
-        "hooks": {
-            "pre-commit": "lint-staged"
-        }
     },
     "lint-staged": {
         "**/*.{js,jsx,scss,md,json}": [
@@ -122,8 +117,6 @@
         "stylelint": "^13.7.0",
         "stylelint-config-standard": "^20.0.0",
         "stylelint-prettier": "^1.1.2",
-        "typescript": "^4.0.2",
-        "webpack-bundle-analyzer": "^3.8.0",
-        "webpackbar": "^4.0.0"
+        "typescript": "^4.0.2"
     }
 }

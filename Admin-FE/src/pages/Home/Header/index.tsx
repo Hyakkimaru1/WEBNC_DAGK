@@ -6,11 +6,9 @@ import { useHistory } from "react-router-dom";
 import "./styles.scss";
 //Material UI
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import PermIdentityIcon from "@material-ui/icons/PermIdentity";
-import { IconButton, Menu, MenuItem, Toolbar } from "@material-ui/core";
+import { IconButton,  Toolbar } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
-import { MenuIcon } from "@material-ui/data-grid";
-import { AccountCircle, PeopleOutline, Home } from "@material-ui/icons";
+import { PeopleOutline, Home } from "@material-ui/icons";
 import HistoryIcon from "@material-ui/icons/History";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 

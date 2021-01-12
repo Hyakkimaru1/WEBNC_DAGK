@@ -31,7 +31,7 @@ const Top: React.FC = () => {
       })
     );
   }, [dispatch]);
-
+  
   return (
     <div className="top-wrapper">
       <Snow />
@@ -61,7 +61,7 @@ const Top: React.FC = () => {
                     className="top__ranking"
                     style={{ background: "#FC427B" }}
                   >
-                    1
+                    {listUserTop.data.rank}
                   </span>
                 </div>
                 <div className="top__username">

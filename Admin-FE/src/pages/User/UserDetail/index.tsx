@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { callGetUserDetail } from "@/actions/GetUserDetail";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { callGetUser } from "@/actions/GetUser";
+import { useDispatch } from "react-redux";
 import { callGetUserHistory } from "@/actions/GetUserHistory";
 import {
   ColDef,
@@ -11,39 +10,14 @@ import {
   ValueGetterParams,
 } from "@material-ui/data-grid";
 import clone from "clone";
-import { Button, createStyles, makeStyles, Switch, Theme } from "@material-ui/core";
-import "./style.scss"
-import { callDisableUser } from "@/actions/DisableUser";
+import { Button } from "@material-ui/core";
+import "./style.scss";
 import { toast } from "react-toastify";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {
-      padding: "2px 4px",
-      display: "flex",
-      alignItems: "center",
-      width: 400,
-    },
-    input: {
-      marginLeft: theme.spacing(1),
-      flex: 1,
-    },
-    iconButton: {
-      padding: 10,
-    },
-    divider: {
-      height: 28,
-      margin: 4,
-    },
-  })
-);
-
 const UserDetail = () => {
-  const classes = useStyles();
   const params: any = useParams();
   const dispatch = useDispatch();
   const id = params.id;
-  const name = params.user;
   const [detail, setDetail] = useState([]);
   const [historyList, setHistoryList] = useState([]);
   const history = useHistory();
@@ -71,6 +45,7 @@ const UserDetail = () => {
         },
       })
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const detailClick = (id:any) => {

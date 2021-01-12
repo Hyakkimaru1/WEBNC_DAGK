@@ -10,9 +10,9 @@ const Home = () => {
   return (
     <div className="home">
       <br />
-      <img src={homeimg} />
+      <img src={homeimg} alt=""/>
       <h2 className="home__intro">
-       Welcome back! 💙
+       Welcome back! <span role="img" aria-label="emoji">💙</span>
       </h2>
     </div>
   );

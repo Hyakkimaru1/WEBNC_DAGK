@@ -6,6 +6,7 @@ import USER, { userInitial } from "@/types/USER";
 type TOP_RANKING = {
   listTops: USER[];
   userRanking?: USER;
+  rank: number;
 };
 
 export interface TopRanking {
@@ -22,6 +23,7 @@ const initialState: TopRanking = {
   data: {
     listTops: [],
     userRanking: userInitial,
+    rank: 0,
   },
 };
 
@@ -40,6 +42,7 @@ const topRanking = createSlice({
       state.data = {
         listTops: [],
         userRanking: userInitial,
+        rank: 0,
       };
       state.isLoading = false;
       state.error = action.payload.error;

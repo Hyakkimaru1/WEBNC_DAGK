@@ -345,10 +345,11 @@ const routerUser = (io: any) => {
 
   router.get("/topranking", checkAuthorization, async (req: any, res) => {
     const [listTops, userRanking] = await Promise.all([
-      UserModel.find({}).sort({ cups: "desc" }).limit(15).select("-password"),
+      UserModel.find({}).sort({ cups: "desc" }).select("-password"),
       UserModel.findById(req.authorization._id).select("-password"),
     ]);
-    res.send({ listTops, userRanking });
+    const rank = listTops.findIndex(ele => ele.user === userRanking.user)+1;
+    res.send({ listTops: listTops.slice(0,15), userRanking, rank });
   });
 
   router.put("/changePassword", checkAuthorization, async (req: any, res) => {
