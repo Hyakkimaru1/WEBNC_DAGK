@@ -56,12 +56,13 @@ const Home = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-    socket.emit("onhome");
+
     socket.on("allrooms", (data: any) => {
       //setBoard here;
       setBoards(data.resRooms);
     });
     socket.on("roomData", (message: any, callback: any) => {
+      console.log("message", message);
       if (message) setusers(message.users);
     });
 
