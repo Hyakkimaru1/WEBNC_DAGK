@@ -2,7 +2,6 @@ import { callGetHistoryDetail } from "@/actions/GetHistoryDetail";
 import {
   Avatar,
   createStyles,
-  Divider,
   List,
   ListItem,
   ListItemAvatar,
@@ -48,6 +47,7 @@ const HistoryDetail = () => {
         },
       })
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const messages: any = data;
   return (

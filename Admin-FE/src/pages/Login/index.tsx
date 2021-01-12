@@ -2,7 +2,7 @@ import React from "react";
 import "./style.scss";
 import BG from "@/Images/2021.jpg";
 import { Button, TextField } from "@material-ui/core";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import ROUTERS from "@/constants/routers/index";
 import { useForm } from "react-hook-form";
 import { FormData } from "@/types/FormData";
@@ -23,7 +23,7 @@ const schema = yup.object().shape({
 });
 
 const Login: React.FC = () => {
-  const { register, handleSubmit, errors } = useForm<FormData>({
+  const { register, handleSubmit } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
   const router = useHistory();

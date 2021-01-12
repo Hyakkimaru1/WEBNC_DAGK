@@ -1,6 +1,6 @@
 import { callGetUser } from "@/actions/GetUser";
-import React, { useContext, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, {  useEffect,  useState } from "react";
+import { useDispatch } from "react-redux";
 import clone from "clone";
 import "./style.scss";
 
@@ -19,7 +19,6 @@ import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import SearchIcon from "@material-ui/icons/Search";
 import DirectionsIcon from "@material-ui/icons/Directions";
-import { timeout } from "d3";
 import { Button, Switch } from "@material-ui/core";
 import { callDisableUser } from "@/actions/DisableUser";
 import { useHistory } from "react-router-dom";
@@ -66,6 +65,7 @@ const User = () => {
         },
       })
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeValue,click]);
 
   function handleChange(e: any) {
@@ -89,7 +89,6 @@ const User = () => {
     );
   }
   const detailClick = (id:any) => {
-    const username = id;
     history.push(`/user/${id}`);  
   }
 
