@@ -12,4 +12,5 @@ export const API: { [key: string]: string } = {
   RESET_PASSWORD: "/user/password_reset",
   USER_PROFILE: "/user/id",
   UPDATE_USER_PROFILE: "/user/update",
+  CHECKTOKEN:"/user/token",
 };

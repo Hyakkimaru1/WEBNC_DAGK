@@ -12,6 +12,7 @@ type CurrentBoardPlay = {
   xReady?:boolean;
   isReady?:boolean;
   oReady?:boolean;
+  chats?:any;
 };
 
 export default CurrentBoardPlay;

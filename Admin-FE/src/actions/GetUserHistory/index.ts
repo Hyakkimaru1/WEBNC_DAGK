@@ -14,10 +14,10 @@ const initialState = {
     reducers: {
       changed: (state,action) => {
         state.data = action.payload;
-        state.isChanged = true;
+        state.isChanged = false;
       },
       changing: (state) => {
-        state.isChanged = false;
+        state.isChanged = true;
       },
       changeError: (state, action) => {
         state.data = null;

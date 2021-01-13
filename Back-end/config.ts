@@ -32,6 +32,7 @@ const EventSocket = {
   ACCEPT_INVITE: "acceptInvite",
   QUICK_JOIN_FOUND: "quickJoinFound",
   QUICK_JOIN_CANCEL: "quickJoinCancel",
+  BAN_USER: "ban-user",
 };
 
 export { EventSocket };

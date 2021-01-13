@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { callGetUserDetail } from "@/actions/GetUserDetail";
 import { useHistory, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { callGetUserHistory } from "@/actions/GetUserHistory";
 import {
   ColDef,
@@ -13,6 +13,8 @@ import clone from "clone";
 import { Button } from "@material-ui/core";
 import "./style.scss";
 import { toast } from "react-toastify";
+import ROUTERS from '@/constants/routers/index';
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const UserDetail = () => {
   const params: any = useParams();
@@ -20,6 +22,7 @@ const UserDetail = () => {
   const id = params.id;
   const [detail, setDetail] = useState([]);
   const [historyList, setHistoryList] = useState([]);
+  const {isChanged} = useSelector((state:any) => state.GetUserHistory);
   const history = useHistory();
   useEffect(() => {
     dispatch(
@@ -104,9 +107,12 @@ const UserDetail = () => {
       user[i].id = i;
     }
   }
-  const isLoading = (newData.length||user.length)? false : true;
+
   return (
     <div className="user">
+      <Button onClick={()=>history.push(ROUTERS.HOME)} className="button-back">
+        <ArrowBackIcon/>
+      </Button>
       <div className="user__detail">
         <div className = "user__avatar" >
             <img className="avatar" src={user?.avatar} alt="" />
@@ -127,7 +133,7 @@ const UserDetail = () => {
             columns={columns}
             pageSize={10}
             autoPageSize={true}
-            loading={isLoading}
+            loading={isChanged}
             hideFooterSelectedRowCount={true}
           />
         </div>

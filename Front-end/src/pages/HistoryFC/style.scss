@@ -40,11 +40,12 @@
 
   &__Play {
     position: absolute;
-    top: 50%;
-    right: 0;
-    transform: translate(-50%, -50%);
-    >button{
-        margin-right: 15px;
+    top: 20%;
+    right: -6%;
+    transform: translateX(-50%);
+    &--button{
+      display: flex;
+      justify-content: space-around;
     }
   }
 }

@@ -5,4 +5,3 @@ import GetUserHistory from "../actions/GetUserHistory";
 import GetHistoryDetail from "../actions/GetHistoryDetail";
 
 export {GetUser, DisableUser, GetUserDetail, GetUserHistory, GetHistoryDetail};
-export { BranchReducer } from "./BranchReducer";

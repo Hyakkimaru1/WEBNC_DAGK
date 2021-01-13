@@ -23,7 +23,8 @@ import CurrentBoardPlay from "@/types/CurrentBoardPlay";
 import Avatar from "@material-ui/core/Avatar";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import ChatsHistory from "./ChatsHistory/index";
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement },
   ref: React.Ref<unknown>
@@ -39,14 +40,15 @@ export default function HistoryFC() {
   const [data, setData] = useState<CurrentBoardPlay[]>([]);
   const [boardShow, setBoardShow] = useState<any>(null);
   const [turn, setTurn] = useState(0);
-
+  const [chats, setChats] = useState<any>({});
   useEffect(() => {
     const page = 1;
     dispatch(
       callHistoryUserSlide({
         page,
         cbSuccess: (data: any) => {
-          setData(data);
+          setChats(data.dataChats);
+          setData(data.docs);
         },
         cbError: () => {
           toast.error("Sorry,our bad");
@@ -124,26 +126,31 @@ export default function HistoryFC() {
           </Paper>
         </div>
         <div className="historyfc__Play">
-          <Button
-            onClick={() => {
-              if (turn > 0) {
-                setTurn(turn - 1);
-              }
-            }}
-            variant="contained"
-          >
-            <ChevronLeftIcon />
-          </Button>
-          <Button
-            onClick={() => {
-              if (turn < boardShow.board.length - 1) {
-                setTurn(turn + 1);
-              }
-            }}
-            variant="contained"
-          >
-            <ChevronRightIcon />
-          </Button>
+          <div className="historyfc__Play--button">
+            <Button
+              disabled={turn === 0 ? true : false}
+              onClick={() => {
+                if (turn > 0) {
+                  setTurn(turn - 1);
+                }
+              }}
+              variant="contained"
+            >
+              <ChevronLeftIcon />
+            </Button>
+            <Button
+              disabled={turn === boardShow?.board.length - 1 ? true : false}
+              onClick={() => {
+                if (turn < boardShow.board.length - 1) {
+                  setTurn(turn + 1);
+                }
+              }}
+              variant="contained"
+            >
+              <ChevronRightIcon />
+            </Button>
+          </div>
+          <ChatsHistory chats={chats} roundId={boardShow?._id} />
         </div>
 
         <div className="historyfc__board">
