@@ -15,7 +15,7 @@ const ChatsHistory: React.FC<{ chats?: any; roundId?: any }> = ({
         <div className="ChatsHistory">
           {chats[roundId] &&
             chats[roundId].map((ele: any,index:number) => {
-              return ele.user === user.user ? (
+              return ele.user !== user.user ? (
                 <div key={index} className="ChatsHistory__friend">
                   <span className="ChatsHistory__friend--name">{ele.user}</span>
                   <div>

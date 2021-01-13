@@ -54,10 +54,6 @@ const Room: React.FC = () => {
       });
     }
     emitTokenOnBoard();
-
-    return () => {
-      socket.emit("leaveroom", { boardId: params.id, token });
-    };
   }, [params.id, token, history]);
 
   useEffect(() => {
@@ -90,6 +86,13 @@ const Room: React.FC = () => {
       socket.off("connect");
     };
   }, [user.user]);
+
+  useEffect(()=>{
+    return () => {
+      socket.emit("leaveroom", { boardId: params.id, token });
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[])
 
   const handleClickBoard = (i: number) => {
     if (infBoard.board) {

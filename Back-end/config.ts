@@ -2,7 +2,7 @@ export default {
   PRIMARYKEY: "hahahaaaa",
 };
 
-export const BASE_URL_CLIENT = "http://localhost:3000";
+export const BASE_URL_CLIENT = "https://dack-d233d.web.app";
 
 const EventSocket = {
   CONNECTION: "connection",

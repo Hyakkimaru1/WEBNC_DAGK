@@ -130,7 +130,7 @@ const routerUser = (io: any) => {
                     {
                       user: req.body.username,
                       password: req.body.password,
-                      avatar: "https://loremflickr.com/320/240/dog",
+                      avatar: req.body.avatar,
                       name: req.body.name,
                       isConfirm: true,
                       joinDate,
@@ -343,7 +343,7 @@ const routerUser = (io: any) => {
           const chats = await ChatModel.findOne({ roomId: docs[index].roomId });
           if (chats && chats.messages.length > 0) {
             const newChats = await chats.messages.slice(
-              docs[index].startChat - 1,
+              docs[index].startChat,
               docs[index].endChat
             );
             dataChats[docs[index]._id] = newChats;

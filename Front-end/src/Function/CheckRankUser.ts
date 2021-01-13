@@ -10,6 +10,8 @@ export default function CheckRankUser(cup: number): string {
     rank = "Platinum";
   } else if (cup < 500) {
     rank = "Diamond";
+  } else {
+    rank = "Master"
   }
   return rank;
 }
