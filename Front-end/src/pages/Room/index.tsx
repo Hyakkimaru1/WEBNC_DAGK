@@ -129,7 +129,7 @@ const Room: React.FC = () => {
               )}
             </div>
           </div>
-          <Player time={time} infBoard={infBoard} />
+          <Player time={time} infBoard={infBoard} user={user}/>
         </div>
         <div className="Room__board">
           <div className="Room__board--ready">
