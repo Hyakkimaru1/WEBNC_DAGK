@@ -213,7 +213,6 @@ export default function (io) {
               updateUser(newUser);
               socket.join(boardID);
               const room = io.sockets.adapter.rooms.get(boardID);
-              console.log("room222");
               //declare person with their socketId and user (allow invite or primary chat)
               const person: personInRoom = {
                 socketId: 1,
@@ -425,13 +424,13 @@ export default function (io) {
               return;
             }
 
-            home.quickJoin.forEach((pl, key) => {
+            await Promise.all(home.quickJoin.map((pl, key) => {
               const dis = Math.abs(pl.cups - player.cups);
               if (dis < minDis) {
                 minDis = dis;
                 chosenPlayer = pl;
               }
-            });
+            }));
             if (chosenPlayer) {
               const player2 = getUserByName(chosenPlayer.name);
               // const board: any = await createBoard(player);
@@ -516,7 +515,6 @@ export default function (io) {
               //     return;
               //   }
               // });
-              console.log("home.quickJoin", home.quickJoin);
               callback(null);
             }, 10000);
           } catch (error) {
