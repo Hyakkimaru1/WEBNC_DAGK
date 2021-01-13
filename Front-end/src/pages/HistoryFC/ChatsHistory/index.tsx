@@ -14,9 +14,9 @@ const ChatsHistory: React.FC<{ chats?: any; roundId?: any }> = ({
       <Paper className="ChatsHistory--wrapper" elevation={3}>
         <div className="ChatsHistory">
           {chats[roundId] &&
-            chats[roundId].map((ele: any) => {
+            chats[roundId].map((ele: any,index:number) => {
               return ele.user === user.user ? (
-                <div className="ChatsHistory__friend">
+                <div key={index} className="ChatsHistory__friend">
                   <span className="ChatsHistory__friend--name">{ele.user}</span>
                   <div>
                   <p className="ChatsHistory__friend--chats">
@@ -25,7 +25,7 @@ const ChatsHistory: React.FC<{ chats?: any; roundId?: any }> = ({
                   </div>
                 </div>
               ) : (
-                <div className="ChatsHistory__me">
+                <div key={index} className="ChatsHistory__me">
                   <p className="ChatsHistory__me--chats">{ele.message}</p>
                 </div>
               );

@@ -659,11 +659,20 @@ export default function (io) {
               room.infBoard?.playerX?.name === name ||
               room.infBoard?.playerO?.name === name
             ) {
+              if (room.infBoard.isReady && room.infBoard.winner === null){
+                if (room.infBoard.playerX?.name === name) {
+                  room.infBoard.winner = room.infBoard.playerO?.name;
+                } else if (room.infBoard.playerO?.name === name) {
+                  room.infBoard.winner = room.infBoard.playerX?.name;
+                }
+                saveOnWin(room.infBoard);
+              }
               if (room.infBoard.playerX?.name === name) {
                 room.infBoard.playerX = null;
               } else if (room.infBoard.playerO?.name === name) {
                 room.infBoard.playerO = null;
               }
+
               room.infBoard.xReady = false;
               room.infBoard.oReady = false;
               room.infBoard.isReady = false;

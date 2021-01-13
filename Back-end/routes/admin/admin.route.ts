@@ -263,22 +263,27 @@ const routerAdmin = (io: any) => {
     } else {
       let username = null;
       userModel.find({ _id: req.query.id }, (error, doc) => {
-        if (doc[0].user) username = doc[0].user;
         if (error) {
           res.sendStatus(404);
         } else {
-          RoomModel.find(
-            {
-              $or: [{ "playerX.name": username }, { "playerO.name": username }],
-            },
-            (err, doc) => {
-              if (err) {
-                res.sendStatus(404);
-              } else {
-                res.send(doc);
+          if (doc.length>0) {
+            if (doc[0].user) username = doc[0].user;
+            RoomModel.find(
+              {
+                $or: [
+                  { "playerX.name": username },
+                  { "playerO.name": username },
+                ],
+              },
+              (err, doc) => {
+                if (err) {
+                  res.sendStatus(404);
+                } else {
+                  res.send(doc);
+                }
               }
-            }
-          );
+            );
+          } else res.sendStatus(404);
         }
       });
     }

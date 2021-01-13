@@ -4,7 +4,7 @@ import HomeRoundedIcon from "@material-ui/icons/HomeRounded";
 import AccountCircleRoundedIcon from "@material-ui/icons/AccountCircleRounded";
 import HistoryRoundedIcon from "@material-ui/icons/HistoryRounded";
 import Box from "@material-ui/core/Box";
-import { Paper, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import AppBar from "@material-ui/core/AppBar";
 import ExitToAppRoundedIcon from "@material-ui/icons/ExitToAppRounded";
 import Tabs from "@material-ui/core/Tabs";

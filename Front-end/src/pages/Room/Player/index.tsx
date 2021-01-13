@@ -9,12 +9,18 @@ import { useHistory, useParams } from "react-router-dom";
 import ROUTERS from "@/constants/routers/index";
 import socket from "@/configs/socket";
 import { ThemeContext } from "@/contexts/ThemeContext";
-import Time from '@/types/Time';
+import Time from "@/types/Time";
+import DialogLeave from "./../DialogLeave";
 
-const Player: React.FC<{ infBoard: CurrentBoardPlay,time:Time }> = ({ infBoard,time }) => {
+const Player: React.FC<{
+  infBoard: CurrentBoardPlay;
+  time: Time;
+  user: any;
+}> = ({ infBoard, time, user }) => {
   const history = useHistory();
   const token = localStorage.getItem("token");
   const params: any = useParams();
+  const [open, setOpen] = React.useState(false);
   const { theme } = useContext(ThemeContext);
   const handleJoinAs = (value: number) => {
     //call socket here
@@ -29,7 +35,7 @@ const Player: React.FC<{ infBoard: CurrentBoardPlay,time:Time }> = ({ infBoard,t
           turn={infBoard.turn}
           user={infBoard.playerO}
           time={time.timeO}
-          isReady= {infBoard.isReady}
+          isReady={infBoard.isReady}
         />
       </div>
       <div className="player__count">
@@ -44,7 +50,7 @@ const Player: React.FC<{ infBoard: CurrentBoardPlay,time:Time }> = ({ infBoard,t
           turn={infBoard.turn}
           user={infBoard.playerX}
           time={time.timeX}
-          isReady= {infBoard.isReady}
+          isReady={infBoard.isReady}
         />
       </div>
       <div className="player__button">
@@ -58,10 +64,24 @@ const Player: React.FC<{ infBoard: CurrentBoardPlay,time:Time }> = ({ infBoard,t
         <Button
           variant="outlined"
           color="secondary"
-          onClick={() => history.push(ROUTERS.HOME)}
+          onClick={() => {
+            if (infBoard.isReady && infBoard.winner === null) {
+              console.log(infBoard);
+              console.log(user);
+              if (
+                infBoard.playerX?.name === user.user ||
+                infBoard.playerO?.name === user.user
+              ) {
+                setOpen(true);
+              } else {
+                history.push(ROUTERS.HOME);
+              }
+            } else history.push(ROUTERS.HOME);
+          }}
         >
           <ExitToAppOutlinedIcon /> Exit
         </Button>
+        <DialogLeave open={open} setOpen={setOpen} />
       </div>
     </div>
   );
