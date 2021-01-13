@@ -39,5 +39,8 @@ export const productAPI = {
   forgotPassword: (email:string) => AXIOS_INSTANCE.post(API.FORGOT_PASSWORD,{email}),
   resetPassword: (params:string,password:string) => AXIOS_INSTANCE.put(`${API.RESET_PASSWORD}/${params}`,{password}),
   getUser: (_id:string) => AXIOS_INSTANCE.get(`${API.USER_PROFILE}/${_id}`),
-  updateProfile: (name:string) => AXIOS_INSTANCE.put(API.UPDATE_USER_PROFILE,{name},)
+  updateProfile: (name:string) => AXIOS_INSTANCE.put(API.UPDATE_USER_PROFILE,{name}),
+  checkToken: () => {
+    return AXIOS_INSTANCE.post(API.CHECKTOKEN);
+  }
 };

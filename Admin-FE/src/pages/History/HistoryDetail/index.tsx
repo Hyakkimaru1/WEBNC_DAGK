@@ -8,13 +8,15 @@ import {
   ListItemText,
   makeStyles,
   Theme,
+  Button
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useHistory } from "react-router-dom";
 import "./styles.scss";
 import ModeCommentIcon from "@material-ui/icons/ModeComment";
 import { toast } from "react-toastify";
+import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -33,14 +35,16 @@ const HistoryDetail = () => {
   const params: any = useParams();
   const dispatch = useDispatch();
   const id = params.id;
-  const [data, setMessages] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const history = useHistory();
   useEffect(() => {
     dispatch(
       callGetHistoryDetail({
         id,
         cbSuccess: (data: any) => {
-          setMessages(data);
-          console.log(data);
+          if (data){
+            setMessages(data);
+          }
         },
         cbError: () => {
           toast.error("Load history detail failed");
@@ -49,16 +53,20 @@ const HistoryDetail = () => {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  const messages: any = data;
+  
   return (
     <div className="chat">
+      <Button onClick={()=>history.goBack()} className="button-back">
+        <ArrowBackIcon/>
+      </Button>
       <div>
         <h2 className="chat__header">Chat of game: {id}</h2>
       </div>
       <div className="chat__list">
-        <List component="nav" className={classes.root}>
-          {messages.map((chat: any) => (
-            <ListItem button key={chat.id}>
+        {
+          messages.length>0?(<List component="nav" className={classes.root}>
+          {messages.map((chat: any,index:number) => (
+            <ListItem button key={index}>
               <ListItemAvatar>
                 <Avatar>
                   <ModeCommentIcon />
@@ -68,7 +76,8 @@ const HistoryDetail = () => {
               <ListItemText> {chat.message} </ListItemText>
             </ListItem>
           ))}
-        </List>
+        </List>):<h2 style={{textAlign:"center"}}>THIS GAME HAS NO CHAT</h2>
+        }
       </div>
     </div>
   );

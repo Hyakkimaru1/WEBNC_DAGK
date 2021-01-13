@@ -6,8 +6,6 @@ import jwt from "jsonwebtoken";
 import config from "../../config";
 import md5 from "md5";
 import { auth, provider, providerfb } from "../../firebase/firebase";
-import { resolveSoa } from "dns";
-import firebase from "firebase";
 import ChatModel from "../../models/Chat.model";
 
 const router = express.Router();
@@ -296,6 +294,7 @@ const routerAdmin = (io: any) => {
       RoomModel.findOne({ _id: req.query.id }, (err, doc) => {
         if (err) {
           res.sendStatus(404);
+          return;
         } else {
           startChat = doc.startChat;
           endChat = doc.endChat;

@@ -1,5 +1,5 @@
 // libs import
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { Route, Switch } from "react-router-dom";
 // routers
 // interceptors
@@ -16,10 +16,12 @@ import Top from "./pages/Top";
 import { useHistory } from "react-router-dom";
 import NotFound from "./pages/NotFound";
 import socket from "@/configs/socket";
+import { UserContext } from './contexts/UserContext';
+import { toast } from 'react-toastify';
 
 const Main: React.FC<{ theme?: THEME }> = ({ theme }) => {
   const history = useHistory();
-  doAxiosRequestIntercept();
+  const curentUser: any = useContext(UserContext);
   useEffect(() => {
     //user online
     const room = "1";
@@ -30,11 +32,21 @@ const Main: React.FC<{ theme?: THEME }> = ({ theme }) => {
         history.push(ROUTERS.ROOM_PUSH + roomId);
       }
     });
+    socket.on("ban-user",(user:any) => {
+      if (user===curentUser.user){
+        localStorage.removeItem("token");
+        toast.error("YOU HAVE BEEN BAN BY ADMIN 😭");
+        history.push(ROUTERS.LOGIN);
+      }
+    })
     return () => {
+      socket.off("ban-user");
       socket.close();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  doAxiosRequestIntercept();
   return (
     <div
       style={{ backgroundColor: theme?.formBackGround }}

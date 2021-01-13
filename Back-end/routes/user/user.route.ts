@@ -9,6 +9,8 @@ import RoomModel from "../../models/Room.model";
 import MailerModel from "./../../models/sendMail.models";
 import TokenPasswordModel from "../../models/TokenPassword.model";
 import moment from "moment";
+import ChatModel from "../../models/Chat.model";
+import clone from "clone";
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -327,21 +329,29 @@ const routerUser = (io: any) => {
   });
 
   router.post("/history", checkAuthorization, (req: any, res) => {
-    RoomModel.find(
-      {
-        $or: [
-          { "playerX.name": req.authorization.user },
-          { "playerO.name": req.authorization.user },
-        ],
-      },
-      (err, doc) => {
-        if (err) {
-          res.sendStatus(404);
-        } else {
-          res.send(doc);
+    RoomModel.find({
+      $or: [
+        { "playerX.name": req.authorization.user },
+        { "playerO.name": req.authorization.user },
+      ],
+    }).exec(async (err, docs: any) => {
+      if (err) {
+        res.sendStatus(404);
+      } else {
+        const dataChats = {};
+        for (let index = 0; index < docs.length; index++) {
+          const chats = await ChatModel.findOne({ roomId: docs[index].roomId });
+          if (chats && chats.messages.length > 0) {
+            const newChats = await chats.messages.slice(
+              docs[index].startChat-1,
+              docs[index].endChat
+            );
+            dataChats[docs[index]._id] = newChats;
+          }
         }
+        res.send({ docs, dataChats });
       }
-    );
+    });
   });
 
   router.get("/topranking", checkAuthorization, async (req: any, res) => {
@@ -421,6 +431,19 @@ const routerUser = (io: any) => {
       return res.sendStatus(200);
     }
     return res.sendStatus(500);
+  });
+
+  router.post("/token", checkAuthorization, async (req: any, res) => {
+    await UserModel.findById(req.authorization._id, (err, doc) => {
+      if (err) {
+        res.sendStatus(503);
+        return;
+      }
+      if (doc) {
+        if (!doc.isActive) res.send(false);
+        else res.send(true);
+      } else res.send(false);
+    });
   });
 
   function checkAuthorization(req, res, next) {

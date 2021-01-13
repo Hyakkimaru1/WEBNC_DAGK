@@ -56,6 +56,9 @@ const Home = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    socket.emit("onhome", (users: any) => {
+      setusers(users);
+    });
     socket.on("allrooms", (data: any) => {
       //setBoard here;
       setBoards(data.resRooms);

@@ -579,8 +579,9 @@ export default function (io) {
     );
 
     //user connect to home page
-    socket.on(EventSocket.ON_HOME, () => {
+    socket.on(EventSocket.ON_HOME, (callback) => {
       allrooms(socket);
+      callback(getAllUsers); 
     });
 
     // Hoan doi vi tri
@@ -808,6 +809,15 @@ export default function (io) {
         }
       });
     });
+
+    socket.on(EventSocket.BAN_USER, (user,token) => {
+      jwt.verify(token, primaryKey, async function (err, decoded) {
+        if (err) {
+        } else {
+          socket.broadcast.emit(EventSocket.BAN_USER,user);
+        }
+      });
+    })
   });
 
   //emit all room data
