@@ -157,7 +157,7 @@ export default function (io) {
             });
           const room = io.sockets.adapter.rooms.get(roomId);
           const person: personInRoom = {
-            socketId: socket.id,
+            socketId: 1,
             user,
           };
 
@@ -213,10 +213,10 @@ export default function (io) {
               updateUser(newUser);
               socket.join(boardID);
               const room = io.sockets.adapter.rooms.get(boardID);
-
+              console.log("room222");
               //declare person with their socketId and user (allow invite or primary chat)
               const person: personInRoom = {
-                socketId: socket.id,
+                socketId: 1,
                 user: name,
               };
 
@@ -233,8 +233,9 @@ export default function (io) {
                   (elm: personInRoom) => elm.user === name
                 );
                 if (idx !== -1) {
-                  if (room.peopleInRoom[idx].socketId === 1)
-                    room.peopleInRoom.splice(idx, 1);
+                  if (room.peopleInRoom[idx].socketId === 1) {
+                  }
+                  // room.peopleInRoom.splice(idx, 1);
                   else {
                     room.peopleInRoom[idx].socketId--;
                   }
@@ -701,16 +702,6 @@ export default function (io) {
                 roomId: boardId, // roomID
                 messages: room.messages,
               };
-              try {
-                ChatModel.create(chat, (err) => {
-                  if (err) {
-                    console.log("err", err);
-                  } else {
-                  }
-                });
-              } catch (error) {
-                console.log("error", error);
-              }
             }
           }
         });
@@ -735,7 +726,7 @@ export default function (io) {
 
     socket.on(EventSocket.DISCONNECTING, async (reason) => {
       try {
-        const roomId = getLastValue(socket.rooms);
+        const roomId = getLastValue(socket);
         const room = io.sockets.adapter.rooms.get(roomId);
         const user = await getUser(socket.id);
         if (room?.infBoard && roomId !== "1") {
@@ -777,13 +768,14 @@ export default function (io) {
                       EventSocket.GET_INFO_BOARD,
                       room.infBoard
                     );
+                    if (room?.infBoard?.history) saveOnWin(room.infBoard);
                     allrooms(socket);
                   } else {
                     room.peopleInRoom[index].socketId--;
                   }
                 }
               }
-            }, 6000);
+            }, 15000);
           }
         }
       } catch (error) {
@@ -844,56 +836,88 @@ export default function (io) {
 
   //luu khi co nguoi thang
   const saveOnWin = async (infBoard) => {
-    const roomH = io.sockets.adapter.rooms.get(infBoard.boardID);
-    const winUser = infBoard.winner
-      ? infBoard.playerX?.name
-      : infBoard.playerO?.name;
-    const room: any = {
-      roomId: infBoard.boardID, // roomID
-      playerX: infBoard.playerX, // store userID or username
-      playerO: infBoard.playerO,
-      board: roomH.history,
-      winner: winUser,
-      startChat: roomH.chatHistory.startChat,
-      endChat: roomH.messages.length - 1,
-    };
+    try {
+      const roomH = io.sockets.adapter.rooms.get(infBoard.boardID);
+      var query = { roomId: infBoard.boardID },
+        update = {
+          roomId: infBoard.boardID, // roomID
+          messages: roomH?.messages,
+        },
+        options = {
+          upsert: true,
+          new: true,
+          setDefaultsOnInsert: true,
+        };
 
-    //xu ly cong diem luc thang
-    let winner, loser;
-    if (infBoard.playerX.name === winUser) {
-      winner = infBoard.playerX;
-      loser = infBoard.playerO;
-    } else {
-      winner = infBoard.playerO;
-      loser = infBoard.playerX;
-    }
-    const wRank = Math.floor(winner.cups / 100);
-    const lRank = Math.floor(loser.cups / 100);
-    let point = 1;
-    if (wRank < lRank) {
-      point += wRank - lRank;
-    }
-    winner.cups += point;
-    winner.wins += 1;
-    loser.cups -= point;
-    loser.wins -= 1;
-    const updateUserWin = await UserModel.findOneAndUpdate(
-      { user: winner.name },
-      { $inc: { wins: 1, cups: point } }
-    );
-    const updateUserLose = await UserModel.findOneAndUpdate(
-      {
-        user: loser.name,
-        cups: { $gt: 0 },
-      },
-      { $inc: { cups: -point } }
-    );
+      // Find the document
+      ChatModel.findOneAndUpdate(
+        query,
+        update,
+        options,
+        function (error, result) {
+          if (error) console.log("error", error);
 
-    RoomModel.create(room, (err) => {
-      if (err) {
-        console.log("err", err);
+          // do something with the document
+        }
+      );
+      // ChatModel.create(chat, (err) => {
+      //   if (err) {
+      //     console.log("err", err);
+      //   } else {
+      //   }
+      // });
+
+      const winUser = infBoard.winner
+        ? infBoard.playerX?.name
+        : infBoard.playerO?.name;
+      const room: any = {
+        roomId: infBoard.boardID, // roomID
+        playerX: infBoard.playerX, // store userID or username
+        playerO: infBoard.playerO,
+        board: roomH.history,
+        winner: winUser,
+        startChat: roomH.chatHistory.startChat,
+        endChat: roomH.messages.length,
+      };
+
+      //xu ly cong diem luc thang
+      let winner, loser;
+      if (infBoard.playerX.name === winUser) {
+        winner = infBoard.playerX;
+        loser = infBoard.playerO;
+      } else {
+        winner = infBoard.playerO;
+        loser = infBoard.playerX;
       }
-    });
+      const wRank = Math.floor(winner.cups / 100);
+      const lRank = Math.floor(loser.cups / 100);
+      let point = 1;
+      if (wRank < lRank) {
+        point += wRank - lRank;
+      }
+      winner.cups += point;
+      winner.wins += 1;
+      loser.cups = loser.cups - point >= 0 ? loser.cups - point : 0;
+      const updateUserWin = await UserModel.findOneAndUpdate(
+        { user: winner.name },
+        { $inc: { wins: 1, cups: point } }
+      );
+      const updateUserLose = await UserModel.findOneAndUpdate(
+        {
+          user: loser.name,
+          cups: { $gt: 0 },
+        },
+        { $inc: { cups: -point } }
+      );
+
+      RoomModel.create(room, (err) => {
+        if (err) {
+          console.log("err", err);
+        }
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
   };
 }
 
@@ -911,10 +935,14 @@ const getUserInfo = async (id) => {
   // make user logout
 };
 
-const getLastValue = (set) => {
+const getLastValue = (socket) => {
   let value;
-  for (value of set);
-  return value;
+  for (value of socket.rooms) {
+    if (value != socket.id && value != "1") {
+      return value;
+    }
+  }
+  return null;
 };
 
 const createBoard = async (player) => {

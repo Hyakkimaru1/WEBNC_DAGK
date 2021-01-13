@@ -125,12 +125,13 @@ const routerUser = (io: any) => {
                     });
                   }
                 } else {
+                  const id = Math.floor(Math.random() * 2220);
                   const joinDate = moment().format("MM-DD-YYYY");
                   UserModel.create(
                     {
                       user: req.body.username,
                       password: req.body.password,
-                      avatar: "https://loremflickr.com/320/240/dog",
+                      avatar: req.body.avatar,
                       name: req.body.name,
                       isConfirm: true,
                       joinDate,
@@ -309,9 +310,9 @@ const routerUser = (io: any) => {
           const index = await room.peopleInRoom.findIndex(
             (ele) => ele.user === req.authorization.user
           );
-          if (index !== -1) {
+          if (index === -1) {
             room.peopleInRoom.push({
-              socketId: req.body.socketId,
+              socketId: 1,
               user: req.authorization.user,
             });
           } else {
@@ -343,7 +344,7 @@ const routerUser = (io: any) => {
           const chats = await ChatModel.findOne({ roomId: docs[index].roomId });
           if (chats && chats.messages.length > 0) {
             const newChats = await chats.messages.slice(
-              docs[index].startChat - 1,
+              docs[index].startChat,
               docs[index].endChat
             );
             dataChats[docs[index]._id] = newChats;

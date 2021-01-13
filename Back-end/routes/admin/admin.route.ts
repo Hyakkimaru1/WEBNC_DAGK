@@ -266,7 +266,7 @@ const routerAdmin = (io: any) => {
         if (error) {
           res.sendStatus(404);
         } else {
-          if (doc.length>0) {
+          if (doc.length > 0) {
             if (doc[0].user) username = doc[0].user;
             RoomModel.find(
               {
@@ -290,34 +290,36 @@ const routerAdmin = (io: any) => {
   });
 
   router.get("/gethistorydetail", (req: any, res) => {
-    let startChat = null;
-    let endChat = null;
-    let room = null;
-    if (req.query.id === "") {
-      res.sendStatus(404);
-    } else {
-      RoomModel.findOne({ _id: req.query.id }, (err, doc) => {
-        if (err) {
-          res.sendStatus(404);
-          return;
-        } else {
-          startChat = doc.startChat;
-          endChat = doc.endChat;
-          room = doc.roomId;
-        }
-        if (startChat && endChat && room) {
+    try {
+      let startChat = null;
+      let endChat = null;
+      let room = null;
+      if (req.query.id === "") {
+        res.sendStatus(404);
+      } else {
+        RoomModel.findOne({ _id: req.query.id }, (err, doc) => {
+          if (err) {
+            res.sendStatus(404);
+            return;
+          } else {
+            startChat = doc.startChat;
+            endChat = doc.endChat;
+            room = doc.roomId;
+          }
           ChatModel.findOne({ roomId: room }, (err, doc) => {
             if (err) {
               res.sendStatus(404);
             } else {
               if (doc && doc.messages) {
                 let chat = doc.messages;
-                res.send(chat.slice(startChat - 1, endChat));
+                res.send(chat.slice(startChat, endChat));
               } else res.send(null);
             }
           });
-        } else res.sendStatus(403);
-      });
+        });
+      }
+    } catch (error) {
+      console.log("error", error);
     }
   });
 
