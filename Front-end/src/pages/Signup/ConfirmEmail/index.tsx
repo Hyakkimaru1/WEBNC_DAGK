@@ -29,7 +29,7 @@ const ConfirmEmail: React.FC<{ changeEmail: () => void,data:any }> = ({
   const { register, handleSubmit } = useForm<FormDataConfirm>({
     resolver: yupResolver(schema),
   });
-  const [timeLeft, setTimeLeft] = useState(data.time/1000-280);
+  const [timeLeft, setTimeLeft] = useState(data.time/1000-5);
 
   useEffect(() => {
     // exit early when we reach 0

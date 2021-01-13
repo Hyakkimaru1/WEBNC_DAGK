@@ -64,7 +64,6 @@ const Home = () => {
       setBoards(data.resRooms);
     });
     socket.on("roomData", (message: any, callback: any) => {
-      console.log("message", message);
       if (message) setusers(message.users);
     });
 
