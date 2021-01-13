@@ -56,7 +56,6 @@ const Home = () => {
   const token = localStorage.getItem("token");
 
   useEffect(() => {
-
     socket.on("allrooms", (data: any) => {
       //setBoard here;
       setBoards(data.resRooms);
@@ -137,10 +136,7 @@ const Home = () => {
                 return (
                   <ListItem key={value} button>
                     <ListItemAvatar>
-                      <Avatar
-                        alt={`Avatar n°${value + 1}`}
-                        // src={`/static/images/avatar/${value + 1}.jpg`}
-                      />
+                      <Avatar alt="avatar" src={user.avatar} />
                     </ListItemAvatar>
                     <ListItemText
                       style={{ color: theme?.text }}

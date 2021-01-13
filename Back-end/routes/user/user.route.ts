@@ -199,8 +199,9 @@ const routerUser = (io: any) => {
           if (doc) {
             res.sendStatus(400);
           } else {
+            const id = Math.floor(Math.random() * 2220);
             req.body.password = md5(req.body.password);
-            req.body.avatar = "https://loremflickr.com/320/240/dog";
+            req.body.avatar = `https://picsum.photos/id/${id}/200/300`;
             req.body.wins = 0;
             req.body.cups = 0;
 
@@ -348,8 +349,8 @@ const routerUser = (io: any) => {
       UserModel.find({}).sort({ cups: "desc" }).select("-password"),
       UserModel.findById(req.authorization._id).select("-password"),
     ]);
-    const rank = listTops.findIndex(ele => ele.user === userRanking.user)+1;
-    res.send({ listTops: listTops.slice(0,15), userRanking, rank });
+    const rank = listTops.findIndex((ele) => ele.user === userRanking.user) + 1;
+    res.send({ listTops: listTops.slice(0, 15), userRanking, rank });
   });
 
   router.put("/changePassword", checkAuthorization, async (req: any, res) => {
