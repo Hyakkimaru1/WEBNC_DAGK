@@ -569,6 +569,7 @@ export default function (io) {
             const room = io.sockets.adapter.rooms.get(infBoard.boardID);
             // console.log("roomH", roomH);
             //count turn
+
             infBoard.turn = 1 - infBoard.turn;
             infBoard.i = i;
             io.to(infBoard.boardID).emit(EventSocket.GET_INFO_BOARD, infBoard);
@@ -581,7 +582,7 @@ export default function (io) {
     //user connect to home page
     socket.on(EventSocket.ON_HOME, (callback) => {
       allrooms(socket);
-      callback(getAllUsers); 
+      callback(getAllUsers);
     });
 
     // Hoan doi vi tri
@@ -659,7 +660,7 @@ export default function (io) {
               room.infBoard?.playerX?.name === name ||
               room.infBoard?.playerO?.name === name
             ) {
-              if (room.infBoard.isReady && room.infBoard.winner === null){
+              if (room.infBoard.isReady && room.infBoard.winner === null) {
                 if (room.infBoard.playerX?.name === name) {
                   room.infBoard.winner = room.infBoard.playerO?.name;
                 } else if (room.infBoard.playerO?.name === name) {
@@ -819,14 +820,14 @@ export default function (io) {
       });
     });
 
-    socket.on(EventSocket.BAN_USER, (user,token) => {
+    socket.on(EventSocket.BAN_USER, (user, token) => {
       jwt.verify(token, primaryKey, async function (err, decoded) {
         if (err) {
         } else {
-          socket.broadcast.emit(EventSocket.BAN_USER,user);
+          socket.broadcast.emit(EventSocket.BAN_USER, user);
         }
       });
-    })
+    });
   });
 
   //emit all room data
