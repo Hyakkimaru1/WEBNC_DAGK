@@ -10,7 +10,6 @@ import MailerModel from "./../../models/sendMail.models";
 import TokenPasswordModel from "../../models/TokenPassword.model";
 import moment from "moment";
 import ChatModel from "../../models/Chat.model";
-import clone from "clone";
 
 const router = express.Router();
 const primaryKey = config.PRIMARYKEY;
@@ -88,7 +87,7 @@ const routerUser = (io: any) => {
       // Build Firebase credential with the Google ID token.
       let credential;
       if (req.body.loginfb) {
-        credential = (providerfb as any).credentital({
+        credential = providerfb.credential({
           accessToken: req.body.idToken,
         });
       } else {
@@ -137,6 +136,7 @@ const routerUser = (io: any) => {
                       joinDate,
                       wins: 0,
                       cups: 0,
+                      isActive: true,
                     },
                     (err, docs) => {
                       if (err) {
@@ -207,7 +207,6 @@ const routerUser = (io: any) => {
             req.body.wins = 0;
             req.body.cups = 0;
 
-            const currentDate = new Date();
             const countDownTime = 5 * 60000;
             const randomnumber =
               Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
@@ -215,6 +214,7 @@ const routerUser = (io: any) => {
             const dataUser = {
               ...req.body,
               joinDate,
+              isActive: true,
               isConfirm: false,
               codeConfirm: randomnumber,
             };
@@ -343,7 +343,7 @@ const routerUser = (io: any) => {
           const chats = await ChatModel.findOne({ roomId: docs[index].roomId });
           if (chats && chats.messages.length > 0) {
             const newChats = await chats.messages.slice(
-              docs[index].startChat-1,
+              docs[index].startChat - 1,
               docs[index].endChat
             );
             dataChats[docs[index]._id] = newChats;
