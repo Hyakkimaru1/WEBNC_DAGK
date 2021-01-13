@@ -5,8 +5,9 @@ const { CLIENT_ENV = "dev" } = process.env;
 
 const envInfo: ENV_INFO = {
   dev: {
-    BASE_URL: "http://localhost:8001",
+    //BASE_URL: "http://localhost:8001",
     // BASE_URL: "https://test-app1332.herokuapp.com/",
+    BASE_URL: "http://192.168.1.4:8001/"
   },
 };
 

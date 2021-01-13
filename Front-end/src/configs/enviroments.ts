@@ -7,7 +7,7 @@ const envInfo: ENV_INFO = {
   dev: {
     BASE_URL: "http://localhost:8001",
     //BASE_URL: "https://dack-backend.herokuapp.com",
-    //BASE_URL: "http://192.168.1.8:8001/"
+    //BASE_URL: "http://192.168.1.4:8001/"
   },
 };
 
